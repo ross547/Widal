@@ -704,15 +704,18 @@ function delE(id) { entries=entries.filter(e=>e.id!==id); saveData(); renderHist
 // API KEY MANAGEMENT
 // =============================================
 function saveApiKey() {
-  const val = document.getElementById('apikey-inp').value.trim();
-  if (!val.startsWith('sk-ant-')) {
+  const inp = document.getElementById('apikey-inp');
+  // Se il campo mostra pallini (mascherato), usa la chiave già in memoria
+  const raw = inp.value.trim();
+  const val = (raw.includes('\u2022') || raw.includes('•')) ? apiKey : raw;
+  if (!val || !val.startsWith('sk-ant-')) {
     showKeyStatus('Formato non valido. Deve iniziare con sk-ant-', false);
     return;
   }
   apiKey = val;
   try { localStorage.setItem('widal-apikey-v1', apiKey); } catch(e) {}
-  document.getElementById('apikey-inp').value = maskKey(apiKey);
-  document.getElementById('apikey-inp').type = 'password';
+  inp.value = maskKey(apiKey);
+  inp.type = 'password';
   showKeyStatus('Chiave salvata ✓ — pronta per le analisi', true);
 }
 
@@ -803,21 +806,32 @@ Se non ci sono trigger, usa array vuoto [].`;
     });
 
     const data = await response.json();
+
+    // Mostra errore API reale (auth, crediti, ecc.)
+    if (!response.ok) {
+      const apiErr = data.error?.message || JSON.stringify(data);
+      resEl.innerHTML = `<div style="font-size:12px;color:#A32D2D;padding:8px">Errore API (${response.status}):<br>${apiErr}</div>`;
+      btn.disabled = false; btn.textContent = 'Analizza'; return;
+    }
+
     const raw = data.content?.find(b => b.type==='text')?.text || '';
 
+    // Estrai JSON anche se il modello aggiunge testo extra
     let result;
     try {
-      const clean = raw.replace(/```json|```/g,'').trim();
-      result = JSON.parse(clean);
+      const match = raw.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('no json');
+      result = JSON.parse(match[0]);
     } catch(e) {
-      throw new Error('Risposta non valida dal modello');
+      resEl.innerHTML = `<div style="font-size:12px;color:#A32D2D;padding:8px">Parsing fallito.<br><pre style="font-size:10px;white-space:pre-wrap">${raw.slice(0,300)}</pre></div>`;
+      btn.disabled = false; btn.textContent = 'Analizza'; return;
     }
 
     currentAiResult = result;
     renderAiResult(result, query);
 
   } catch(err) {
-    resEl.innerHTML = `<div style="font-size:13px;color:#A32D2D;padding:8px">Errore durante l'analisi: ${err.message}.<br>Controlla la connessione e riprova.</div>`;
+    resEl.innerHTML = `<div style="font-size:13px;color:#A32D2D;padding:8px">Errore di rete: ${err.message}.<br>Controlla la connessione e riprova.</div>`;
   } finally {
     btn.disabled = false;
     btn.textContent = 'Analizza';
