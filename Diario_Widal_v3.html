@@ -76,7 +76,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;fo
 /* INPUTS */
 .inp{width:100%;padding:10px 12px;border:0.5px solid var(--bd2);border-radius:var(--r);font-size:15px;background:var(--bg);color:var(--tx);outline:none;-webkit-appearance:none;}
 .inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(55,138,221,.12);}
-select.inp{appearance:none;-webkit-appearance:none;background-image:url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.org/2000/svg’ width=‘10’ height=‘6’%3E%3Cpath d=‘M0 0l5 6 5-6z’ fill=’%23888’/%3E%3C/svg%3E”);background-repeat:no-repeat;background-position:right 12px center;padding-right:28px;}
+select.inp{appearance:none;-webkit-appearance:none;background-image:url(“data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E”);background-repeat:no-repeat;background-position:right 12px center;padding-right:28px;}
 
 /* BUTTONS */
 .savebtn{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;margin-top:10px;}
@@ -671,53 +671,53 @@ async function analyzeFood(){
 currentAiResult=result;renderAiResult(result);
 
 }catch(err){resEl.innerHTML=`<div style="font-size:13px;color:#A32D2D;padding:8px">Errore di rete: ${err.message}</div>`;}
-finally{btn.disabled=false;btn.textContent=‘Analizza’;}
+finally{btn.disabled=false;btn.textContent='Analizza';}
 }
 function renderAiResult(r){
-const resEl=document.getElementById(‘ai-result’);
-const riskColor=RTC[r.risk]||’#606060’,riskBg=RBG[r.risk]||‘transparent’,riskLabel=RL[r.risk]||’–’;
-const tH=r.triggers.length?r.triggers.map(t=>{const s=TS[t]||{bg:’#F1EFE8’,c:’#5F5E5A’};return`<span class="etag" style="background:${s.bg};color:${s.c};font-size:11px;padding:3px 9px">${t}</span>`;}).join(’’):’<span style="font-size:11px;color:var(--tx3)">Nessun trigger</span>’;
-resEl.style.display=‘block’;
+const resEl=document.getElementById('ai-result');
+const riskColor=RTC[r.risk]||'#606060',riskBg=RBG[r.risk]||'transparent',riskLabel=RL[r.risk]||'–';
+const tH=r.triggers.length?r.triggers.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A'};return`<span class="etag" style="background:${s.bg};color:${s.c};font-size:11px;padding:3px 9px">${t}</span>`;}).join(''):'<span style="font-size:11px;color:var(--tx3)">Nessun trigger</span>';
+resEl.style.display='block';
 resEl.innerHTML=`<div class="ai-result-header"><div class="ai-food-name">${r.name}</div><div class="ai-risk-badge" style="background:${riskBg};color:${riskColor}">${r.risk}/5 — ${riskLabel}</div></div><div class="ai-triggers-row">${tH}</div><div class="ai-rationale">${r.rationale}${r.note?'<br><em>'+r.note+'</em>':''}</div><div class="ai-action-row"><button class="ai-btn ai-btn-promo" onclick="saveAndPromote('${escQ(r.name)}')">&#9733; Salva + chip</button><button class="ai-btn ai-btn-save" onclick="saveCustomOnly('${escQ(r.name)}')">Salva DB</button><button class="ai-btn ai-btn-disc" onclick="discardAi()">&#215;</button></div>`;
 }
-function discardAi(){document.getElementById(‘ai-result’).style.display=‘none’;document.getElementById(‘smart-inp’).value=’’;currentAiResult=null;}
-function saveCustomOnly(name){if(!currentAiResult)return;const r=currentAiResult;if(customFoods.find(f=>f.name.toLowerCase()===r.name.toLowerCase())){toast(‘Già presente’);return;}customFoods.push({id:‘cf’+Date.now(),name:r.name,risk:r.risk,triggers:r.triggers,rationale:r.rationale,note:r.note||’’,promoted:false,ts:new Date().toISOString()});saveCustomData();renderCustomFoods();discardAi();toast(‘Salvato nel DB ✓’);}
-function saveAndPromote(name){if(!currentAiResult)return;const r=currentAiResult;const existing=customFoods.find(f=>f.name.toLowerCase()===r.name.toLowerCase());if(existing){existing.promoted=true;}else{customFoods.push({id:‘cf’+Date.now(),name:r.name,risk:r.risk,triggers:r.triggers,rationale:r.rationale,note:r.note||’’,promoted:true,ts:new Date().toISOString()});}saveCustomData();buildCustomGenreChips();updateCustomDishesDropdown();renderCustomFoods();discardAi();toast(‘Salvato e promosso a chip ✓’);}
-function togglePromotion(id){const cf=customFoods.find(f=>f.id===id);if(!cf)return;cf.promoted=!cf.promoted;saveCustomData();buildCustomGenreChips();updateCustomDishesDropdown();renderCustomFoods();toast(cf.promoted?‘Promosso a chip ✓’:‘Rimosso dalle chip’);}
-function deleteCustomFood(id){customFoods=customFoods.filter(f=>f.id!==id);delete selCustom[id];saveCustomData();buildCustomGenreChips();updateCustomDishesDropdown();renderCustomFoods();toast(‘Alimento rimosso’);}
+function discardAi(){document.getElementById('ai-result').style.display='none';document.getElementById('smart-inp').value='';currentAiResult=null;}
+function saveCustomOnly(name){if(!currentAiResult)return;const r=currentAiResult;if(customFoods.find(f=>f.name.toLowerCase()===r.name.toLowerCase())){toast('Già presente');return;}customFoods.push({id:'cf'+Date.now(),name:r.name,risk:r.risk,triggers:r.triggers,rationale:r.rationale,note:r.note||'',promoted:false,ts:new Date().toISOString()});saveCustomData();renderCustomFoods();discardAi();toast('Salvato nel DB ✓');}
+function saveAndPromote(name){if(!currentAiResult)return;const r=currentAiResult;const existing=customFoods.find(f=>f.name.toLowerCase()===r.name.toLowerCase());if(existing){existing.promoted=true;}else{customFoods.push({id:'cf'+Date.now(),name:r.name,risk:r.risk,triggers:r.triggers,rationale:r.rationale,note:r.note||'',promoted:true,ts:new Date().toISOString()});}saveCustomData();buildCustomGenreChips();updateCustomDishesDropdown();renderCustomFoods();discardAi();toast('Salvato e promosso a chip ✓');}
+function togglePromotion(id){const cf=customFoods.find(f=>f.id===id);if(!cf)return;cf.promoted=!cf.promoted;saveCustomData();buildCustomGenreChips();updateCustomDishesDropdown();renderCustomFoods();toast(cf.promoted?'Promosso a chip ✓':'Rimosso dalle chip');}
+function deleteCustomFood(id){customFoods=customFoods.filter(f=>f.id!==id);delete selCustom[id];saveCustomData();buildCustomGenreChips();updateCustomDishesDropdown();renderCustomFoods();toast('Alimento rimosso');}
 function renderCustomFoods(){
-const el=document.getElementById(‘custom-foods-list’);
-if(!customFoods.length){el.innerHTML=’<div class="notrig" style="padding:12px 0">Nessun alimento codificato ancora.</div>’;return;}
+const el=document.getElementById('custom-foods-list');
+if(!customFoods.length){el.innerHTML='<div class="notrig" style="padding:12px 0">Nessun alimento codificato ancora.</div>';return;}
 const sorted=[...customFoods].sort((a,b)=>b.risk-a.risk);
-el.innerHTML=sorted.map(f=>{const tH=f.triggers.length?f.triggers.map(t=>{const s=TS[t]||{bg:’#F1EFE8’,c:’#5F5E5A’};return`<span class="etag" style="background:${s.bg};color:${s.c};font-size:10px">${t}</span>`;}).join(’’):’<span style="font-size:10px;color:var(--tx3)">nessun trigger</span>’;return`<div class="cf-item"><div class="cf-info"><div class="cf-name">${rdot(f.risk)} ${f.name}${f.promoted?'<span class="promo-badge">chip</span>':''}</div><div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:4px">${tH}</div><div class="cf-meta">${f.rationale}</div></div><div class="cf-actions"><button class="cf-promo-btn" onclick="togglePromotion('${f.id}')">${f.promoted?'★':'☆'}</button><button class="cf-del-btn" onclick="deleteCustomFood('${f.id}')">✕</button></div></div>`;}).join(’’);
+el.innerHTML=sorted.map(f=>{const tH=f.triggers.length?f.triggers.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A'};return`<span class="etag" style="background:${s.bg};color:${s.c};font-size:10px">${t}</span>`;}).join(''):'<span style="font-size:10px;color:var(--tx3)">nessun trigger</span>';return`<div class="cf-item"><div class="cf-info"><div class="cf-name">${rdot(f.risk)} ${f.name}${f.promoted?'<span class="promo-badge">chip</span>':''}</div><div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:4px">${tH}</div><div class="cf-meta">${f.rationale}</div></div><div class="cf-actions"><button class="cf-promo-btn" onclick="togglePromotion('${f.id}')">${f.promoted?'★':'☆'}</button><button class="cf-del-btn" onclick="deleteCustomFood('${f.id}')">✕</button></div></div>`;}).join('');
 }
 
 // STATS
-function copyForClaude(){const txt=‘DATI DIARIO WIDAL\n\nPasti recenti:\n’+JSON.stringify(entries.slice(0,12),null,2)+’\n\nStato infiammatorio:\n’+JSON.stringify(statoEntries.slice(-15),null,2)+’\n\nAlimenti personalizzati:\n’+JSON.stringify(customFoods,null,2)+’\n\nChiedo: analizza i pattern, i trigger dominanti e le eventuali correlazioni tra pasti e stato infiammatorio.’;navigator.clipboard.writeText(txt).then(()=>toast(‘Dati copiati ✓’)).catch(()=>toast(‘Errore copia’));}
+function copyForClaude(){const txt='DATI DIARIO WIDAL\n\nPasti recenti:\n'+JSON.stringify(entries.slice(0,12),null,2)+'\n\nStato infiammatorio:\n'+JSON.stringify(statoEntries.slice(-15),null,2)+'\n\nAlimenti personalizzati:\n'+JSON.stringify(customFoods,null,2)+'\n\nChiedo: analizza i pattern, i trigger dominanti e le eventuali correlazioni tra pasti e stato infiammatorio.';navigator.clipboard.writeText(txt).then(()=>toast('Dati copiati ✓')).catch(()=>toast('Errore copia'));}
 function renderStats(){
-const el=document.getElementById(‘stats-cnt’);
-if(entries.length<2){el.innerHTML=’<div class="empty">Aggiungi qualche voce<br>per vedere le analisi.</div>’;return;}
+const el=document.getElementById('stats-cnt');
+if(entries.length<2){el.innerHTML='<div class="empty">Aggiungi qualche voce<br>per vedere le analisi.</div>';return;}
 const withS=entries.filter(e=>e.symptoms&&e.symptoms.length>0).length;
-const fast=entries.filter(e=>e.reactionTime&&e.reactionTime.includes(‘Istantanea’)).length;
+const fast=entries.filter(e=>e.reactionTime&&e.reactionTime.includes('Istantanea')).length;
 const symC={},foodC={},trigC={};
 entries.forEach(e=>{if(e.symptoms&&e.symptoms.length>0){e.foods.forEach(f=>foodC[f]=(foodC[f]||0)+1);e.symptoms.forEach(s=>symC[s]=(symC[s]||0)+1);(e.triggers||[]).forEach(t=>trigC[t]=(trigC[t]||0)+1);}});
 const topS=Object.entries(symC).sort((a,b)=>b[1]-a[1]).slice(0,5);
 const topF=Object.entries(foodC).sort((a,b)=>b[1]-a[1]).slice(0,5);
 const topT=Object.entries(trigC).sort((a,b)=>b[1]-a[1]).slice(0,5);
 const mS=topS[0]?.[1]||1,mF=topF[0]?.[1]||1,mT=topT[0]?.[1]||1;
-let html=’’;
+let html='';
 html+=`<div class="sg"><div class="sc"><div class="sv">${entries.length}</div><div class="sl">pasti registrati</div></div><div class="sc"><div class="sv">${withS}</div><div class="sl">con reazioni</div></div><div class="sc"><div class="sv">${Math.round(withS/entries.length*100)}%</div><div class="sl">tasso reazione</div></div><div class="sc"><div class="sv">${fast}</div><div class="sl">istantanee</div></div></div>`;
-if(topF.length){html+=’<div class="stit">Alimenti con più reazioni</div>’;topF.forEach(([f,n])=>{html+=`<div class="brow"><div class="bn" title="${f}">${f}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mF*100)}%;background:#E24B4A"></div></div><div class="bc">${n}</div></div>`;});}
-if(topS.length){html+=’<div class="stit">Sintomi più frequenti</div>’;topS.forEach(([s,n])=>{html+=`<div class="brow"><div class="bn">${s}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mS*100)}%;background:#D85A30"></div></div><div class="bc">${n}</div></div>`;});}
-if(topT.length){html+=’<div class="stit">Trigger più coinvolti</div>’;topT.forEach(([t,n])=>{const c=(TS[t]||{c:’#888’}).c;html+=`<div class="brow"><div class="bn">${t}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mT*100)}%;background:${c}"></div></div><div class="bc">${n}</div></div>`;});}
-html+=’<div style="margin-top:20px;border-top:0.5px solid var(--bd);padding-top:16px"><div class="stit">Porta i dati in Claude</div><p style="font-size:12px;color:var(--tx2);margin-bottom:8px;line-height:1.5">Copia i dati e incollali in Claude.ai per un’analisi approfondita.</p><button class="copy-btn" onclick="copyForClaude()">Copia dati per Claude.ai</button></div>’;
+if(topF.length){html+='<div class="stit">Alimenti con più reazioni</div>';topF.forEach(([f,n])=>{html+=`<div class="brow"><div class="bn" title="${f}">${f}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mF*100)}%;background:#E24B4A"></div></div><div class="bc">${n}</div></div>`;});}
+if(topS.length){html+='<div class="stit">Sintomi più frequenti</div>';topS.forEach(([s,n])=>{html+=`<div class="brow"><div class="bn">${s}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mS*100)}%;background:#D85A30"></div></div><div class="bc">${n}</div></div>`;});}
+if(topT.length){html+='<div class="stit">Trigger più coinvolti</div>';topT.forEach(([t,n])=>{const c=(TS[t]||{c:'#888'}).c;html+=`<div class="brow"><div class="bn">${t}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mT*100)}%;background:${c}"></div></div><div class="bc">${n}</div></div>`;});}
+html+='<div style="margin-top:20px;border-top:0.5px solid var(--bd);padding-top:16px"><div class="stit">Porta i dati in Claude</div><p style="font-size:12px;color:var(--tx2);margin-bottom:8px;line-height:1.5">Copia i dati e incollali in Claude.ai per un&#39;analisi approfondita.</p><button class="copy-btn" onclick="copyForClaude()">Copia dati per Claude.ai</button></div>';
 el.innerHTML=html;
 }
 
 // TABS
 function showTab(t){
-[‘pasto’,‘hist’,‘stato’,‘alim’,‘stats’].forEach(x=>{document.getElementById(‘v’+x).style.display=x===t?‘block’:‘none’;document.getElementById(‘tab-’+x).className=‘tab’+(x===t?’ on’:’’);});
-if(t===‘hist’)renderHist();if(t===‘stato’)renderStato();if(t===‘alim’){renderCustomFoods();initApiKeyUI();}if(t===‘stats’)renderStats();
+['pasto','hist','stato','alim','stats'].forEach(x=>{document.getElementById('v'+x).style.display=x===t?'block':'none';document.getElementById('tab-'+x).className='tab'+(x===t?' on':'');});
+if(t==='hist')renderHist();if(t==='stato')renderStato();if(t==='alim'){renderCustomFoods();initApiKeyUI();}if(t==='stats')renderStats();
 }
 
 // INIT
