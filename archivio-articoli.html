@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Archivio Articoli</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink:      #1a1510;
+    --ink2:     #3d3529;
+    --paper:    #f5f0e8;
+    --paper2:   #ede7d9;
+    --cream:    #faf7f2;
+    --accent:   #b85c2a;
+    --accent2:  #7a9e7e;
+    --wa:       #25d366;
+    --wa-dark:  #128c4b;
+    --border:   #d4cbbf;
+    --shadow:   rgba(26,21,16,.10);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 80% 0%, #e8dcc8 0%, transparent 55%),
+      radial-gradient(ellipse at 10% 90%, #d9cfc0 0%, transparent 50%);
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px var(--shadow);
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    letter-spacing: .01em;
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+  }
+  .logo span { color: var(--accent); font-size:1.5rem; }
+  .header-count {
+    font-size: .78rem;
+    font-family: 'DM Mono', monospace;
+    opacity: .55;
+    letter-spacing: .06em;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  /* ── ADD FORM ── */
+  .add-card {
+    background: var(--cream);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 24px var(--shadow);
+    animation: slideDown .4s ease;
+  }
+  @keyframes slideDown {
+    from { opacity:0; transform:translateY(-12px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .add-card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 1.1rem;
+    color: var(--ink2);
+  }
+  .field-row { display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: .75rem; }
+  .field-row > * { flex: 1 1 200px; }
+  label { display: block; font-size: .75rem; font-weight: 500; margin-bottom: .3rem; color: var(--ink2); letter-spacing: .04em; text-transform: uppercase; }
+  input[type=text], input[type=url], textarea, select {
+    width: 100%;
+    background: var(--paper);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: .6rem .85rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .9rem;
+    color: var(--ink);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(184,92,42,.12);
+  }
+  textarea { resize: vertical; min-height: 70px; }
+
+  .btn-row { display: flex; gap: .65rem; margin-top: .9rem; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .6rem 1.2rem;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .88rem;
+    font-weight: 500;
+    border: none; cursor: pointer;
+    transition: background .18s, transform .12s, box-shadow .18s;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 2px 8px rgba(184,92,42,.25); }
+  .btn-primary:hover { background: #a04e22; }
+  .btn-ghost { background: transparent; color: var(--ink2); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { background: var(--paper2); }
+  .btn-wa { background: var(--wa); color: #fff; box-shadow: 0 2px 8px rgba(37,211,102,.25); }
+  .btn-wa:hover { background: var(--wa-dark); }
+  .btn-pdf { background: var(--ink2); color: #fff; }
+  .btn-pdf:hover { background: var(--ink); }
+  .btn-danger { background: transparent; color: #c0392b; border: 1.5px solid #e0a0a0; font-size: .8rem; padding: .4rem .8rem; }
+  .btn-danger:hover { background: #fdecea; }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    display: flex; align-items: center; gap: .75rem; margin-bottom: 1.4rem; flex-wrap: wrap;
+  }
+  .search-wrap {
+    position: relative; flex: 1 1 220px;
+  }
+  .search-wrap input {
+    padding-left: 2.2rem;
+  }
+  .search-icon {
+    position: absolute; left: .75rem; top: 50%; transform: translateY(-50%);
+    font-size: 1rem; color: var(--border); pointer-events: none;
+  }
+  .filter-tag {
+    padding: .35rem .85rem; border-radius: 20px; font-size: .8rem; font-weight: 500;
+    border: 1.5px solid var(--border); background: var(--cream); cursor: pointer;
+    transition: all .15s;
+  }
+  .filter-tag.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+
+  /* ── ARTICLES GRID ── */
+  .articles-grid { display: grid; gap: 1rem; }
+
+  /* ── ARTICLE CARD ── */
+  .article-card {
+    background: var(--cream);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: .75rem;
+    box-shadow: 0 2px 12px var(--shadow);
+    transition: transform .18s, box-shadow .18s;
+    animation: fadeIn .35s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity:0; transform:translateY(8px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .article-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px var(--shadow); }
+  .card-body { min-width: 0; }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.07rem;
+    font-weight: 600;
+    margin-bottom: .35rem;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+  .card-url {
+    font-family: 'DM Mono', monospace;
+    font-size: .72rem;
+    color: var(--accent);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 480px;
+    margin-bottom: .5rem;
+    text-decoration: none;
+  }
+  .card-url:hover { text-decoration: underline; }
+  .card-notes {
+    font-size: .85rem; color: var(--ink2); line-height: 1.5;
+    margin-bottom: .6rem;
+  }
+  .card-meta {
+    display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+  }
+  .card-tag {
+    font-size: .72rem; font-weight: 500; padding: .2rem .6rem;
+    border-radius: 20px; background: var(--paper2); color: var(--ink2);
+    border: 1px solid var(--border);
+  }
+  .card-date { font-size: .72rem; color: #9a9080; font-family: 'DM Mono', monospace; }
+
+  .card-actions {
+    display: flex; flex-direction: column; gap: .5rem; align-items: flex-end;
+    justify-content: flex-start;
+  }
+
+  /* ── WA MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(26,21,16,.55);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200;
+    animation: fadeOverlay .2s ease;
+  }
+  @keyframes fadeOverlay { from{opacity:0} to{opacity:1} }
+  .modal {
+    background: var(--cream);
+    border-radius: 18px;
+    padding: 2rem;
+    max-width: 540px; width: calc(100% - 2rem);
+    box-shadow: 0 20px 60px rgba(26,21,16,.25);
+    animation: popIn .25s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes popIn { from{transform:scale(.9);opacity:0} to{transform:scale(1);opacity:1} }
+  .modal h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem; margin-bottom: .35rem;
+  }
+  .modal .modal-url {
+    font-family: 'DM Mono', monospace;
+    font-size: .73rem; color: var(--accent);
+    margin-bottom: 1.1rem;
+    word-break: break-all;
+  }
+  .modal label { margin-top: .75rem; display: block; }
+  .char-count { font-size: .72rem; color: #9a9080; text-align: right; margin-top: .2rem; }
+  .preview-box {
+    background: #e7fbe9;
+    border: 1px solid #b2dfb8;
+    border-radius: 10px;
+    padding: .85rem 1rem;
+    font-size: .87rem;
+    color: #1a3a20;
+    line-height: 1.55;
+    margin-top: .85rem;
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+  .preview-label { font-size: .72rem; color: #4a7a52; font-weight: 500; margin-bottom: .35rem; letter-spacing: .04em; text-transform: uppercase; }
+
+  /* ── EMPTY STATE ── */
+  .empty {
+    text-align: center; padding: 4rem 2rem; color: var(--ink2);
+    opacity: .65;
+  }
+  .empty .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .empty p { font-family: 'Playfair Display', serif; font-size: 1.1rem; }
+  .empty small { font-size: .85rem; }
+
+  /* ── ADD TOGGLE BUTTON ── */
+  .add-toggle {
+    width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: .5rem;
+    padding: .75rem; border-radius: 10px;
+    border: 2px dashed var(--border);
+    background: transparent; cursor: pointer; color: var(--ink2);
+    font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 500;
+    margin-bottom: 1.5rem;
+    transition: all .18s;
+  }
+  .add-toggle:hover { border-color: var(--accent); color: var(--accent); background: rgba(184,92,42,.04); }
+
+  @media(max-width:600px) {
+    .article-card { grid-template-columns: 1fr; }
+    .card-actions { flex-direction: row; justify-content: flex-start; }
+  }
+  @media print {
+    body * { visibility: hidden; }
+    .print-frame, .print-frame * { visibility: visible; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span>📰</span> Archivio Articoli</div>
+  <div class="header-count" id="hCount">0 articoli</div>
+</header>
+
+<main>
+  <!-- ADD TOGGLE -->
+  <button class="add-toggle" id="toggleAdd" onclick="toggleForm()">
+    <span id="toggleIcon">＋</span> <span id="toggleLabel">Aggiungi articolo</span>
+  </button>
+
+  <!-- ADD FORM -->
+  <div class="add-card" id="addCard" style="display:none">
+    <h2>Nuovo articolo</h2>
+    <div class="field-row">
+      <div>
+        <label for="inUrl">URL articolo *</label>
+        <input type="url" id="inUrl" placeholder="https://www.esempio.it/articolo" />
+      </div>
+      <div>
+        <label for="inTitle">Titolo *</label>
+        <input type="text" id="inTitle" placeholder="Titolo dell'articolo" />
+      </div>
+    </div>
+    <div class="field-row">
+      <div>
+        <label for="inTag">Categoria / Tag</label>
+        <input type="text" id="inTag" placeholder="es. Politica, Scienza, Sport…" />
+      </div>
+      <div>
+        <label for="inSource">Fonte / Testata</label>
+        <input type="text" id="inSource" placeholder="es. Corriere della Sera" />
+      </div>
+    </div>
+    <div>
+      <label for="inNotes">Note</label>
+      <textarea id="inNotes" placeholder="Note personali, commenti, motivo dell'archiviazione…"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="addArticle()">✦ Salva articolo</button>
+      <button class="btn btn-ghost" onclick="toggleForm()">Annulla</button>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Cerca titolo, fonte, tag…" oninput="renderList()" />
+    </div>
+    <button class="filter-tag active" data-filter="all" onclick="setFilter('all',this)">Tutti</button>
+  </div>
+
+  <!-- ARTICLES -->
+  <div class="articles-grid" id="articlesList"></div>
+
+  <!-- EMPTY STATE -->
+  <div class="empty" id="emptyState">
+    <div class="empty-icon">🗂</div>
+    <p>Nessun articolo salvato</p>
+    <small>Aggiungi il primo articolo usando il pulsante qui sopra.</small>
+  </div>
+</main>
+
+<!-- WA MODAL -->
+<div class="modal-overlay" id="waModal" style="display:none" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>📲 Condividi su WhatsApp</h3>
+    <div class="modal-url" id="modalUrl"></div>
+
+    <label for="waTpl">Modello messaggio</label>
+    <select id="waTpl" onchange="applyTemplate()">
+      <option value="custom">— Scrivi messaggio libero —</option>
+      <option value="neutral">Condivisione semplice</option>
+      <option value="recommend">Consiglio di lettura</option>
+      <option value="fyi">FYI / Ti potrebbe interessare</option>
+      <option value="comment">Con commento personale</option>
+    </select>
+
+    <label for="waText">Testo di accompagnamento</label>
+    <textarea id="waText" rows="5" oninput="updatePreview()" placeholder="Scrivi il tuo messaggio…"></textarea>
+    <div class="char-count"><span id="charCount">0</span> caratteri</div>
+
+    <div class="preview-label" style="margin-top:.9rem">Anteprima messaggio WhatsApp</div>
+    <div class="preview-box" id="waPreview"></div>
+
+    <div class="btn-row" style="margin-top:1.2rem">
+      <button class="btn btn-wa" onclick="sendWA()">📲 Apri WhatsApp</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('waModal').style.display='none'">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── DATA ─── */
+let articles = JSON.parse(localStorage.getItem('archivio_articles') || '[]');
+let currentFilter = 'all';
+let waArticle = null;
+
+function save() {
+  localStorage.setItem('archivio_articles', JSON.stringify(articles));
+}
+
+/* ─── FORM TOGGLE ─── */
+function toggleForm() {
+  const card = document.getElementById('addCard');
+  const icon = document.getElementById('toggleIcon');
+  const label = document.getElementById('toggleLabel');
+  const open = card.style.display === 'none';
+  card.style.display = open ? 'block' : 'none';
+  icon.textContent  = open ? '✕' : '＋';
+  label.textContent = open ? 'Chiudi' : 'Aggiungi articolo';
+  if (open) document.getElementById('inUrl').focus();
+}
+
+/* ─── ADD ARTICLE ─── */
+function addArticle() {
+  const url   = document.getElementById('inUrl').value.trim();
+  const title = document.getElementById('inTitle').value.trim();
+  if (!url || !title) { alert('URL e Titolo sono obbligatori.'); return; }
+
+  const art = {
+    id:     Date.now(),
+    url,
+    title,
+    tag:    document.getElementById('inTag').value.trim(),
+    source: document.getElementById('inSource').value.trim(),
+    notes:  document.getElementById('inNotes').value.trim(),
+    date:   new Date().toLocaleDateString('it-IT', {day:'2-digit',month:'short',year:'numeric'})
+  };
+
+  articles.unshift(art);
+  save();
+  clearForm();
+  toggleForm();
+  renderList();
+  updateFilters();
+}
+
+function clearForm() {
+  ['inUrl','inTitle','inTag','inSource','inNotes'].forEach(id =>
+    document.getElementById(id).value = '');
+}
+
+/* ─── DELETE ─── */
+function deleteArticle(id) {
+  if (!confirm('Eliminare questo articolo dall\'archivio?')) return;
+  articles = articles.filter(a => a.id !== id);
+  save();
+  renderList();
+  updateFilters();
+}
+
+/* ─── PDF ARCHIVE ─── */
+function archivePDF(art) {
+  const ok = confirm(
+    `📄 Archivia come PDF\n\n"${art.title}"\n\n` +
+    `Verrà aperta la pagina in un nuovo tab.\n` +
+    `Usa "Stampa → Salva come PDF" per archiviare il documento.\n\n` +
+    `Premi OK per aprire l'articolo.`
+  );
+  if (!ok) return;
+  const win = window.open(art.url, '_blank');
+  // Small delay then trigger print dialog in new tab
+  if (win) {
+    win.onload = () => {
+      try { win.print(); } catch(e) {}
+    };
+    // Fallback: show instructions
+    setTimeout(() => {
+      if (!win.closed) {
+        // Print might have opened automatically; just inform user
+      }
+    }, 3000);
+  }
+}
+
+/* ─── WA MODAL ─── */
+const templates = {
+  neutral:   (a) => `Ciao! Ti mando questo articolo:\n\n📰 ${a.title}${a.source ? '\n📌 ' + a.source : ''}\n\n🔗 ${a.url}`,
+  recommend: (a) => `Ti consiglio vivamente di leggere questo articolo:\n\n📰 ${a.title}${a.source ? ' — ' + a.source : ''}\n\nMerita davvero.\n\n🔗 ${a.url}`,
+  fyi:       (a) => `FYI 📌\n\n${a.title}${a.source ? ' (' + a.source + ')' : ''}\n\nPotrebbe interessarti.\n\n${a.url}`,
+  comment:   (a) => `Ho letto questo e ho pensato subito a te:\n\n"${a.title}"\n\n[Il tuo commento qui]\n\n🔗 ${a.url}`,
+};
+
+function openWA(id) {
+  waArticle = articles.find(a => a.id === id);
+  document.getElementById('modalUrl').textContent = waArticle.url;
+  document.getElementById('waTpl').value = 'custom';
+  document.getElementById('waText').value = '';
+  updatePreview();
+  document.getElementById('waModal').style.display = 'flex';
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('waModal'))
+    document.getElementById('waModal').style.display = 'none';
+}
+
+function applyTemplate() {
+  const tpl = document.getElementById('waTpl').value;
+  if (tpl === 'custom') { document.getElementById('waText').value = ''; }
+  else { document.getElementById('waText').value = templates[tpl](waArticle); }
+  updatePreview();
+}
+
+function updatePreview() {
+  const text = document.getElementById('waText').value;
+  document.getElementById('charCount').textContent = text.length;
+  // Build full WA message
+  let msg = text.trim();
+  // If URL not already in message, append it
+  if (msg && !msg.includes(waArticle.url)) msg += '\n\n🔗 ' + waArticle.url;
+  else if (!msg) msg = '🔗 ' + waArticle.url;
+  document.getElementById('waPreview').textContent = msg;
+}
+
+function sendWA() {
+  const text = document.getElementById('waText').value.trim();
+  let msg = text;
+  if (msg && !msg.includes(waArticle.url)) msg += '\n\n🔗 ' + waArticle.url;
+  else if (!msg) msg = '🔗 ' + waArticle.url;
+  const encoded = encodeURIComponent(msg);
+  window.open(`https://wa.me/?text=${encoded}`, '_blank');
+}
+
+/* ─── FILTERS ─── */
+function updateFilters() {
+  const tags = [...new Set(articles.map(a => a.tag).filter(Boolean))];
+  const toolbar = document.querySelector('.toolbar');
+  // Remove old tag filters
+  toolbar.querySelectorAll('.filter-tag:not([data-filter="all"])').forEach(el => el.remove());
+  tags.forEach(tag => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-tag' + (currentFilter === tag ? ' active' : '');
+    btn.textContent = tag;
+    btn.dataset.filter = tag;
+    btn.onclick = () => setFilter(tag, btn);
+    toolbar.appendChild(btn);
+  });
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-tag').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+}
+
+/* ─── RENDER ─── */
+function renderList() {
+  const q    = document.getElementById('searchInput').value.toLowerCase();
+  const list = document.getElementById('articlesList');
+  const empty = document.getElementById('emptyState');
+
+  let filtered = articles.filter(a => {
+    const matchTag    = currentFilter === 'all' || a.tag === currentFilter;
+    const matchSearch = !q || [a.title, a.source, a.tag, a.notes, a.url]
+      .some(f => f && f.toLowerCase().includes(q));
+    return matchTag && matchSearch;
+  });
+
+  document.getElementById('hCount').textContent =
+    articles.length + (articles.length === 1 ? ' articolo' : ' articoli');
+
+  if (filtered.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  list.innerHTML = filtered.map(art => `
+    <div class="article-card" id="card-${art.id}">
+      <div class="card-body">
+        <div class="card-title">${escHtml(art.title)}</div>
+        <a class="card-url" href="${escHtml(art.url)}" target="_blank">${escHtml(art.url)}</a>
+        ${art.notes ? `<div class="card-notes">${escHtml(art.notes)}</div>` : ''}
+        <div class="card-meta">
+          ${art.tag    ? `<span class="card-tag">🏷 ${escHtml(art.tag)}</span>` : ''}
+          ${art.source ? `<span class="card-tag">📌 ${escHtml(art.source)}</span>` : ''}
+          <span class="card-date">${art.date}</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-wa"   onclick="openWA(${art.id})">📲 WhatsApp</button>
+        <button class="btn btn-pdf"  onclick="archivePDF(${JSON.stringify(art).replace(/"/g,'&quot;')})">📄 Archivia PDF</button>
+        <button class="btn btn-danger" onclick="deleteArticle(${art.id})">🗑 Elimina</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ─── INIT ─── */
+renderList();
+updateFilters();
+</script>
+</body>
+</html>
