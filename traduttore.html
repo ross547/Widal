@@ -420,6 +420,21 @@ input:focus { border-color: var(--blue); }
   margin-top: .5rem;
 }
 
+
+/* ── ERROR PANEL ── */
+#errorPanel {
+  display: none;
+  background: #fdf0f0;
+  border: 1.5px solid #f0b8b8;
+  border-radius: 12px;
+  padding: .85rem 1rem;
+  font-size: .84rem;
+  color: var(--red);
+  line-height: 1.6;
+  word-break: break-all;
+}
+#errorPanel strong { display: block; margin-bottom: .25rem; font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; }
+
 /* toast */
 #toast {
   position: fixed;
@@ -501,6 +516,13 @@ input:focus { border-color: var(--blue); }
         📋 Copia
       </button>
     </div>
+  </div>
+
+
+  <!-- ERROR -->
+  <div id="errorPanel">
+    <strong>Errore</strong>
+    <span id="errorMsg"></span>
   </div>
 
   <!-- HISTORY -->
@@ -593,6 +615,7 @@ async function translate() {
   btn.classList.add('loading');
   btn.disabled = true;
   document.getElementById('resultCard').style.display = 'none';
+  document.getElementById('errorPanel').style.display = 'none';
 
   const isWord = text.trim().split(/\s+/).length === 1;
 
@@ -649,7 +672,10 @@ Formato:
     saveHistory(text, parsed.translation || raw);
 
   } catch(err) {
-    showToast('Errore: ' + err.message);
+    const msg = err.message || 'Errore sconosciuto';
+    showToast('Errore: ' + msg);
+    document.getElementById('errorMsg').textContent = msg;
+    document.getElementById('errorPanel').style.display = 'block';
   } finally {
     btn.classList.remove('loading');
     btn.disabled = false;
@@ -738,7 +764,7 @@ function closeSettings(e) {
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+  setTimeout(() => t.classList.remove('show'), 4000);
 }
 
 /* ══════ UTILS ══════ */
