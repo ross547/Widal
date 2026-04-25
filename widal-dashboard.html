@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Diario Widal — Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root{--ink:#1a1814;--ink2:#5a5650;--ink3:#9a9590;--paper:#faf9f6;--paper2:#f2f0eb;--paper3:#e8e5de;--accent:#2a5c8a;--accent2:#e8f0f8;--r1:#5aaa44;--r1bg:#edf6ea;--r2:#e8a020;--r2bg:#fdf3e0;--r3:#d4601a;--r3bg:#faeae0;--r4:#c02828;--r4bg:#fbeaea;--r5:#8a1a1a;--r5bg:#f5e0e0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{background:var(--paper);}
+body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);line-height:1.5;}
+#upload-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;padding:40px;}
+#upload-screen h1{font-family:'DM Serif Display',serif;font-size:36px;}
+#upload-screen p{color:var(--ink2);max-width:400px;text-align:center;line-height:1.7;}
+.upload-zone{border:1.5px dashed var(--paper3);border-radius:12px;padding:48px 64px;text-align:center;cursor:pointer;background:var(--paper2);transition:all .2s;}
+.upload-zone:hover{border-color:var(--accent);background:var(--accent2);}
+.upload-zone input{display:none;}
+.upload-icon{font-size:40px;margin-bottom:12px;}
+.upload-label{font-size:15px;font-weight:500;color:var(--accent);}
+.upload-sub{font-size:12px;color:var(--ink3);margin-top:4px;}
+#dashboard{display:none;padding:28px 36px 60px;max-width:1080px;margin:0 auto;}
+.top-bar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;padding-bottom:14px;border-bottom:1.5px solid var(--paper3);}
+.top-bar h1{font-family:'DM Serif Display',serif;font-size:26px;}
+.export-date{font-size:12px;color:var(--ink3);margin-top:2px;}
+.top-bar-right{display:flex;gap:8px;align-items:center;}
+.btn{padding:7px 14px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--paper3);background:var(--paper2);color:var(--ink2);font-family:'DM Sans',sans-serif;transition:all .15s;}
+.btn:hover{background:var(--paper3);}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn-primary:hover{background:#1e4a72;}
+.period-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:10px 14px;background:var(--paper2);border-radius:8px;border:1px solid var(--paper3);}
+.period-bar label{font-size:12px;font-weight:500;color:var(--ink2);}
+.period-bar select{padding:5px 10px;border-radius:6px;border:1px solid var(--paper3);font-size:13px;background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;}
+.period-info{font-size:12px;color:var(--ink3);margin-left:auto;}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.stat-card{background:var(--paper2);border-radius:10px;padding:16px 18px;border:1px solid var(--paper3);}
+.stat-val{font-family:'DM Serif Display',serif;font-size:32px;color:var(--ink);line-height:1;}
+.stat-lbl{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:5px;}
+.stat-sub{font-size:11px;color:var(--ink2);margin-top:3px;}
+.section-title{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin:20px 0 10px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px;}
+.one-col{margin-bottom:20px;}
+.panel{background:var(--paper2);border-radius:10px;border:1px solid var(--paper3);overflow:hidden;}
+.panel-head{padding:9px 14px;border-bottom:1px solid var(--paper3);font-size:11px;font-weight:600;color:var(--ink2);}
+.bar-row{display:flex;align-items:center;gap:8px;padding:6px 14px;border-bottom:1px solid var(--paper3);}
+.bar-row:last-child{border-bottom:none;}
+.bar-label{font-size:12px;color:var(--ink2);width:118px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bar-track{flex:1;height:5px;background:var(--paper3);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;}
+.bar-count{font-size:12px;color:var(--ink2);min-width:18px;text-align:right;}
+.chip{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:500;margin:2px;}
+.risk{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600;}
+.risk0,.risk1{background:var(--r1bg);color:var(--r1);}
+.risk2{background:var(--r2bg);color:var(--r2);}
+.risk3{background:var(--r3bg);color:var(--r3);}
+.risk4{background:var(--r4bg);color:var(--r4);}
+.risk5{background:var(--r5bg);color:var(--r5);}
+.stato-wrap{padding:12px 12px 0;}
+.stato-legend{display:flex;gap:14px;justify-content:center;padding:6px 0 8px;}
+.stato-notes{border-top:1px solid var(--paper3);}
+.stato-note-row{display:flex;gap:8px;padding:5px 14px;border-bottom:1px solid var(--paper3);font-size:11px;align-items:baseline;}
+.stato-note-row:last-child{border-bottom:none;}
+.stato-note-date{color:var(--ink3);min-width:65px;flex-shrink:0;}
+.stato-note-vals{color:var(--accent);font-weight:500;flex-shrink:0;min-width:140px;}
+.stato-note-txt{color:var(--ink3);font-style:italic;}
+.custom-table{width:100%;border-collapse:collapse;}
+.custom-table th{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;padding:7px 12px;text-align:left;border-bottom:1px solid var(--paper3);}
+.custom-table td{font-size:12px;padding:6px 12px;border-bottom:1px solid var(--paper3);vertical-align:middle;}
+.custom-table tr:last-child td{border-bottom:none;}
+.custom-table tr:hover td{background:var(--accent2);}
+.entries-controls{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;}
+.entries-controls select,.entries-controls input{padding:6px 10px;border-radius:6px;border:1px solid var(--paper3);font-size:13px;background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;}
+.entry-row{border:1px solid var(--paper3);border-radius:8px;margin-bottom:6px;overflow:hidden;background:var(--paper);}
+.entry-head{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;user-select:none;}
+.entry-head:hover{background:var(--paper2);}
+.entry-date{font-size:11px;color:var(--ink3);min-width:104px;flex-shrink:0;}
+.entry-meal-tag{font-size:10px;font-weight:600;color:var(--accent);background:var(--accent2);padding:1px 6px;border-radius:10px;flex-shrink:0;}
+.entry-foods{font-size:13px;font-weight:500;color:var(--ink);flex:1;min-width:0;}
+.entry-sym{font-size:11px;color:var(--r4);flex-shrink:0;}
+.entry-body{padding:9px 12px 12px;border-top:1px solid var(--paper3);display:none;}
+.entry-body.open{display:block;}
+.entry-detail-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;align-items:center;}
+.entry-note{font-size:12px;color:var(--ink2);font-style:italic;margin-top:5px;}
+.entry-react{font-size:11px;color:var(--ink3);margin-top:3px;}
+.no-data{text-align:center;padding:20px;color:var(--ink3);font-size:13px;}
+/* PRINT DIALOG */
+#print-dialog{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;}
+#print-dialog.open{display:flex;}
+.print-modal{background:var(--paper);border-radius:12px;padding:28px 32px;min-width:340px;box-shadow:0 8px 40px rgba(0,0,0,.15);}
+.print-modal h2{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:16px;}
+.print-check{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--paper3);cursor:pointer;}
+.print-check:last-of-type{border-bottom:none;}
+.print-check input{width:16px;height:16px;cursor:pointer;accent-color:var(--accent);}
+.print-check label{font-size:14px;color:var(--ink);cursor:pointer;flex:1;}
+.print-check .print-sub{font-size:11px;color:var(--ink3);display:block;margin-top:1px;}
+.print-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
+@media print{
+  #upload-screen,#print-dialog,.top-bar-right,.entries-controls,.period-bar{display:none!important;}
+  body{font-size:11px;}
+  .stat-val{font-size:24px;}
+  .entry-body{display:block!important;}
+  .entry-head{cursor:default;}
+  #dashboard{padding:0;max-width:none;display:block!important;}
+  .panel,.stat-card,.entry-row{break-inside:avoid;}
+}
+</style>
+</head>
+<body>
+
+<div id="upload-screen">
+  <div><h1>Diario Widal</h1><p style="text-align:center;margin-top:2px;color:var(--ink3);font-size:13px;">Dashboard</p></div>
+  <p>Carica il file di backup JSON esportato dall'app.</p>
+  <div class="upload-zone" onclick="document.getElementById('fi1').click()">
+    <div class="upload-icon">📂</div>
+    <div class="upload-label">Seleziona il file JSON</div>
+    <div class="upload-sub">widal-backup-YYYY-MM-DD.json</div>
+    <input type="file" id="fi1" accept=".json" onchange="loadFile(event)"/>
+  </div>
+</div>
+
+<div id="print-dialog">
+  <div class="print-modal">
+    <h2>Cosa stampare</h2>
+    <div class="print-check"><input type="checkbox" id="pc-stats" checked/><label for="pc-stats">Statistiche e grafici<span class="print-sub">Card riassuntive, trigger, sintomi, alimenti con reazioni</span></label></div>
+    <div class="print-check"><input type="checkbox" id="pc-stato" checked/><label for="pc-stato">Stato infiammatorio<span class="print-sub">Grafico poliposi / asma / dermatosi + note</span></label></div>
+    <div class="print-check"><input type="checkbox" id="pc-alim"/><label for="pc-alim">Tabella alimenti codificati<span class="print-sub">Tutti gli alimenti analizzati con AI, ordinati per rischio</span></label></div>
+    <div class="print-check"><input type="checkbox" id="pc-entries"/><label for="pc-entries">Registro pasti<span class="print-sub">Voci del periodo selezionato, con filtri applicati</span></label></div>
+    <div class="print-actions">
+      <button class="btn" onclick="closePrint()">Annulla</button>
+      <button class="btn btn-primary" onclick="doPrint()">🖨 Stampa</button>
+    </div>
+  </div>
+</div>
+
+<div id="dashboard">
+  <div class="top-bar">
+    <div>
+      <h1>Diario Widal — Dashboard</h1>
+      <div class="export-date" id="export-date"></div>
+    </div>
+    <div class="top-bar-right">
+      <button class="btn" onclick="document.getElementById('fi2').click()">📂 Carica nuovo</button>
+      <input type="file" id="fi2" accept=".json" onchange="loadFile(event)" style="display:none"/>
+      <button class="btn btn-primary" onclick="openPrint()">🖨 Stampa…</button>
+    </div>
+  </div>
+
+  <div class="period-bar">
+    <label>Periodo:</label>
+    <select id="period-sel" onchange="applyPeriod()">
+      <option value="1">Ultima settimana</option>
+      <option value="2" selected>Ultime 2 settimane</option>
+      <option value="4">Ultime 4 settimane</option>
+      <option value="all">Tutto il diario</option>
+    </select>
+    <span class="period-info" id="period-info"></span>
+  </div>
+
+  <div id="sec-stats">
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-val" id="st-entries">—</div><div class="stat-lbl">Pasti registrati</div><div class="stat-sub" id="st-days"></div></div>
+      <div class="stat-card"><div class="stat-val" id="st-reactions">—</div><div class="stat-lbl">Con reazioni</div><div class="stat-sub" id="st-react-pct"></div></div>
+      <div class="stat-card"><div class="stat-val" id="st-instant">—</div><div class="stat-lbl">Reazioni istantanee</div><div class="stat-sub">&lt; 2 min</div></div>
+      <div class="stat-card"><div class="stat-val" id="st-foods">—</div><div class="stat-lbl">Alimenti diversi</div><div class="stat-sub" id="st-custom"></div></div>
+    </div>
+    <div class="three-col">
+      <div>
+        <div class="section-title">Trigger — tutti i pasti · (rosso = con reazione)</div>
+        <div class="panel" id="trigger-chart"></div>
+      </div>
+      <div>
+        <div class="section-title">Sintomi più frequenti</div>
+        <div class="panel" id="symptom-chart"></div>
+      </div>
+      <div>
+        <div class="section-title">Alimenti con più reazioni</div>
+        <div class="panel" id="food-chart"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-stato">
+    <div class="section-title">Stato infiammatorio nel tempo</div>
+    <div class="panel" id="stato-chart"></div>
+  </div>
+
+  <div id="sec-alim">
+    <div class="section-title">Alimenti codificati — profilo di rischio</div>
+    <div class="panel" style="overflow-x:auto;">
+      <table class="custom-table">
+        <thead><tr>
+          <th style="width:190px">Alimento</th>
+          <th>Trigger</th>
+          <th style="width:110px">Rischio</th>
+          <th>Nota sintetica</th>
+        </tr></thead>
+        <tbody id="custom-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="sec-entries">
+    <div class="section-title">Registro pasti</div>
+    <div class="entries-controls">
+      <select id="filter-reaction" onchange="renderEntries()">
+        <option value="">Tutti i pasti</option>
+        <option value="reaction">Con reazioni</option>
+        <option value="no-reaction">Senza reazioni</option>
+      </select>
+      <select id="sort-order" onchange="renderEntries()">
+        <option value="desc">Più recenti prima</option>
+        <option value="asc">Più vecchi prima</option>
+      </select>
+      <input type="text" id="filter-text" placeholder="Cerca alimento…" oninput="renderEntries()" style="flex:1;min-width:130px;"/>
+    </div>
+    <div id="entries-list"></div>
+  </div>
+</div>
+
+<script>
+const TS_C={"Istamina":{bg:"#FCEBEB",c:"#A32D2D"},"Salicilati":{bg:"#FAEEDA",c:"#854F0B"},"Ammine biogene":{bg:"#FAECE7",c:"#993C1D"},"Tiramina":{bg:"#FCEBEB",c:"#791F1F"},"TRPA1":{bg:"#EEEDFE",c:"#3C3489"},"Istamina-lib.":{bg:"#FBEAF0",c:"#993556"}};
+const RL=["","Basso","Lieve","Medio","Alto","Molto alto"];
+const CONDS=[{key:"poliposi",label:"Poliposi",color:"#2a5c8a"},{key:"asma",label:"Asma",color:"#EF9F27"},{key:"dermatosi",label:"Dermatosi",color:"#D85A30"}];
+let RAW=null, PERIOD_DAYS=14;
+
+function loadFile(e){
+  const file=e.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=ev=>{try{processData(JSON.parse(ev.target.result));}catch(err){alert('File non valido: '+err.message);}};
+  r.readAsText(file);
+}
+function processData(json){
+  RAW=json;
+  document.getElementById('upload-screen').style.display='none';
+  document.getElementById('dashboard').style.display='block';
+  if(RAW.exported) document.getElementById('export-date').textContent='Esportato il '+new Date(RAW.exported).toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'});
+  applyPeriod();
+  renderCustomTable();
+}
+function applyPeriod(){
+  const sel=document.getElementById('period-sel').value;
+  PERIOD_DAYS=sel==='all'?null:parseInt(sel)*7;
+  renderAll();
+}
+function filterByPeriod(arr){
+  if(!PERIOD_DAYS||!arr.length)return arr;
+  const maxTs=Math.max(...arr.map(e=>new Date(e.ts).getTime()));
+  const cutoff=new Date(maxTs-PERIOD_DAYS*86400000);
+  return arr.filter(e=>new Date(e.ts)>=cutoff);
+}
+function renderAll(){
+  if(!RAW)return;
+  const allEntries=(RAW.entries||[]).slice().sort((a,b)=>new Date(a.ts)-new Date(b.ts));
+  const allStato=(RAW.statoEntries||RAW.stato||[]).slice().sort((a,b)=>new Date(a.ts)-new Date(b.ts));
+  const entries=filterByPeriod(allEntries);
+  const stato=filterByPeriod(allStato);
+
+  // Period info
+  const pi=document.getElementById('period-info');
+  if(entries.length>=1){
+    const d1=new Date(entries[0].ts),d2=new Date(entries[entries.length-1].ts);
+    pi.textContent=fmt2(d1)+(entries.length>1?' → '+fmt2(d2):'')+' · '+entries.length+' pasti · '+stato.length+' valutazioni stato';
+  } else pi.textContent='Nessun dato nel periodo';
+
+  // Stats
+  const withReact=entries.filter(e=>e.symptoms&&e.symptoms.length>0);
+  const instant=entries.filter(e=>e.reactionTime&&e.reactionTime.includes('Istantanea'));
+  const allFoods=new Set(entries.flatMap(e=>e.foods));
+  document.getElementById('st-entries').textContent=entries.length;
+  document.getElementById('st-reactions').textContent=withReact.length;
+  document.getElementById('st-react-pct').textContent=entries.length?Math.round(withReact.length/entries.length*100)+'% dei pasti':'';
+  document.getElementById('st-instant').textContent=instant.length;
+  document.getElementById('st-foods').textContent=allFoods.size;
+  document.getElementById('st-custom').textContent=(RAW.customFoods||[]).length+' codificati';
+  if(entries.length>=2){
+    const d1=new Date(entries[0].ts),d2=new Date(entries[entries.length-1].ts);
+    const days=Math.round((d2-d1)/86400000)+1;
+    document.getElementById('st-days').textContent=days+' giorni';
+  }
+
+  // Charts
+  const trigC={},trigReactC={};
+  entries.forEach(e=>(e.triggers||[]).forEach(t=>trigC[t]=(trigC[t]||0)+1));
+  withReact.forEach(e=>(e.triggers||[]).forEach(t=>trigReactC[t]=(trigReactC[t]||0)+1));
+  renderBarChart('trigger-chart',Object.entries(trigC).sort((a,b)=>b[1]-a[1]),t=>(TS_C[t]||{c:'#888'}).c,null,trigReactC);
+
+  const symC={};
+  withReact.forEach(e=>(e.symptoms||[]).forEach(s=>symC[s]=(symC[s]||0)+1));
+  renderBarChart('symptom-chart',Object.entries(symC).sort((a,b)=>b[1]-a[1]),()=>'#c02828');
+
+  const foodReactC={};
+  withReact.forEach(e=>e.foods.forEach(f=>foodReactC[f]=(foodReactC[f]||0)+1));
+  renderBarChart('food-chart',Object.entries(foodReactC).sort((a,b)=>b[1]-a[1]).slice(0,7),()=>'#2a5c8a');
+
+  renderStatoChart(stato);
+  renderEntries();
+}
+
+function renderBarChart(id,data,colorFn,head,subData){
+  const el=document.getElementById(id);
+  if(!data.length){el.innerHTML='<div class="no-data">Nessun dato</div>';return;}
+  const max=data[0][1];
+  el.innerHTML=(head?`<div class="panel-head">${head}</div>`:'')+
+    data.map(([label,count])=>{
+      const pct=Math.round(count/max*100),col=colorFn(label);
+      const sub=subData&&subData[label]?`<span style="color:var(--r4);font-size:10px;margin-left:2px">(${subData[label]})</span>`:'';
+      return`<div class="bar-row"><div class="bar-label" title="${label}">${label}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><div class="bar-count">${count}${sub}</div></div>`;
+    }).join('');
+}
+
+function renderStatoChart(stato){
+  const el=document.getElementById('stato-chart');
+  if(!stato.length){el.innerHTML='<div class="no-data">Nessuna valutazione nel periodo</div>';return;}
+  const N=stato.length;
+  const W=940,H=150,ML=24,MT=10,MR=10,MB=24;
+  const CW=W-ML-MR,CH=H-MT-MB;
+  const xF=i=>ML+(N>1?i*CW/(N-1):CW/2);
+  const yF=v=>MT+(5-v)/4*CH;
+  let svg=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;display:block">`;
+  for(let v=1;v<=5;v++){
+    const y=yF(v);
+    svg+=`<line x1="${ML}" y1="${y}" x2="${W-MR}" y2="${y}" stroke="#e0ddd6" stroke-width="0.5" stroke-dasharray="${v===3?'4,3':''}"/>`;
+    svg+=`<text x="${ML-4}" y="${y+3}" font-size="9" fill="#9a9590" text-anchor="end">${v}</text>`;
+  }
+  // Date labels — adattive
+  const step=Math.max(1,Math.floor(N/12));
+  stato.forEach((d,i)=>{
+    if(i===0||i===N-1||i%step===0)
+      svg+=`<text x="${xF(i)}" y="${H-5}" font-size="8" fill="#9a9590" text-anchor="middle">${fmtShort(d.ts)}</text>`;
+  });
+  CONDS.forEach(({key,color})=>{
+    let p='',open=false;
+    stato.forEach((d,i)=>{
+      if(d[key]!=null){const x=xF(i),y=yF(d[key]);p+=open?`L${x},${y}`:`M${x},${y}`;open=true;}
+      else open=false;
+    });
+    if(p)svg+=`<path d="${p}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    stato.forEach((d,i)=>{if(d[key]!=null)svg+=`<circle cx="${xF(i)}" cy="${yF(d[key])}" r="2.5" fill="${color}" stroke="white" stroke-width="1"/>`;});
+  });
+  svg+='</svg>';
+  const leg='<div style="display:flex;gap:16px;justify-content:center;padding:6px 0 8px;border-top:1px solid var(--paper3)">'+
+    CONDS.map(c=>`<span style="font-size:11px;color:var(--ink2);display:flex;align-items:center;gap:5px"><span style="width:16px;height:2px;background:${c.color};display:inline-block;border-radius:1px"></span>${c.label}</span>`).join('')+'</div>';
+  const noteRows=stato.filter(e=>e.note&&e.note.trim());
+  let notes='';
+  if(noteRows.length){
+    notes='<div class="stato-notes">'+
+      noteRows.map(e=>`<div class="stato-note-row"><span class="stato-note-date">${fmtShort(e.ts)}</span><span class="stato-note-vals">${CONDS.map(c=>e[c.key]!=null?`${c.label} ${e[c.key]}/5`:null).filter(Boolean).join(' · ')}</span><span class="stato-note-txt">${e.note}</span></div>`).join('')+'</div>';
+  }
+  el.innerHTML=`<div class="stato-wrap">${svg}</div>${leg}${notes}`;
+}
+
+function renderCustomTable(){
+  const custom=(RAW.customFoods||[]).slice().sort((a,b)=>b.risk-a.risk);
+  const tbody=document.getElementById('custom-tbody');
+  if(!custom.length){tbody.innerHTML='<tr><td colspan="4" class="no-data">Nessun alimento codificato</td></tr>';return;}
+  tbody.innerHTML=custom.map(f=>{
+    const rc=`risk${Math.min(f.risk,5)}`;
+    const tH=f.triggers.map(t=>{const s=TS_C[t]||{bg:'#eee',c:'#555'};return`<span class="chip" style="background:${s.bg};color:${s.c}">${t}</span>`;}).join('')||'<span style="font-size:11px;color:var(--ink3)">—</span>';
+    const noteShort=f.note?f.note.split('.')[0]+'.':'';
+    return`<tr><td style="font-weight:500">${f.name}</td><td>${tH}</td><td><span class="risk ${rc}">${f.risk}/5 ${RL[f.risk]||''}</span></td><td style="font-size:11px;color:var(--ink3);font-style:italic">${noteShort}</td></tr>`;
+  }).join('');
+}
+
+function renderEntries(){
+  if(!RAW)return;
+  const allEntries=(RAW.entries||[]).slice().sort((a,b)=>new Date(a.ts)-new Date(b.ts));
+  let entries=filterByPeriod(allEntries);
+  const fr=document.getElementById('filter-reaction').value;
+  const so=document.getElementById('sort-order').value;
+  const ft=document.getElementById('filter-text').value.toLowerCase();
+  if(fr==='reaction')entries=entries.filter(e=>e.symptoms&&e.symptoms.length>0);
+  if(fr==='no-reaction')entries=entries.filter(e=>!e.symptoms||e.symptoms.length===0);
+  if(ft)entries=entries.filter(e=>e.foods.some(f=>f.toLowerCase().includes(ft)));
+  if(so==='desc')entries=[...entries].reverse();
+  const el=document.getElementById('entries-list');
+  if(!entries.length){el.innerHTML='<div class="no-data">Nessun risultato</div>';return;}
+  el.innerHTML=entries.map((e,i)=>{
+    const hasSym=e.symptoms&&e.symptoms.length>0;
+    const rc=`risk${Math.min(e.maxRisk||0,5)}`;
+    const tH=(e.triggers||[]).map(t=>{const s=TS_C[t]||{bg:'#eee',c:'#555'};return`<span class="chip" style="background:${s.bg};color:${s.c}">${t}</span>`;}).join('');
+    const symH=(e.symptoms||[]).map(s=>`<span class="chip" style="background:#FCEBEB;color:#A32D2D">${s}</span>`).join('');
+    const sevH=e.severity?`<span class="chip" style="background:#FAEEDA;color:#854F0B">${e.severity}</span>`:'';
+    const mealH=e.meal?`<span class="entry-meal-tag">${e.meal}</span>`:'';
+    const symIcon=hasSym?`<span class="entry-sym">⚠ ${e.symptoms.join(', ')}</span>`:'';
+    return`<div class="entry-row"><div class="entry-head" onclick="togE('eb${i}','ar${i}')"><span class="entry-date">${fmt(e.ts)}</span>${mealH}<span class="entry-foods">${e.foods.join(', ')}</span>${symIcon}<span class="risk ${rc}" style="flex-shrink:0">${e.maxRisk||0}/5</span><span style="font-size:11px;color:var(--ink3);flex-shrink:0" id="ar${i}">▼</span></div><div class="entry-body" id="eb${i}">${tH?`<div class="entry-detail-row">${tH}</div>`:''}${hasSym?`<div class="entry-detail-row" style="margin-top:4px">${symH}${sevH}</div>`:''}${e.reactionTime?`<div class="entry-react">Reazione: ${e.reactionTime}</div>`:''}${e.note?`<div class="entry-note">${e.note}</div>`:''}</div></div>`;
+  }).join('');
+}
+function togE(id,aid){
+  const el=document.getElementById(id),ar=document.getElementById(aid);
+  if(!el)return;const open=el.classList.toggle('open');
+  if(ar)ar.textContent=open?'▲':'▼';
+}
+
+// PRINT
+function openPrint(){document.getElementById('print-dialog').classList.add('open');}
+function closePrint(){document.getElementById('print-dialog').classList.remove('open');}
+function doPrint(){
+  const secs=['stats','stato','alim','entries'];
+  secs.forEach(s=>{
+    const el=document.getElementById('sec-'+s);
+    const checked=document.getElementById('pc-'+s).checked;
+    if(el)el.style.display=checked?'':'none';
+  });
+  document.querySelectorAll('.entry-body').forEach(el=>el.classList.add('open'));
+  closePrint();
+  setTimeout(()=>{
+    window.print();
+    secs.forEach(s=>{const el=document.getElementById('sec-'+s);if(el)el.style.display='';});
+    document.querySelectorAll('.entry-body').forEach(el=>el.classList.remove('open'));
+  },200);
+}
+
+function fmt(ts){const d=new Date(ts);return d.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});}
+function fmt2(d){return d.toLocaleDateString('it-IT',{day:'2-digit',month:'short'});}
+function fmtShort(ts){return new Date(ts).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'});}
+</script>
+</body>
+</html>
