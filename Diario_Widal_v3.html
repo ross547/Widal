@@ -6,10 +6,22 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="Widal"/>
-<title>Diario Widal</title>
+<title>Diario Widal v4</title>
 <style>
-:root{--bg:#ffffff;--bg2:#f5f5f4;--bg3:#ececea;--tx:#1a1a1a;--tx2:#606060;--tx3:#9a9a9a;--bd:rgba(0,0,0,0.11);--bd2:rgba(0,0,0,0.2);--blue:#378ADD;--bluedark:#185FA5;--bluelight:#E6F1FB;--green:#2E8B57;--greenlight:#E1F5EE;--r:8px;--rl:12px;--safe-b:env(safe-area-inset-bottom,0px);}
-@media(prefers-color-scheme:dark){:root{--bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;--tx:#f2f2f7;--tx2:#aeaeb2;--tx3:#636366;--bd:rgba(255,255,255,0.1);--bd2:rgba(255,255,255,0.2);--bluelight:#1a3652;--greenlight:#1a3528;}}
+:root{
+  --bg:#ffffff;--bg2:#f5f5f4;--bg3:#ececea;
+  --tx:#1a1a1a;--tx2:#606060;--tx3:#9a9a9a;
+  --bd:rgba(0,0,0,0.11);--bd2:rgba(0,0,0,0.2);
+  --blue:#378ADD;--bluedark:#185FA5;--bluelight:#E6F1FB;
+  --green:#2E8B57;--greenlight:#E1F5EE;
+  --r:8px;--rl:12px;--safe-b:env(safe-area-inset-bottom,0px);
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;
+  --tx:#f2f2f7;--tx2:#aeaeb2;--tx3:#636366;
+  --bd:rgba(255,255,255,0.1);--bd2:rgba(255,255,255,0.2);
+  --bluelight:#1a3652;--greenlight:#1a3528;
+}}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:var(--bg);color:var(--tx);}
 body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;font-size:16px;}
@@ -24,15 +36,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;fo
 .field{margin-bottom:12px;}
 .lbl{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;display:block;}
 
-/* TOP BAR PASTO */
+/* ── PASTO ── */
 .pasto-topbar{display:flex;gap:6px;margin-bottom:12px;align-items:center;}
 .date-inp{flex:1;padding:8px 10px;border:0.5px solid var(--bd2);border-radius:var(--r);font-size:13px;background:var(--bg);color:var(--tx);outline:none;-webkit-appearance:none;}
 .date-inp:focus{border-color:var(--blue);}
 .meal-btns{display:flex;gap:3px;}
 .mbtn{padding:6px 8px;border-radius:var(--r);border:0.5px solid var(--bd2);background:var(--bg2);font-size:12px;cursor:pointer;color:var(--tx2);}
 .mbtn.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);}
-
-/* RICERCA UNIFICATA */
 .food-search-wrap{position:relative;margin-bottom:10px;}
 .food-search-inp{width:100%;padding:10px 36px 10px 12px;border:0.5px solid var(--blue);border-radius:var(--r);font-size:14px;background:var(--bg);color:var(--tx);outline:none;-webkit-appearance:none;box-shadow:0 0 0 3px rgba(55,138,221,.08);}
 .food-search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--tx3);cursor:pointer;background:none;border:none;padding:2px 4px;display:none;}
@@ -41,17 +51,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;fo
 .food-ac.vis{display:block;}
 .ac-item{padding:9px 12px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid var(--bd);}
 .ac-item:last-child{border-bottom:none;}
-.ac-item:hover,.ac-item.hl{background:var(--bluelight);}
+.ac-item.hl,.ac-item:hover{background:var(--bluelight);}
 .ac-item-name{flex:1;}
 .ac-item-cat{font-size:10px;color:var(--tx3);}
 .ac-item-risk{font-size:10px;font-weight:600;}
-
-/* SELECTED TAGS */
 .sel-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;min-height:0;}
 .sel-tag{display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border-radius:20px;font-size:12px;background:var(--bluelight);color:var(--blue);border:0.5px solid var(--blue);}
 .sel-tag-del{cursor:pointer;font-size:13px;line-height:1;opacity:.7;}
-
-/* ACCORDION CATEGORIE (collassati, solo se cercato non nascosti) */
 .genre-block{margin-bottom:6px;border:0.5px solid var(--bd);border-radius:var(--r);overflow:hidden;}
 .genre-hdr{display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 11px;background:var(--bg2);user-select:none;}
 .genre-hdr-name{font-size:12px;font-weight:600;color:var(--tx2);flex:1;}
@@ -63,21 +69,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;fo
 .fchip.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);font-weight:600;}
 .fchip.custom{border-style:dashed;}
 .rdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-
-/* TRIGGER + BANNER */
 .tblock{display:flex;flex-wrap:wrap;gap:4px;}
 .tchip{display:inline-flex;flex-direction:column;padding:5px 9px;border-radius:var(--r);}
 .tname{font-size:11px;font-weight:600;}
 .tdesc{font-size:10px;opacity:.8;margin-top:1px;}
 .rbanner{padding:8px 12px;border-radius:var(--r);margin-top:6px;font-size:12px;font-weight:600;}
 .notrig{font-size:12px;color:var(--tx3);padding:3px 0;}
-
-/* CHIPS SINTOMI/GRAVITA */
 .chips{display:flex;flex-wrap:wrap;gap:5px;}
 .schip,.sevchip{padding:5px 10px;border-radius:20px;font-size:12px;cursor:pointer;border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);display:inline-block;user-select:none;}
 .schip.on{background:#FCEBEB;color:#A32D2D;border-color:#F7C1C1;}
-
-/* INPUT / SELECT */
 .inp{width:100%;padding:10px 12px;border:0.5px solid var(--bd2);border-radius:var(--r);font-size:15px;background:var(--bg);color:var(--tx);outline:none;-webkit-appearance:none;}
 .inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(55,138,221,.12);}
 select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:28px;}
@@ -85,23 +85,49 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .savebtn:active{background:var(--bluedark);transform:scale(.98);}
 .copy-btn{width:100%;padding:11px;border:0.5px solid var(--bd2);border-radius:var(--r);font-size:13px;cursor:pointer;background:var(--bg2);color:var(--tx);margin-top:12px;font-weight:500;}
 
-/* STORICO - vista compatta */
-.dayhdr{display:flex;align-items:center;gap:8px;padding:6px 0 8px;border-bottom:0.5px solid var(--bd);margin-bottom:8px;cursor:pointer;}
+/* ══════════════════════════════
+   STORICO v4 — FILTRI + COMPATTO
+   ══════════════════════════════ */
+.hist-sparkline{margin-bottom:10px;background:var(--bg2);border-radius:var(--r);padding:9px 12px;}
+.hist-sparkline-title{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
+
+/* Barra filtri */
+.hist-filters{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.hfbtn{padding:5px 10px;border-radius:20px;font-size:11px;font-weight:600;border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);cursor:pointer;user-select:none;white-space:nowrap;}
+.hfbtn.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);}
+.hfbtn.red.on{background:#FCEBEB;color:#A32D2D;border-color:#F7C1C1;}
+
+/* Ricerca storico */
+.hist-search-wrap{position:relative;margin-bottom:10px;}
+.hist-search-inp{width:100%;padding:8px 32px 8px 11px;border:0.5px solid var(--bd2);border-radius:var(--r);font-size:13px;background:var(--bg);color:var(--tx);outline:none;}
+.hist-search-inp:focus{border-color:var(--blue);}
+.hist-search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--tx3);cursor:pointer;background:none;border:none;display:none;}
+.hist-search-clear.vis{display:block;}
+.hist-result-count{font-size:11px;color:var(--tx3);margin-bottom:8px;}
+
+/* Intestazione giorno collassabile */
+.dayhdr{display:flex;align-items:center;gap:7px;padding:7px 0 8px;border-bottom:0.5px solid var(--bd);margin-bottom:7px;cursor:pointer;}
 .dayhdr-date{font-size:12px;font-weight:600;color:var(--tx2);flex:1;}
-.dayhdr-risk{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;}
+.dayhdr-risk{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;}
 .dayhdr-sym{font-size:10px;color:var(--tx3);}
 .dayhdr-arrow{font-size:10px;color:var(--tx3);transition:transform .2s;}
 .dayhdr-arrow.open{transform:rotate(90deg);}
-.day-entries{margin-bottom:12px;}
-.entry{border:0.5px solid var(--bd);border-radius:var(--rl);padding:10px 12px;margin-bottom:6px;background:var(--bg);cursor:pointer;}
+.day-entries{margin-bottom:10px;}
+
+/* Entry compatta a riga singola → espandibile */
+.entry{border:0.5px solid var(--bd);border-radius:var(--rl);padding:9px 11px;margin-bottom:5px;background:var(--bg);}
+.entry.has-reaction{border-left:3px solid #E24B4A;}
 .entry.editing{border-color:var(--blue);box-shadow:0 0 0 2px rgba(55,138,221,.12);}
-.entry-summary{display:flex;align-items:center;gap:8px;}
+.entry-summary{display:flex;align-items:center;gap:7px;cursor:pointer;}
 .entry-meal-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .entry-foods-short{font-size:13px;font-weight:600;color:var(--tx);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.entry-time{font-size:11px;color:var(--tx3);white-space:nowrap;}
+.entry-badges{display:flex;gap:4px;align-items:center;flex-shrink:0;}
+.entry-risk-badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:20px;}
+.entry-sym-icon{font-size:12px;}
+.entry-time{font-size:10px;color:var(--tx3);white-space:nowrap;}
 .entry-detail{display:none;margin-top:8px;padding-top:8px;border-top:0.5px solid var(--bd);}
 .entry-detail.vis{display:block;}
-.etags{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;}
+.etags{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;}
 .etag{font-size:10px;padding:2px 8px;border-radius:20px;}
 .enote{font-size:11px;color:var(--tx2);margin-top:5px;font-style:italic;}
 .ereact{font-size:10px;color:var(--tx3);margin-top:2px;}
@@ -112,36 +138,47 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .annota-panel{background:var(--bg2);border-radius:var(--r);padding:10px 11px;margin-top:7px;}
 .annota-save{padding:7px 14px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;}
 .annota-cancel{padding:7px 10px;background:none;border:none;font-size:13px;color:var(--tx3);cursor:pointer;}
+.empty{text-align:center;padding:36px 20px;color:var(--tx2);font-size:14px;line-height:1.8;}
 
-/* MINI SPARKLINE STORICO */
-.hist-sparkline{margin-bottom:14px;background:var(--bg2);border-radius:var(--r);padding:10px 12px;}
-.hist-sparkline-title{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+/* ══════════════════════════════
+   ALIMENTI v4 — SEZIONI PER RISCHIO + FILTRO TRIGGER
+   ══════════════════════════════ */
+.alim-search-wrap{margin-bottom:10px;position:relative;}
+.alim-search-inp{width:100%;padding:8px 32px 8px 11px;border:0.5px solid var(--bd2);border-radius:var(--r);font-size:13px;background:var(--bg);color:var(--tx);outline:none;}
+.alim-search-inp:focus{border-color:var(--blue);}
+.alim-search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--tx3);cursor:pointer;background:none;border:none;display:none;}
+.alim-search-clear.vis{display:block;}
 
-/* STATO */
-.cond-row{margin-bottom:14px;}
-.cond-name{font-size:14px;font-weight:600;}
-.cond-sub{font-size:11px;color:var(--tx3);}
-.rating-btns{display:flex;gap:8px;margin-top:7px;}
-.rbtn{width:42px;height:42px;border-radius:50%;border:0.5px solid var(--bd2);background:var(--bg2);font-size:15px;font-weight:600;cursor:pointer;color:var(--tx2);flex-shrink:0;}
-.rbtn:active{transform:scale(.93);}
-.sentry{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--bd);}
-.sentry-time{font-size:11px;color:var(--tx3);min-width:72px;padding-top:2px;}
-.sentry-note{font-size:11px;color:var(--tx2);font-style:italic;margin-top:3px;}
+/* Filtro trigger */
+.trig-filter-bar{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px;}
+.tfbtn{padding:4px 9px;border-radius:20px;font-size:10px;font-weight:600;border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);cursor:pointer;user-select:none;}
+.tfbtn.on{border-color:currentColor;}
 
-/* ALIMENTI - lista custom compatta */
-.cf-item{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--bd);cursor:pointer;}
+/* Sezioni rischio */
+.risk-section{margin-bottom:14px;}
+.risk-section-hdr{display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 11px;border-radius:var(--r);user-select:none;}
+.risk-section-hdr:active{opacity:.8;}
+.risk-section-label{font-size:11px;font-weight:700;flex:1;}
+.risk-section-cnt{font-size:11px;font-weight:600;}
+.risk-section-arrow{font-size:10px;color:var(--tx3);transition:transform .15s;}
+.risk-section-arrow.open{transform:rotate(90deg);}
+.risk-section-body{padding:0 4px;}
+
+/* Card alimento custom (più compatta) */
+.cf-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--bd);cursor:pointer;}
+.cf-item:last-child{border-bottom:none;}
 .cf-info{flex:1;min-width:0;}
 .cf-row1{display:flex;align-items:center;gap:6px;}
-.cf-name{font-size:13px;font-weight:600;}
-.cf-tags-row{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px;}
+.cf-name{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cf-tags-row{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px;}
 .cf-meta{font-size:11px;color:var(--tx2);margin-top:5px;line-height:1.4;display:none;}
 .cf-meta.vis{display:block;}
-.cf-actions{display:flex;gap:6px;align-items:center;padding-top:2px;flex-shrink:0;}
-.cf-promo-btn{font-size:10px;padding:3px 8px;border-radius:20px;border:0.5px solid var(--green);color:var(--green);background:var(--greenlight);cursor:pointer;white-space:nowrap;}
+.cf-actions{display:flex;gap:5px;align-items:center;padding-top:2px;flex-shrink:0;}
+.cf-promo-btn{font-size:10px;padding:3px 7px;border-radius:20px;border:0.5px solid var(--green);color:var(--green);background:var(--greenlight);cursor:pointer;white-space:nowrap;}
 .cf-del-btn{font-size:11px;color:var(--tx3);cursor:pointer;border:none;background:none;padding:0;}
-.promo-badge{font-size:9px;padding:1px 5px;border-radius:20px;background:var(--greenlight);color:var(--green);margin-left:4px;font-weight:600;}
+.promo-badge{font-size:9px;padding:1px 5px;border-radius:20px;background:var(--greenlight);color:var(--green);margin-left:4px;font-weight:600;flex-shrink:0;}
 
-/* ALIMENTI - smart box */
+/* Smart box alimenti */
 .smart-box{border:0.5px solid var(--bd2);border-radius:var(--rl);padding:14px;background:var(--bg);margin-bottom:14px;}
 .smart-box h3{font-size:13px;font-weight:600;margin-bottom:6px;}
 .smart-input-row{display:flex;gap:8px;}
@@ -163,6 +200,8 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .ai-loading{text-align:center;padding:20px;color:var(--tx3);font-size:13px;}
 .ai-spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--bd2);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin-right:8px;vertical-align:middle;}
 @keyframes spin{to{transform:rotate(360deg);}}
+
+/* API key */
 .apikey-box{border:0.5px solid var(--bd2);border-radius:var(--rl);padding:14px;background:var(--bg);margin-bottom:14px;}
 .apikey-box h3{font-size:13px;font-weight:600;margin-bottom:4px;}
 .apikey-desc{font-size:12px;color:var(--tx2);margin-bottom:10px;line-height:1.5;}
@@ -174,7 +213,20 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .apikey-status.err{background:#FCEBEB;color:#A32D2D;}
 .apikey-toggle{font-size:11px;color:var(--tx3);cursor:pointer;border:none;background:none;padding:2px 0;margin-top:4px;display:block;}
 
-/* ANALISI */
+/* ══════════════════════════════
+   STATO v4 — con marker reazioni
+   ══════════════════════════════ */
+.cond-row{margin-bottom:14px;}
+.cond-name{font-size:14px;font-weight:600;}
+.cond-sub{font-size:11px;color:var(--tx3);}
+.rating-btns{display:flex;gap:8px;margin-top:7px;}
+.rbtn{width:42px;height:42px;border-radius:50%;border:0.5px solid var(--bd2);background:var(--bg2);font-size:15px;font-weight:600;cursor:pointer;color:var(--tx2);flex-shrink:0;}
+.rbtn:active{transform:scale(.93);}
+.sentry{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--bd);}
+.sentry-time{font-size:11px;color:var(--tx3);min-width:72px;padding-top:2px;}
+.sentry-note{font-size:11px;color:var(--tx2);font-style:italic;margin-top:3px;}
+
+/* ── ANALISI ── */
 .sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
 .sc{background:var(--bg2);border-radius:var(--r);padding:11px 13px;}
 .sv{font-size:24px;font-weight:600;color:var(--tx);}
@@ -186,9 +238,6 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .bf-pct{font-size:9px;color:rgba(255,255,255,.9);padding-left:5px;white-space:nowrap;}
 .bc{font-size:11px;color:var(--tx2);min-width:20px;text-align:right;}
 .stit{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 8px;}
-.empty{text-align:center;padding:40px 20px;color:var(--tx2);font-size:14px;line-height:1.8;}
-
-/* GRAFICO + SYNC */
 .chart-box{border:0.5px solid var(--bd2);border-radius:var(--rl);padding:14px;background:var(--bg);margin-bottom:14px;}
 .chart-box h3{font-size:13px;font-weight:600;margin-bottom:8px;}
 .chart-legend{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:8px;}
@@ -196,7 +245,6 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .chart-legend-line{width:16px;height:2px;border-radius:1px;display:inline-block;}
 .chart-wrap{background:var(--bg2);border-radius:var(--r);padding:10px;overflow:hidden;margin-bottom:10px;}
 .export-btn{width:100%;padding:11px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;}
-.export-btn:active{background:var(--bluedark);}
 .sync-box{border:0.5px solid var(--bd2);border-radius:var(--rl);padding:14px;background:var(--bg);margin-bottom:14px;}
 .sync-box h3{font-size:13px;font-weight:600;margin-bottom:4px;}
 .sync-desc{font-size:12px;color:var(--tx2);margin-bottom:10px;line-height:1.5;}
@@ -222,7 +270,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     <div class="tab" id="tab-stats" onclick="showTab('stats')">Analisi</div>
   </div>
 
-  <!-- TAB PASTO -->
+  <!-- TAB PASTO (invariato) -->
   <div id="vpasto" class="view">
     <div class="pasto-topbar">
       <input type="date" class="date-inp" id="pasto-date"/>
@@ -234,7 +282,6 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
         <button class="mbtn" id="mb-snk" onclick="setMeal('Snack')" title="Snack">&#127863;</button>
       </div>
     </div>
-
     <div class="field">
       <label class="lbl">Cerca alimento o piatto</label>
       <div class="food-search-wrap">
@@ -244,7 +291,6 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       </div>
       <div class="sel-tags" id="sel-tags"></div>
     </div>
-
     <div class="field">
       <label class="lbl">Alimenti per categoria</label>
       <div id="genre-vegetali" class="genre-block">
@@ -276,7 +322,6 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
         <div class="genre-chips" id="gc-miei" style="display:none"></div>
       </div>
     </div>
-
     <div class="field">
       <label class="lbl">Trigger (automatici)</label>
       <div id="trig-display"><div class="notrig">Seleziona alimenti per vedere i trigger</div></div>
@@ -308,16 +353,32 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     <button class="savebtn" onclick="saveEntry()">Aggiungi al diario</button>
   </div>
 
-  <!-- TAB STORICO -->
+  <!-- TAB STORICO v4 -->
   <div id="vhist" class="view" style="display:none">
     <div class="hist-sparkline" id="hist-sparkline" style="display:none">
       <div class="hist-sparkline-title">Rischio pasto &mdash; ultimi 14 giorni</div>
       <canvas id="sparkline-canvas" style="width:100%;display:block;height:44px;"></canvas>
     </div>
+
+    <!-- Filtri rapidi -->
+    <div class="hist-filters">
+      <button class="hfbtn on" id="hf-all" onclick="setHistFilter('all')">Tutti</button>
+      <button class="hfbtn red" id="hf-reaction" onclick="setHistFilter('reaction')">&#128276; Con reazione</button>
+      <button class="hfbtn" id="hf-high" onclick="setHistFilter('high')">&#128308; Rischio alto</button>
+      <button class="hfbtn" id="hf-instant" onclick="setHistFilter('instant')">&#9889; Istantanee</button>
+    </div>
+
+    <!-- Ricerca testuale -->
+    <div class="hist-search-wrap">
+      <input class="hist-search-inp" id="hist-search" placeholder="Cerca alimento nello storico..." oninput="onHistSearch(this.value)" autocomplete="off"/>
+      <button class="hist-search-clear" id="hist-search-clear" onclick="clearHistSearch()">&#215;</button>
+    </div>
+    <div class="hist-result-count" id="hist-result-count" style="display:none"></div>
+
     <div id="hist-list"></div>
   </div>
 
-  <!-- TAB STATO -->
+  <!-- TAB STATO (invariato nel form, arricchito nel rendering) -->
   <div id="vstato" class="view" style="display:none">
     <div class="field">
       <label class="lbl">Come stai adesso &mdash; 1 (assente) &rarr; 5 (severo)</label>
@@ -331,11 +392,11 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     <div id="stato-results" style="margin-top:18px"></div>
   </div>
 
-  <!-- TAB ALIMENTI -->
+  <!-- TAB ALIMENTI v4 -->
   <div id="valim" class="view" style="display:none">
     <div class="apikey-box" id="apikey-box">
       <h3>&#128273; Chiave API Anthropic</h3>
-      <p class="apikey-desc">Necessaria per l&#39;analisi smart. Ottienila su <strong>console.anthropic.com</strong> &rarr; API Keys. Salvata solo sul dispositivo.</p>
+      <p class="apikey-desc">Necessaria per l'analisi smart. Ottienila su <strong>console.anthropic.com</strong> &rarr; API Keys. Salvata solo sul dispositivo.</p>
       <div class="apikey-row">
         <input class="inp apikey-inp" id="apikey-inp" type="password" placeholder="sk-ant-&hellip;" autocomplete="off" autocorrect="off" spellcheck="false"/>
         <button class="apikey-save-btn" onclick="saveApiKey()">Salva</button>
@@ -356,14 +417,29 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       </div>
       <div id="ai-result" class="ai-result"></div>
     </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-      <div class="stit" style="margin:0">Alimenti codificati (<span id="cf-count">0</span>)</div>
+
+    <!-- Intestazione con contatore e filtri -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div class="stit" style="margin:0">Miei alimenti (<span id="cf-count">0</span>)</div>
       <div style="font-size:11px;color:var(--tx3);">Tocca per descrizione</div>
     </div>
-    <div id="custom-foods-list"><div class="notrig" style="padding:12px 0">Nessun alimento codificato ancora.</div></div>
+
+    <!-- Ricerca -->
+    <div class="alim-search-wrap">
+      <input class="alim-search-inp" id="alim-search" placeholder="Cerca nei miei alimenti..." oninput="onAlimSearch(this.value)" autocomplete="off"/>
+      <button class="alim-search-clear" id="alim-search-clear" onclick="clearAlimSearch()">&#215;</button>
+    </div>
+
+    <!-- Filtro trigger -->
+    <div class="trig-filter-bar" id="trig-filter-bar">
+      <button class="tfbtn on" id="tf-all" onclick="setTrigFilter(null)">Tutti</button>
+    </div>
+
+    <!-- Lista strutturata per sezioni di rischio -->
+    <div id="custom-foods-list"></div>
   </div>
 
-  <!-- TAB ANALISI -->
+  <!-- TAB ANALISI (invariato) -->
   <div id="vstats" class="view" style="display:none">
     <div id="stats-cnt"></div>
     <div class="chart-box" id="chart-box" style="display:none">
@@ -376,7 +452,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     </div>
     <div class="sync-box">
       <h3>&#9729; Backup &mdash; iCloud / iPad</h3>
-      <p class="sync-desc">Esporta tutti i dati in un file JSON da salvare in iCloud Drive. Su un altro dispositivo, apri lo stesso file HTML e importa il JSON.</p>
+      <p class="sync-desc">Esporta tutti i dati in un file JSON da salvare in iCloud Drive.</p>
       <div class="sync-btns">
         <button class="sync-btn primary" onclick="exportData()">&#8681; Esporta JSON</button>
         <button class="sync-btn" onclick="document.getElementById('import-file').click()">&#8679; Importa JSON</button>
@@ -385,8 +461,8 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       <div id="sync-status" class="sync-status"></div>
     </div>
     <div style="border-top:0.5px solid var(--bd);padding-top:16px;margin-top:4px;">
-      <div class="stit">Porta i dati in Claude per l&#39;analisi</div>
-      <p style="font-size:12px;color:var(--tx2);margin-bottom:8px;line-height:1.5">Copia i dati e incollali in Claude.ai per un&#39;analisi approfondita dei pattern.</p>
+      <div class="stit">Porta i dati in Claude per l'analisi</div>
+      <p style="font-size:12px;color:var(--tx2);margin-bottom:8px;line-height:1.5">Copia i dati e incollali in Claude.ai per un'analisi approfondita dei pattern.</p>
       <button class="copy-btn" onclick="copyForClaude()">Copia dati per Claude.ai</button>
     </div>
   </div>
@@ -405,7 +481,6 @@ SCALA RISCHIO 0-5: 0=sicuro, 1=minimo, 2=monitorare, 3=cautela, 4=evitare quasi 
 TRIGGER: Istamina, Salicilati, Ammine biogene, Tiramina, TRPA1, Istamina-lib.
 Per piatti composti analizza ogni ingrediente + profilo combinato.`;
 
-// ── DATI BASE ──
 const DISHES=[
   {n:"Minestrone misto",t:["Istamina","Salicilati","Ammine biogene"],r:3},
   {n:"Minestra ceci/bietole",t:["Istamina","Salicilati","Ammine biogene"],r:3},
@@ -433,7 +508,6 @@ const DISHES=[
   {n:"Sorbetto di mango",t:["Salicilati"],r:2},
   {n:"Crostata marmellata pera",t:["Salicilati"],r:2},
 ];
-
 const SINGLES={
   vegetali:[
     {n:"Cavolfiore",t:[],r:0},{n:"Zucchine",t:["Salicilati"],r:1},
@@ -464,8 +538,7 @@ const SINGLES={
     {n:"Tisana zafferano",t:[],r:1},{n:"Tisana menta",t:["Salicilati","TRPA1"],r:3},
   ],
 };
-
-const TS={"Istamina":{bg:"#FCEBEB",c:"#A32D2D",d:"istamina preformata"},"Salicilati":{bg:"#FAEEDA",c:"#854F0B",d:"COX-1 leucotrieni"},"Ammine biogene":{bg:"#FAECE7",c:"#993C1D",d:"attivazione mastociti"},"Tiramina":{bg:"#FCEBEB",c:"#791F1F",d:"vasoattiva"},"TRPA1":{bg:"#EEEDFE",c:"#3C3489",d:"neurogeno mucose"},"Istamina-lib.":{bg:"#FBEAF0",c:"#993556",d:"induce rilascio"}};
+const TS={"Istamina":{bg:"#FCEBEB",c:"#A32D2D",d:"istamina preformata → degranulazione diretta"},"Salicilati":{bg:"#FAEEDA",c:"#854F0B",d:"COX-1 → leucotrieni"},"Ammine biogene":{bg:"#FAECE7",c:"#993C1D",d:"attivazione mastociti"},"Tiramina":{bg:"#FCEBEB",c:"#791F1F",d:"vasoattiva → degranulazione"},"TRPA1":{bg:"#EEEDFE",c:"#3C3489",d:"neurogeno su mucose"},"Istamina-lib.":{bg:"#FBEAF0",c:"#993556",d:"induce rilascio"}};
 const RC=["","#5DCAA5","#5DCAA5","#EF9F27","#E24B4A","#E24B4A"];
 const RBG=["transparent","#E1F5EE","#E1F5EE","#FAEEDA","#FCEBEB","#FCEBEB"];
 const RTC=["#606060","#3B6D11","#3B6D11","#854F0B","#A32D2D","#791F1F"];
@@ -476,11 +549,23 @@ const SEVS=["1 -- Lieve","2 -- Moderata","3 -- Notevole","4 -- Intensa","5 -- Se
 const CONDS=[{key:"poliposi",label:"Poliposi nasale",sub:"ostruzione, congestione",color:"#378ADD"},{key:"asma",label:"Asma / respiro",sub:"dispnea, sibilo",color:"#EF9F27"},{key:"dermatosi",label:"Dermatosi",sub:"prurito, eritema",color:"#D85A30"}];
 const MEAL_COLORS={Colazione:"#EF9F27",Pranzo:"#378ADD",Cena:"#3C3489",Spuntino:"#5DCAA5",Snack:"#E24B4A"};
 
+// Sezioni rischio per la lista Alimenti
+const RISK_SECTIONS=[
+  {id:"rs5",label:"🔴 Evitare (5/5)",minR:5,maxR:5,bg:"#FCEBEB",c:"#A32D2D",bdg:"#F7C1C1"},
+  {id:"rs4",label:"🟠 Quasi sempre evitare (4/5)",minR:4,maxR:4,bg:"#FAECE7",c:"#993C1D",bdg:"#F5CBBD"},
+  {id:"rs3",label:"🟡 Cautela (3/5)",minR:3,maxR:3,bg:"#FAEEDA",c:"#854F0B",bdg:"#F5E1B5"},
+  {id:"rs2",label:"🟢 Monitorare (2/5)",minR:2,maxR:2,bg:"#E8F5E4",c:"#3B6D11",bdg:"#C7E5BE"},
+  {id:"rs01",label:"✅ Sicuri (0-1/5)",minR:0,maxR:1,bg:"#E1F5EE",c:"#2E8B57",bdg:"#B0DEC9"},
+];
+
 let selItems={},selSym={},selSev=null,selMeal=null;
 let statoSel={poliposi:null,asma:null,dermatosi:null};
 let entries=[],statoEntries=[],customFoods=[],apiKey='',currentAiResult=null;
+// Stato filtri storico
+let histFilter='all',histSearchQuery='';
+// Stato filtri alimenti
+let alimSearchQuery='',alimTrigFilter=null;
 
-// ── STORAGE ──
 function loadData(){
   try{const r=localStorage.getItem('widal-diary-v3');if(r)entries=JSON.parse(r);}catch(e){entries=[];}
   try{const r=localStorage.getItem('widal-stato-v1');if(r)statoEntries=JSON.parse(r);}catch(e){statoEntries=[];}
@@ -491,7 +576,6 @@ function saveData(){try{localStorage.setItem('widal-diary-v3',JSON.stringify(ent
 function saveStatoData(){try{localStorage.setItem('widal-stato-v1',JSON.stringify(statoEntries));}catch(e){}}
 function saveCustomData(){try{localStorage.setItem('widal-custom-v1',JSON.stringify(customFoods));}catch(e){}}
 
-// ── UTILS ──
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 function rdot(r){return r>0?`<span class="rdot" style="background:${RC[r]}"></span>`:'';}
 function escQ(s){return s.replace(/'/g,"\\'");}
@@ -499,36 +583,21 @@ function escId(s){return s.replace(/[^a-zA-Z0-9]/g,'_');}
 function fmtT(ts){const d=new Date(ts);return d.toLocaleDateString('it-IT',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});}
 function fmtD(ts){return new Date(ts).toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});}
 function fmtDateShort(ts){return new Date(ts).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'});}
+function capFirst(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 
-// ── LOOKUP ──
 function getItemData(key){
-  // key = "genre:name" o "dish:name" o "custom:id"
-  const parts=key.split(':');
-  const type=parts[0],ref=parts.slice(1).join(':');
+  const parts=key.split(':');const type=parts[0],ref=parts.slice(1).join(':');
   if(type==='dish'){const d=DISHES.find(x=>x.n===ref);return d?{n:d.n,t:d.t,r:d.r}:{n:ref,t:[],r:0};}
   if(type==='custom'){const cf=customFoods.find(x=>x.id===ref);return cf?{n:cf.name,t:cf.triggers,r:cf.risk}:{n:ref,t:[],r:0};}
-  // single
   const arr=SINGLES[type]||[];const s=arr.find(x=>x.n===ref);
   if(s)return{n:s.n,t:s.t,r:s.r};
   const cf=customFoods.find(x=>x.name===ref);
   return cf?{n:cf.name,t:cf.triggers,r:cf.risk}:{n:ref,t:[],r:0};
 }
+function computeAllTriggers(){const ts=new Set();Object.keys(selItems).forEach(k=>{const d=getItemData(k);d.t.forEach(t=>ts.add(t));});return[...ts];}
+function computeMaxRisk(){let m=0;Object.keys(selItems).forEach(k=>{const d=getItemData(k);m=Math.max(m,d.r);});return m;}
+function getAllSelectedNames(){return Object.keys(selItems).map(k=>getItemData(k).n);}
 
-function computeAllTriggers(){
-  const ts=new Set();
-  Object.keys(selItems).forEach(k=>{const d=getItemData(k);d.t.forEach(t=>ts.add(t));});
-  return[...ts];
-}
-function computeMaxRisk(){
-  let m=0;
-  Object.keys(selItems).forEach(k=>{const d=getItemData(k);m=Math.max(m,d.r);});
-  return m;
-}
-function getAllSelectedNames(){
-  return Object.keys(selItems).map(k=>getItemData(k).n);
-}
-
-// ── POOL per ricerca ──
 function getSearchPool(){
   const pool=[];
   DISHES.forEach(d=>pool.push({key:'dish:'+d.n,n:d.n,r:d.r,t:d.t,cat:'Piatto'}));
@@ -536,9 +605,8 @@ function getSearchPool(){
   customFoods.forEach(f=>pool.push({key:'custom:'+f.id,n:f.name,r:f.risk,t:f.triggers,cat:'Personale'}));
   return pool;
 }
-function capFirst(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 
-// ── RICERCA UNIFICATA ──
+// RICERCA PASTO
 let acIdx=-1;
 function onFoodSearch(val){
   acIdx=-1;
@@ -557,8 +625,7 @@ function onFoodSearch(val){
   ac.className='food-ac vis';
 }
 function onFoodSearchKey(e){
-  const ac=document.getElementById('food-ac');
-  const items=ac.querySelectorAll('.ac-item');
+  const ac=document.getElementById('food-ac');const items=ac.querySelectorAll('.ac-item');
   if(e.key==='ArrowDown'){e.preventDefault();acIdx=Math.min(acIdx+1,items.length-1);highlightAc(items);}
   else if(e.key==='ArrowUp'){e.preventDefault();acIdx=Math.max(acIdx-1,0);highlightAc(items);}
   else if(e.key==='Enter'&&acIdx>=0){e.preventDefault();selectFoodAc(items[acIdx].dataset.key);}
@@ -566,23 +633,12 @@ function onFoodSearchKey(e){
 }
 function highlightAc(items){items.forEach((el,i)=>el.className='ac-item'+(i===acIdx?' hl':''));}
 function selectFoodAc(key){
-  selItems[key]=true;
-  renderSelTags();updateTriggers();
-  const inp=document.getElementById('food-search');
-  if(inp){inp.value='';onFoodSearch('');}
-  // sync chip categoria
+  selItems[key]=true;renderSelTags();updateTriggers();
+  const inp=document.getElementById('food-search');if(inp){inp.value='';onFoodSearch('');}
   syncChipState(key,true);
 }
-function clearFoodSearch(){
-  const inp=document.getElementById('food-search');
-  if(inp)inp.value='';
-  onFoodSearch('');
-}
-function removeItem(key){
-  delete selItems[key];
-  renderSelTags();updateTriggers();
-  syncChipState(key,false);
-}
+function clearFoodSearch(){const inp=document.getElementById('food-search');if(inp)inp.value='';onFoodSearch('');}
+function removeItem(key){delete selItems[key];renderSelTags();updateTriggers();syncChipState(key,false);}
 function syncChipState(key,on){
   const parts=key.split(':');const type=parts[0],ref=parts.slice(1).join(':');
   let chipId;
@@ -590,23 +646,19 @@ function syncChipState(key,on){
   else if(type==='custom'){const cf=customFoods.find(f=>f.id===ref);if(cf)chipId='cf-chip-'+ref;}
   else chipId='sg-'+type+'-'+escId(ref);
   const el=document.getElementById(chipId);
-  if(el){
-    const isCustom=el.className.includes('custom');
-    el.className='fchip'+(isCustom?' custom':'')+(on?' on':'');
-  }
+  if(el){const isCustom=el.className.includes('custom');el.className='fchip'+(isCustom?' custom':'')+(on?' on':'');}
 }
 document.addEventListener('click',function(e){
   const ac=document.getElementById('food-ac');
   if(ac&&!ac.contains(e.target)&&e.target.id!=='food-search')ac.className='food-ac';
 });
-
 function renderSelTags(){
   const el=document.getElementById('sel-tags');
   const keys=Object.keys(selItems);
   el.innerHTML=keys.map(k=>{const d=getItemData(k);return`<span class="sel-tag">${rdot(d.r)}<span>${d.n}</span><span class="sel-tag-del" onclick="removeItem('${escQ(k)}')">&#215;</span></span>`;}).join('');
 }
 
-// ── CHIP CATEGORIE ──
+// CHIPS CATEGORIE
 function togGenre(g){
   const el=document.getElementById('gc-'+g),ar=document.getElementById('ga-'+g);if(!el)return;
   const open=el.style.display!=='none';
@@ -618,7 +670,6 @@ function buildGenreChips(){
     const el=document.getElementById('gc-'+genre);if(!el)return;
     el.innerHTML=items.map(f=>`<div class="fchip" id="sg-${genre}-${escId(f.n)}" onclick="togSingle('${genre}','${escQ(f.n)}')">${rdot(f.r)}${f.n}</div>`).join('');
   });
-  // Piatti composti
   const elP=document.getElementById('gc-piatti');if(elP){
     elP.innerHTML=DISHES.map(d=>`<div class="fchip" id="gc-piatti-${escId(d.n)}" onclick="togDish('${escQ(d.n)}')">${rdot(d.r)}${d.n}</div>`).join('');
   }
@@ -641,8 +692,7 @@ function updateGenreCount(genre){
   let cnt=0;
   if(genre==='piatti')cnt=Object.keys(selItems).filter(k=>k.startsWith('dish:')).length;
   else cnt=Object.keys(selItems).filter(k=>k.startsWith(genre+':')).length;
-  const el=document.getElementById('gc-cnt-'+genre);
-  if(el)el.textContent=cnt>0?String(cnt):'';
+  const el=document.getElementById('gc-cnt-'+genre);if(el)el.textContent=cnt>0?String(cnt):'';
 }
 function buildCustomGenreChips(){
   const promoted=customFoods.filter(f=>f.promoted);
@@ -659,7 +709,6 @@ function togCustom(id){
   renderSelTags();updateTriggers();
 }
 
-// ── TRIGGERS ──
 function updateTriggers(){
   const trigs=computeAllTriggers(),mr=computeMaxRisk();
   const el=document.getElementById('trig-display'),rb=document.getElementById('rbanner');
@@ -669,21 +718,17 @@ function updateTriggers(){
   rb.textContent='Profilo di rischio pasto: '+RL[mr];
 }
 
-// ── MEAL ──
 function setMeal(m){
   selMeal=selMeal===m?null:m;
   const map={col:'Colazione',pra:'Pranzo',cen:'Cena',spu:'Spuntino',snk:'Snack'};
   Object.entries(map).forEach(([k,v])=>{const el=document.getElementById('mb-'+k);if(el)el.className='mbtn'+(selMeal===v?' on':'');});
 }
 function initDatePicker(){const inp=document.getElementById('pasto-date');if(inp)inp.value=new Date().toISOString().slice(0,10);}
-
-// ── SYMPTOMS/SEVERITY ──
 function buildSyms(){document.getElementById('sym-chips').innerHTML=SYMS.map(s=>`<div class="schip" id="sc-${s.replace(/ /g,'_')}" onclick="togSym('${s}')">${s}</div>`).join('');}
 function togSym(s){const k=s.replace(/ /g,'_');selSym[s]?delete selSym[s]:(selSym[s]=true);document.getElementById('sc-'+k).className='schip'+(selSym[s]?' on':'');}
 function buildSevs(){document.getElementById('sev-chips').innerHTML=SEVS.map((s,i)=>`<div class="sevchip" id="sv${i}" onclick="togSev('${s}',${i})">${s}</div>`).join('');}
 function togSev(s,i){SEVS.forEach((_,j)=>{const e=document.getElementById('sv'+j);if(e){e.className='sevchip';e.style.cssText='';}});if(selSev===s){selSev=null;return;}selSev=s;const e=document.getElementById('sv'+i),ss=SS[i];e.style.background=ss.bg;e.style.color=ss.c;e.style.borderColor=ss.c;}
 
-// ── SAVE ENTRY ──
 function saveEntry(){
   const names=getAllSelectedNames();
   if(!names.length){const el=document.getElementById('sel-tags');el.style.outline='2px solid #E24B4A';el.style.borderRadius='8px';setTimeout(()=>{el.style.outline='';},1500);return;}
@@ -695,23 +740,66 @@ function saveEntry(){
 function resetPasto(){
   selItems={};selSym={};selSev=null;
   renderSelTags();
-  // reset chip stati
   document.querySelectorAll('.fchip.on').forEach(el=>el.classList.remove('on'));
   Object.keys(SINGLES).forEach(g=>updateGenreCount(g));
   updateGenreCount('piatti');
   updateTriggers();buildSyms();buildSevs();
-  document.getElementById('react-time').value='';
-  document.getElementById('note-inp').value='';
-  clearFoodSearch();
-  initDatePicker();
+  document.getElementById('react-time').value='';document.getElementById('note-inp').value='';
+  clearFoodSearch();initDatePicker();
 }
 
-// ── STORICO ──
+/* ══════════════════════════════
+   STORICO v4
+   ══════════════════════════════ */
+function setHistFilter(f){
+  histFilter=f;
+  ['all','reaction','high','instant'].forEach(x=>{
+    const el=document.getElementById('hf-'+x);if(!el)return;
+    el.className='hfbtn'+(x==='reaction'?' red':'')+(f===x?' on':'');
+  });
+  renderHist();
+}
+function onHistSearch(val){
+  histSearchQuery=val.trim().toLowerCase();
+  const clr=document.getElementById('hist-search-clear');
+  if(clr)clr.className='hist-search-clear'+(val?' vis':'');
+  renderHist();
+}
+function clearHistSearch(){
+  const inp=document.getElementById('hist-search');if(inp)inp.value='';
+  histSearchQuery='';
+  const clr=document.getElementById('hist-search-clear');if(clr)clr.className='hist-search-clear';
+  renderHist();
+}
+
+function entryMatchesFilter(e){
+  if(histFilter==='reaction'&&(!e.symptoms||e.symptoms.length===0))return false;
+  if(histFilter==='high'&&(e.maxRisk||0)<4)return false;
+  if(histFilter==='instant'&&(!e.reactionTime||!e.reactionTime.includes('Istantanea')))return false;
+  if(histSearchQuery){
+    const hay=e.foods.join(' ').toLowerCase()+' '+(e.note||'').toLowerCase();
+    if(!hay.includes(histSearchQuery))return false;
+  }
+  return true;
+}
+
 function renderHist(){
   const el=document.getElementById('hist-list');
   if(!entries.length){el.innerHTML='<div class="empty">Nessuna voce ancora.<br>Registra il primo pasto.</div>';drawSparkline();return;}
   drawSparkline();
-  const G={};entries.forEach(e=>{const d=new Date(e.ts).toDateString();(G[d]=G[d]||[]).push(e);});
+
+  const filtered=entries.filter(entryMatchesFilter);
+  const rcEl=document.getElementById('hist-result-count');
+  if(histFilter!=='all'||histSearchQuery){
+    rcEl.style.display='block';
+    rcEl.textContent=filtered.length+' risultati su '+entries.length+' pasti';
+  }else{
+    rcEl.style.display='none';
+  }
+
+  if(!filtered.length){el.innerHTML='<div class="empty">Nessun pasto corrisponde<br>al filtro selezionato.</div>';return;}
+
+  const G={};filtered.forEach(e=>{const d=new Date(e.ts).toDateString();(G[d]=G[d]||[]).push(e);});
   el.innerHTML=Object.entries(G).map(([dayStr,items])=>{
     const maxR=Math.max(...items.map(e=>e.maxRisk||0));
     const hasSym=items.some(e=>e.symptoms&&e.symptoms.length>0);
@@ -721,7 +809,7 @@ function renderHist(){
     return`<div>
       <div class="dayhdr" onclick="togDay('${dayId}')">
         <span class="dayhdr-date">${fmtD(items[0].ts)}</span>
-        ${maxR>0?`<span class="dayhdr-risk" style="${riskStyle}">Rischio ${RL[maxR]}</span>`:''}
+        ${maxR>0?`<span class="dayhdr-risk" style="${riskStyle}">${RL[maxR]}</span>`:''}
         ${hasSym?`<span class="dayhdr-sym">&#128276; ${symCount}</span>`:''}
         <span class="dayhdr-arrow" id="arr-${dayId}">&#9658;</span>
       </div>
@@ -729,15 +817,18 @@ function renderHist(){
         ${items.map(e=>{
           const si=e.severity?parseInt(e.severity[0])-1:-1,ss=si>=0?SS[si]:null;
           const mealColor=e.meal&&MEAL_COLORS[e.meal]?MEAL_COLORS[e.meal]:'#9a9a9a';
-          const entryId='entry-'+e.id;
-          return`<div class="entry" id="${entryId}" onclick="togEntry(${e.id})">
-            <div class="entry-summary">
+          const hasReaction=e.symptoms&&e.symptoms.length>0;
+          const riskBadge=e.maxRisk>0?`<span class="entry-risk-badge" style="background:${RBG[e.maxRisk]};color:${RTC[e.maxRisk]}">${e.maxRisk}</span>`:'';
+          const symIcon=hasReaction?'<span class="entry-sym-icon">&#128276;</span>':'';
+          return`<div class="entry${hasReaction?' has-reaction':''}" id="entry-${e.id}">
+            <div class="entry-summary" onclick="togEntry(${e.id})">
               <span class="entry-meal-dot" style="background:${mealColor}" title="${e.meal||''}"></span>
-              <span class="entry-foods-short">${e.foods.join(', ')}</span>
+              <span class="entry-foods-short" title="${e.foods.join(', ')}">${e.foods.join(', ')}</span>
+              <span class="entry-badges">${riskBadge}${symIcon}</span>
               <span class="entry-time">${fmtT(e.ts).split(' ').pop()}</span>
             </div>
             <div class="entry-detail" id="detail-${e.id}">
-              ${e.meal?`<div style="font-size:10px;color:var(--blue);font-weight:600;margin-bottom:4px">${e.meal}</div>`:''}
+              ${e.meal?`<div style="font-size:10px;color:var(--blue);font-weight:600;margin-bottom:3px">${e.meal}</div>`:''}
               ${e.reactionTime?`<div class="ereact">Reazione: ${e.reactionTime}</div>`:''}
               <div class="etags">
                 ${(e.triggers||[]).map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A'};return`<span class="etag" style="background:${s.bg};color:${s.c}">${t}</span>`;}).join('')}
@@ -760,26 +851,22 @@ function renderHist(){
 }
 
 function togDay(dayId){
-  const el=document.getElementById(dayId);
-  const arr=document.getElementById('arr-'+dayId);
-  if(!el)return;
+  const el=document.getElementById(dayId),arr=document.getElementById('arr-'+dayId);if(!el)return;
   const open=el.style.display!=='none';
   el.style.display=open?'none':'block';
   if(arr)arr.className='dayhdr-arrow'+(open?'':' open');
 }
 function togEntry(id){
-  const det=document.getElementById('detail-'+id);
-  if(!det)return;
+  const det=document.getElementById('detail-'+id);if(!det)return;
   det.className='entry-detail'+(det.className.includes('vis')?'':' vis');
 }
-
 function openAnnota(id){
   const el=document.getElementById('annota-panel-'+id);if(!el)return;
   if(el.innerHTML){el.innerHTML='';document.getElementById('entry-'+id)?.classList.remove('editing');return;}
   const e=entries.find(x=>x.id===id);if(!e)return;
   const symHtml=SYMS.map(s=>{const on=(e.symptoms||[]).includes(s);return`<div class="schip${on?' on':''}" id="ann-sc-${id}-${s.replace(/ /g,'_')}" onclick="annTogSym(${id},'${s}')">${s}</div>`;}).join('');
   const sevHtml=SEVS.map((s,i)=>{const on=e.severity===s;const style=on?`style="background:${SS[i].bg};color:${SS[i].c};border-color:${SS[i].c}"`:'';return`<div class="sevchip" id="ann-sv-${id}-${i}" onclick="annTogSev(${id},'${s}',${i})" ${style}>${s}</div>`;}).join('');
-  el.innerHTML=`<div class="annota-panel"><div class="lbl" style="margin-bottom:6px">Sintomi</div><div class="chips" style="margin-bottom:8px">${symHtml}</div><div class="lbl" style="margin-bottom:6px">Gravita</div><div class="chips" style="margin-bottom:8px">${sevHtml}</div><div class="lbl" style="margin-bottom:4px">Note</div><input class="inp" id="ann-note-${id}" value="${(e.note||'').replace(/"/g,'&quot;')}" placeholder="annotazione..." style="margin-bottom:8px"/><div style="display:flex;gap:8px"><button class="annota-save" onclick="saveAnnota(${id})">Salva</button><button class="annota-cancel" onclick="openAnnota(${id})">Annulla</button></div></div>`;
+  el.innerHTML=`<div class="annota-panel"><div class="lbl" style="margin-bottom:6px">Sintomi</div><div class="chips" style="margin-bottom:8px">${symHtml}</div><div class="lbl" style="margin-bottom:6px">Gravità</div><div class="chips" style="margin-bottom:8px">${sevHtml}</div><div class="lbl" style="margin-bottom:4px">Note</div><input class="inp" id="ann-note-${id}" value="${(e.note||'').replace(/"/g,'&quot;')}" placeholder="annotazione..." style="margin-bottom:8px"/><div style="display:flex;gap:8px"><button class="annota-save" onclick="saveAnnota(${id})">Salva</button><button class="annota-cancel" onclick="openAnnota(${id})">Annulla</button></div></div>`;
   document.getElementById('entry-'+id)?.classList.add('editing');
 }
 function annTogSym(id,s){const e=entries.find(x=>x.id===id);if(!e)return;if(!e.symptoms)e.symptoms=[];const idx=e.symptoms.indexOf(s);if(idx>=0)e.symptoms.splice(idx,1);else e.symptoms.push(s);const el=document.getElementById('ann-sc-'+id+'-'+s.replace(/ /g,'_'));if(el)el.className='schip'+(e.symptoms.includes(s)?' on':'');}
@@ -787,92 +874,197 @@ function annTogSev(id,s,i){const e=entries.find(x=>x.id===id);if(!e)return;e.sev
 function saveAnnota(id){const e=entries.find(x=>x.id===id);if(!e)return;const noteEl=document.getElementById('ann-note-'+id);if(noteEl)e.note=noteEl.value.trim();saveData();openAnnota(id);renderHist();toast('Annotazione salvata ✓');}
 function delE(id){entries=entries.filter(e=>e.id!==id);saveData();renderHist();}
 
-// ── SPARKLINE STORICO ──
 function drawSparkline(){
   const wrap=document.getElementById('hist-sparkline');
   const canvas=document.getElementById('sparkline-canvas');
   if(!canvas||entries.length<2){if(wrap)wrap.style.display='none';return;}
   wrap.style.display='block';
-  const days=14;
-  const now=new Date();
-  const dayData=[];
+  const days=14;const now=new Date();const dayData=[];
   for(let i=days-1;i>=0;i--){
     const d=new Date(now);d.setDate(d.getDate()-i);
     const ds=d.toDateString();
     const de=entries.filter(e=>new Date(e.ts).toDateString()===ds);
     const maxR=de.length?Math.max(...de.map(e=>e.maxRisk||0)):null;
-    dayData.push({date:d,maxR});
+    const hasSym=de.some(e=>e.symptoms&&e.symptoms.length>0);
+    dayData.push({date:d,maxR,hasSym});
   }
   const DPR=window.devicePixelRatio||1;
   const W=canvas.parentElement.clientWidth-24||340;
   const H=44;
   canvas.width=W*DPR;canvas.height=H*DPR;
   canvas.style.width=W+'px';canvas.style.height=H+'px';
-  const ctx=canvas.getContext('2d');
-  ctx.scale(DPR,DPR);
-  const barW=Math.floor(W/days)-2;
-  const maxH=H-14;
+  const ctx=canvas.getContext('2d');ctx.scale(DPR,DPR);
+  const barW=Math.floor(W/days)-2;const maxH=H-16;
   dayData.forEach((d,i)=>{
     const x=i*(W/days);
     if(d.maxR!=null&&d.maxR>0){
       const h=Math.max(4,(d.maxR/5)*maxH);
       ctx.fillStyle=RBG[d.maxR]||'#E1F5EE';
-      ctx.fillRect(x+1,H-h-12,barW,h);
+      ctx.fillRect(x+1,H-h-14,barW,h);
       ctx.fillStyle=RTC[d.maxR]||'#3B6D11';
-      ctx.font=`bold 9px -apple-system,sans-serif`;
-      ctx.textAlign='center';
-      ctx.fillText(String(d.maxR),x+1+barW/2,H-h-14);
+      ctx.font=`bold 9px -apple-system,sans-serif`;ctx.textAlign='center';
+      ctx.fillText(String(d.maxR),x+1+barW/2,H-h-16);
+      // pallino reazione
+      if(d.hasSym){ctx.fillStyle='#E24B4A';ctx.beginPath();ctx.arc(x+1+barW/2,H-h-20,2.5,0,Math.PI*2);ctx.fill();}
     }
-    // data ogni 3 giorni
     if(i%3===0||i===days-1){
-      ctx.fillStyle='#999';
-      ctx.font=`8px -apple-system,sans-serif`;
-      ctx.textAlign='center';
+      ctx.fillStyle='#999';ctx.font=`8px -apple-system,sans-serif`;ctx.textAlign='center';
       ctx.fillText(fmtDateShort(d.date),x+1+barW/2,H-2);
     }
   });
 }
 
-// ── STATO ──
+/* ══════════════════════════════
+   STATO v4 — con riferimenti ai pasti vicini
+   ══════════════════════════════ */
 function buildStatoInput(){
-  document.getElementById('stato-input').innerHTML=CONDS.map(c=>`<div class="cond-row"><div><span class="cond-name" style="color:${c.color}">${c.label}</span>&ensp;<span class="cond-sub">${c.sub}</span></div><div class="rating-btns">${[1,2,3,4,5].map(v=>`<button class="rbtn" id="ss-${c.key}-${v}" onclick="togStato('${c.key}',${v})">${v}</button>`).join('')}</div></div>`).join('')+'<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--tx3);margin-top:-4px"><span>1 = assente</span><span>5 = severo</span></div>';
+  document.getElementById('stato-input').innerHTML=
+    CONDS.map(c=>`<div class="cond-row"><div><span class="cond-name" style="color:${c.color}">${c.label}</span>&ensp;<span class="cond-sub">${c.sub}</span></div><div class="rating-btns">${[1,2,3,4,5].map(v=>`<button class="rbtn" id="ss-${c.key}-${v}" onclick="togStato('${c.key}',${v})">${v}</button>`).join('')}</div></div>`).join('')+
+    '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--tx3);margin-top:-4px"><span>1 = assente</span><span>5 = severo</span></div>';
 }
 function togStato(key,val){const prev=statoSel[key];statoSel[key]=prev===val?null:val;const cond=CONDS.find(c=>c.key===key);[1,2,3,4,5].forEach(v=>{const el=document.getElementById('ss-'+key+'-'+v);if(!el)return;el.style.cssText='';if(v===statoSel[key]){el.style.background=cond.color;el.style.color='white';el.style.borderColor=cond.color;}});}
 function saveStato(){if(!statoSel.poliposi&&!statoSel.asma&&!statoSel.dermatosi){const el=document.getElementById('stato-input');el.style.outline='2px solid #E24B4A';el.style.borderRadius='8px';setTimeout(()=>{el.style.outline='';el.style.borderRadius='';},1500);return;}statoEntries.push({id:Date.now(),ts:new Date().toISOString(),poliposi:statoSel.poliposi,asma:statoSel.asma,dermatosi:statoSel.dermatosi,note:document.getElementById('stato-note').value.trim()});saveStatoData();statoSel={poliposi:null,asma:null,dermatosi:null};document.getElementById('stato-note').value='';CONDS.forEach(c=>[1,2,3,4,5].forEach(v=>{const el=document.getElementById('ss-'+c.key+'-'+v);if(el)el.style.cssText='';}));toast('Valutazione salvata ✓');renderStato();}
-function calcTrend(key){const vals=statoEntries.filter(d=>d[key]!=null).map(d=>d[key]);if(vals.length<4)return null;const h=Math.floor(vals.length/2),old=vals.slice(0,h),rec=vals.slice(h),aO=old.reduce((s,v)=>s+v,0)/old.length,aR=rec.reduce((s,v)=>s+v,0)/rec.length,d=aR-aO;if(Math.abs(d)<0.3)return{a:'stab.',c:'#808080'};return d>0?{a:'aum.',c:'#E24B4A'}:{a:'calo',c:'#5DCAA5'};}
-function makeStatoSvg(){const N=Math.min(statoEntries.length,28),recent=statoEntries.slice(-N);if(N<2)return'<p style="font-size:12px;color:var(--tx3);text-align:center;padding:16px 0">Registra almeno 2 valutazioni per il grafico</p>';const W=370,H=118,ML=22,MT=8,MR=8,MB=22,CW=W-ML-MR,CH=H-MT-MB,xF=i=>ML+(N>1?i*CW/(N-1):CW/2),yF=v=>MT+(5-v)/4*CH;let svg=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;display:block">`;for(let v=1;v<=5;v++){const y=yF(v);svg+=`<line x1="${ML}" y1="${y}" x2="${W-MR}" y2="${y}" stroke="#ccc" stroke-width="0.5" stroke-dasharray="${v===3?'3,3':''}"/><text x="${ML-4}" y="${y+3}" font-size="8" fill="#999" text-anchor="end">${v}</text>`;}CONDS.forEach(({key,color})=>{let p='',open=false;recent.forEach((d,i)=>{if(d[key]!=null){const x=xF(i),y=yF(d[key]);p+=open?`L${x},${y}`:`M${x},${y}`;open=true;}else open=false;});if(p)svg+=`<path d="${p}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/>`;recent.forEach((d,i)=>{if(d[key]!=null)svg+=`<circle cx="${xF(i)}" cy="${yF(d[key])}" r="2.5" fill="${color}"/>`;});});const fs=ts=>new Date(ts).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'});svg+=`<text x="${ML}" y="${H-6}" font-size="8" fill="#999">${fs(recent[0].ts)}</text><text x="${W-MR}" y="${H-6}" font-size="8" fill="#999" text-anchor="end">${fs(recent[N-1].ts)}</text></svg>`;let leg='<div style="display:flex;gap:14px;justify-content:center;margin:7px 0 14px">';CONDS.forEach(({color,label})=>leg+=`<span style="font-size:11px;color:var(--tx2);display:flex;align-items:center;gap:4px"><span style="width:10px;height:2px;background:${color};display:inline-block;border-radius:1px"></span>${label.split(' ')[0]}</span>`);return svg+leg+'</div>';}
-function renderStato(){const el=document.getElementById('stato-results');if(!statoEntries.length){el.innerHTML='';return;}let html=makeStatoSvg();if(statoEntries.length>=2){html+='<div style="border:0.5px solid var(--bd);border-radius:var(--r);padding:11px 13px;margin-bottom:14px">';CONDS.forEach(({key,label,color})=>{const vals=statoEntries.filter(d=>d[key]!=null).map(d=>d[key]);if(!vals.length)return;const last7=vals.slice(-7),avg=last7.reduce((s,v)=>s+v,0)/last7.length,tr=calcTrend(key);html+=`<div style="display:flex;align-items:center;gap:8px;padding:4px 0"><span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0"></span><span style="font-size:12px;font-weight:600;color:var(--tx);min-width:100px">${label}</span><span style="font-size:12px;color:var(--tx2)">media: ${avg.toFixed(1)}/5</span>${tr?`<span style="font-size:12px;color:${tr.c};margin-left:auto">${tr.a}</span>`:''}</div>`;});html+='</div>';}const rec=statoEntries.slice(-5).reverse();html+=`<div class="stit">Ultime valutazioni</div>`;html+=rec.map(e=>`<div class="sentry"><div class="sentry-time">${fmtT(e.ts)}</div><div style="flex:1"><div style="display:flex;flex-wrap:wrap;gap:8px">${CONDS.map(c=>e[c.key]!=null?`<span style="font-size:12px;color:var(--tx2)">${c.label.split(' ')[0].slice(0,4)}.: <span style="color:${c.color};font-weight:600">${e[c.key]}/5</span></span>`:'').join('')}</div>${e.note?`<div class="sentry-note">${e.note}</div>`:''}</div><button class="delbtn" onclick="delStato(${e.id})">&#10005;</button></div>`).join('');el.innerHTML=html;}
+function calcTrend(key){const vals=statoEntries.filter(d=>d[key]!=null).map(d=>d[key]);if(vals.length<4)return null;const h=Math.floor(vals.length/2),old=vals.slice(0,h),rec=vals.slice(h),aO=old.reduce((s,v)=>s+v,0)/old.length,aR=rec.reduce((s,v)=>s+v,0)/rec.length,d=aR-aO;if(Math.abs(d)<0.3)return{a:'stab.',c:'#808080'};return d>0?{a:'↑ aum.',c:'#E24B4A'}:{a:'↓ calo',c:'#5DCAA5'};}
+
+// Trova pasti con reazione nelle 6h precedenti a una valutazione stato
+function getRecentReactionMeals(ts,hours){
+  const t=new Date(ts).getTime();
+  return entries.filter(e=>{
+    const et=new Date(e.ts).getTime();
+    return et<=t && et>=(t-hours*3600000) && e.symptoms && e.symptoms.length>0;
+  });
+}
+
+function makeStatoSvg(){const N=Math.min(statoEntries.length,28),recent=statoEntries.slice(-N);if(N<2)return'<p style="font-size:12px;color:var(--tx3);text-align:center;padding:16px 0">Registra almeno 2 valutazioni per il grafico</p>';const W=370,H=118,ML=22,MT=8,MR=8,MB=22,CW=W-ML-MR,CH=H-MT-MB,xF=i=>ML+(N>1?i*CW/(N-1):CW/2),yF=v=>MT+(5-v)/4*CH;let svg=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;display:block">`;for(let v=1;v<=5;v++){const y=yF(v);svg+=`<line x1="${ML}" y1="${y}" x2="${W-MR}" y2="${y}" stroke="#ccc" stroke-width="0.5" stroke-dasharray="${v===3?'3,3':''}"/><text x="${ML-4}" y="${y+3}" font-size="8" fill="#999" text-anchor="end">${v}</text>`;}CONDS.forEach(({key,color})=>{let p='',open=false;recent.forEach((d,i)=>{if(d[key]!=null){const x=xF(i),y=yF(d[key]);p+=open?`L${x},${y}`:`M${x},${y}`;open=true;}else open=false;});if(p)svg+=`<path d="${p}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/>`;recent.forEach((d,i)=>{if(d[key]!=null)svg+=`<circle cx="${xF(i)}" cy="${yF(d[key])}" r="2.5" fill="${color}"/>`;});});
+// Marker pasti con reazione
+recent.forEach((d,i)=>{
+  const meals=getRecentReactionMeals(d.ts,6);
+  if(meals.length>0){
+    const x=xF(i);
+    svg+=`<line x1="${x}" y1="${MT}" x2="${x}" y2="${MT+CH}" stroke="#E24B4A" stroke-width="0.8" stroke-dasharray="2,2" opacity="0.5"/>`;
+    svg+=`<text x="${x}" y="${MT-1}" font-size="7" fill="#E24B4A" text-anchor="middle">R</text>`;
+  }
+});
+const fs=ts=>new Date(ts).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'});svg+=`<text x="${ML}" y="${H-6}" font-size="8" fill="#999">${fs(recent[0].ts)}</text><text x="${W-MR}" y="${H-6}" font-size="8" fill="#999" text-anchor="end">${fs(recent[N-1].ts)}</text></svg>`;let leg='<div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:7px 0 6px">';CONDS.forEach(({color,label})=>leg+=`<span style="font-size:11px;color:var(--tx2);display:flex;align-items:center;gap:4px"><span style="width:10px;height:2px;background:${color};display:inline-block;border-radius:1px"></span>${label.split(' ')[0]}</span>`);leg+=`<span style="font-size:11px;color:var(--tx2);display:flex;align-items:center;gap:4px"><span style="font-size:9px;color:#E24B4A;font-weight:700">R</span>reazione 6h prima</span>`;return svg+leg+'</div>';}
+
+function renderStato(){
+  const el=document.getElementById('stato-results');if(!statoEntries.length){el.innerHTML='';return;}
+  let html=makeStatoSvg();
+  if(statoEntries.length>=2){
+    html+='<div style="border:0.5px solid var(--bd);border-radius:var(--r);padding:11px 13px;margin-bottom:14px">';
+    CONDS.forEach(({key,label,color})=>{const vals=statoEntries.filter(d=>d[key]!=null).map(d=>d[key]);if(!vals.length)return;const last7=vals.slice(-7),avg=last7.reduce((s,v)=>s+v,0)/last7.length,tr=calcTrend(key);html+=`<div style="display:flex;align-items:center;gap:8px;padding:4px 0"><span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0"></span><span style="font-size:12px;font-weight:600;color:var(--tx);min-width:100px">${label}</span><span style="font-size:12px;color:var(--tx2)">media: ${avg.toFixed(1)}/5</span>${tr?`<span style="font-size:12px;color:${tr.c};margin-left:auto">${tr.a}</span>`:''}</div>`;});
+    html+='</div>';
+  }
+  const rec=statoEntries.slice(-5).reverse();
+  html+=`<div class="stit">Ultime valutazioni</div>`;
+  html+=rec.map(e=>{
+    const reactionMeals=getRecentReactionMeals(e.ts,6);
+    const reactionHint=reactionMeals.length?`<div style="font-size:10px;color:#E24B4A;margin-top:3px">&#128276; Reazione ${reactionMeals.length>1?reactionMeals.length+'x ':''} nelle 6h precedenti: ${reactionMeals.map(m=>m.foods.slice(0,2).join(', ')).join(' / ')}</div>`:'';
+    return`<div class="sentry"><div class="sentry-time">${fmtT(e.ts)}</div><div style="flex:1"><div style="display:flex;flex-wrap:wrap;gap:8px">${CONDS.map(c=>e[c.key]!=null?`<span style="font-size:12px;color:var(--tx2)">${c.label.split(' ')[0].slice(0,4)}.: <span style="color:${c.color};font-weight:600">${e[c.key]}/5</span></span>`:'').join('')}</div>${e.note?`<div class="sentry-note">${e.note}</div>`:''}${reactionHint}</div><button class="delbtn" onclick="delStato(${e.id})">&#10005;</button></div>`;
+  }).join('');
+  el.innerHTML=html;
+}
 function delStato(id){statoEntries=statoEntries.filter(e=>e.id!==id);saveStatoData();renderStato();}
 
-// ── ALIMENTI - lista custom A-Z, descrizione collassata ──
+/* ══════════════════════════════
+   ALIMENTI v4 — sezioni rischio + filtri
+   ══════════════════════════════ */
+function onAlimSearch(val){
+  alimSearchQuery=val.trim().toLowerCase();
+  const clr=document.getElementById('alim-search-clear');
+  if(clr)clr.className='alim-search-clear'+(val?' vis':'');
+  renderCustomFoods();
+}
+function clearAlimSearch(){
+  const inp=document.getElementById('alim-search');if(inp)inp.value='';
+  alimSearchQuery='';
+  const clr=document.getElementById('alim-search-clear');if(clr)clr.className='alim-search-clear';
+  renderCustomFoods();
+}
+function setTrigFilter(trig){
+  alimTrigFilter=trig;
+  document.querySelectorAll('.tfbtn').forEach(el=>{
+    const t=el.dataset.trig||null;
+    const color=t?(TS[t]||{c:'var(--bd2)'}).c:'var(--blue)';
+    el.className='tfbtn'+(alimTrigFilter===t?' on':'');
+    if(alimTrigFilter===t&&t)el.style.color=color;else el.style.color='';
+  });
+  renderCustomFoods();
+}
+function buildTrigFilterBar(){
+  // Raccoglie trigger presenti nei custom foods
+  const trigSet=new Set();customFoods.forEach(f=>f.triggers.forEach(t=>trigSet.add(t)));
+  const bar=document.getElementById('trig-filter-bar');if(!bar)return;
+  let html=`<button class="tfbtn on" id="tf-all" data-trig="" onclick="setTrigFilter(null)">Tutti</button>`;
+  [...trigSet].sort().forEach(t=>{
+    const s=TS[t]||{c:'#888'};
+    html+=`<button class="tfbtn" data-trig="${t}" onclick="setTrigFilter('${escQ(t)}')" style="border-color:${s.c};color:${s.c}">${t}</button>`;
+  });
+  bar.innerHTML=html;
+}
+
 function renderCustomFoods(){
   const el=document.getElementById('custom-foods-list');
   const cnt=document.getElementById('cf-count');
   if(cnt)cnt.textContent=customFoods.length;
-  if(!customFoods.length){el.innerHTML='<div class="notrig" style="padding:12px 0">Nessun alimento codificato ancora.</div>';return;}
-  const sorted=[...customFoods].sort((a,b)=>a.name.localeCompare(b.name,'it'));
-  el.innerHTML=sorted.map(f=>{
-    const tH=f.triggers.length?f.triggers.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A'};return`<span class="etag" style="background:${s.bg};color:${s.c};font-size:10px">${t}</span>`;}).join(''):'<span style="font-size:10px;color:var(--tx3)">nessun trigger</span>';
-    return`<div class="cf-item" onclick="togCfMeta('cf-meta-${f.id}')">
-      <div class="cf-info">
-        <div class="cf-row1">${rdot(f.risk)}<span class="cf-name">${f.name}</span>${f.promoted?'<span class="promo-badge">chip</span>':''}<span style="font-size:10px;font-weight:600;color:${RTC[f.risk]||'#606060'};margin-left:4px">${f.risk}/5</span></div>
-        <div class="cf-tags-row">${tH}</div>
-        <div class="cf-meta" id="cf-meta-${f.id}">${f.rationale||''}${f.note?'<br><em>'+f.note+'</em>':''}</div>
+
+  if(!customFoods.length){
+    el.innerHTML='<div class="notrig" style="padding:12px 0">Nessun alimento codificato ancora.<br>Usa "Analisi smart" qui sopra per aggiungerne.</div>';
+    return;
+  }
+
+  // Applica filtri
+  let filtered=[...customFoods];
+  if(alimSearchQuery)filtered=filtered.filter(f=>f.name.toLowerCase().includes(alimSearchQuery));
+  if(alimTrigFilter)filtered=filtered.filter(f=>f.triggers.includes(alimTrigFilter));
+
+  if(!filtered.length){
+    el.innerHTML='<div class="empty" style="padding:20px 0">Nessun alimento corrisponde al filtro.</div>';
+    return;
+  }
+
+  let html='';
+  RISK_SECTIONS.forEach(sec=>{
+    const items=filtered.filter(f=>f.risk>=sec.minR&&f.risk<=sec.maxR).sort((a,b)=>b.risk-a.risk||a.name.localeCompare(b.name,'it'));
+    if(!items.length)return;
+    const secId='rsec-'+sec.id;
+    html+=`<div class="risk-section">
+      <div class="risk-section-hdr" onclick="togRiskSection('${secId}')" style="background:${sec.bg}">
+        <span class="risk-section-arrow open" id="arr-${secId}">&#9658;</span>
+        <span class="risk-section-label" style="color:${sec.c}">${sec.label}</span>
+        <span class="risk-section-cnt" style="color:${sec.c}">${items.length}</span>
       </div>
-      <div class="cf-actions" onclick="event.stopPropagation()">
-        <button class="cf-promo-btn" onclick="togglePromotion('${f.id}')">${f.promoted?'&#9733;':'&#9734;'}</button>
-        <button class="cf-del-btn" onclick="deleteCustomFood('${f.id}')">&#10005;</button>
+      <div class="risk-section-body" id="${secId}">
+        ${items.map(f=>{
+          const tH=f.triggers.length?f.triggers.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A'};return`<span class="etag" style="background:${s.bg};color:${s.c};font-size:10px">${t}</span>`;}).join(''):'<span style="font-size:10px;color:var(--tx3)">nessun trigger</span>';
+          return`<div class="cf-item" onclick="togCfMeta('cf-meta-${f.id}')">
+            <div class="cf-info">
+              <div class="cf-row1">${rdot(f.risk)}<span class="cf-name">${f.name}</span>${f.promoted?'<span class="promo-badge">chip</span>':''}</div>
+              <div class="cf-tags-row">${tH}</div>
+              <div class="cf-meta" id="cf-meta-${f.id}">${f.rationale||''}${f.note?'<br><em style=\'color:var(--tx3)\''>'+f.note+'</em>':''}</div>
+            </div>
+            <div class="cf-actions" onclick="event.stopPropagation()">
+              <button class="cf-promo-btn" onclick="togglePromotion('${f.id}')" title="${f.promoted?'Rimuovi dai chip':'Aggiungi ai chip'}">${f.promoted?'&#9733;':'&#9734;'}</button>
+              <button class="cf-del-btn" onclick="deleteCustomFood('${f.id}')">&#10005;</button>
+            </div>
+          </div>`;
+        }).join('')}
       </div>
     </div>`;
-  }).join('');
+  });
+  el.innerHTML=html;
 }
 function togCfMeta(id){const el=document.getElementById(id);if(el)el.className='cf-meta'+(el.className.includes('vis')?'':' vis');}
-
+function togRiskSection(id){
+  const el=document.getElementById(id),arr=document.getElementById('arr-'+id);if(!el)return;
+  const open=el.style.display!=='none'&&el.style.display!=='';
+  el.style.display=open?'none':'block';
+  if(arr)arr.className='risk-section-arrow'+(open?'':' open');
+}
 function togglePromotion(id){const cf=customFoods.find(f=>f.id===id);if(!cf)return;cf.promoted=!cf.promoted;saveCustomData();buildCustomGenreChips();renderCustomFoods();toast(cf.promoted?'Aggiunto ai chip ✓':'Rimosso dai chip');}
-function deleteCustomFood(id){customFoods=customFoods.filter(f=>f.id!==id);saveCustomData();buildCustomGenreChips();renderCustomFoods();toast('Alimento rimosso');}
-function updateCustomDishesDropdown(){} // non piu usato dropdown
+function deleteCustomFood(id){customFoods=customFoods.filter(f=>f.id!==id);delete selItems['custom:'+id];saveCustomData();buildCustomGenreChips();buildTrigFilterBar();renderCustomFoods();toast('Alimento rimosso');}
 
-// ── AI ANALYSIS ──
+/* ── AI ANALYSIS ── */
 async function analyzeFood(){
   const query=document.getElementById('smart-inp').value.trim();if(!query)return;
   const portions=Math.max(1,parseInt(document.getElementById('smart-portions').value)||1);
@@ -890,7 +1082,7 @@ async function analyzeFood(){
     const raw=data.content?.find(b=>b.type==='text')?.text||'';
     let result;try{const match=raw.match(/\{[\s\S]*\}/);if(!match)throw new Error();result=JSON.parse(match[0]);}catch(e){resEl.innerHTML=`<div style="font-size:12px;color:#A32D2D;padding:8px">Parsing fallito.</div>`;btn.disabled=false;btn.textContent='Analizza';return;}
     result.portions=portions;currentAiResult=result;renderAiResult(result);
-  }catch(err){resEl.innerHTML=`<div style="font-size:13px;color:#A32D2D;padding:8px">Errore di rete: ${err.message}</div>`;}
+  }catch(err){resEl.innerHTML=`<div style="font-size:13px;color:#A32D2D;padding:8px">Errore: ${err.message}</div>`;}
   finally{btn.disabled=false;btn.textContent='Analizza';}
 }
 function renderAiResult(r){
@@ -902,21 +1094,19 @@ function renderAiResult(r){
   resEl.innerHTML=`<div class="ai-result-header"><div class="ai-food-name">${r.name}${portBadge}</div><div class="ai-risk-badge" style="background:${riskBg};color:${riskColor}">${r.risk}/5 -- ${riskLabel}</div></div><div class="ai-triggers-row">${tH}</div><div class="ai-rationale">${r.rationale}${r.note?'<br><em>'+r.note+'</em>':''}</div><div class="ai-action-row"><button class="ai-btn ai-btn-promo" onclick="saveAndPromote('${escQ(r.name)}')">&#9733; Salva + chip</button><button class="ai-btn ai-btn-save" onclick="saveCustomOnly('${escQ(r.name)}')">Salva DB</button><button class="ai-btn ai-btn-disc" onclick="discardAi()">&#215;</button></div>`;
 }
 function discardAi(){document.getElementById('ai-result').style.display='none';document.getElementById('smart-inp').value='';currentAiResult=null;}
-function saveCustomOnly(name){if(!currentAiResult)return;const r=currentAiResult;if(customFoods.find(f=>f.name.toLowerCase()===r.name.toLowerCase())){toast('Gia presente');return;}customFoods.push({id:'cf'+Date.now(),name:r.name,risk:r.risk,triggers:r.triggers,rationale:r.rationale,note:r.note||'',promoted:false,ts:new Date().toISOString()});saveCustomData();buildCustomGenreChips();renderCustomFoods();discardAi();toast('Salvato nel DB ✓');}
-function saveAndPromote(name){if(!currentAiResult)return;const r=currentAiResult;const existing=customFoods.find(f=>f.name.toLowerCase()===r.name.toLowerCase());if(existing){existing.promoted=true;}else{customFoods.push({id:'cf'+Date.now(),name:r.name,risk:r.risk,triggers:r.triggers,rationale:r.rationale,note:r.note||'',promoted:true,ts:new Date().toISOString()});}saveCustomData();buildCustomGenreChips();renderCustomFoods();discardAi();toast('Salvato e promosso a chip ✓');}
+function saveCustomOnly(name){if(!currentAiResult)return;const r=currentAiResult;if(customFoods.find(f=>f.name.toLowerCase()===r.name.toLowerCase())){toast('Già presente');return;}customFoods.push({id:'cf'+Date.now(),name:r.name,risk:r.risk,triggers:r.triggers,rationale:r.rationale,note:r.note||'',promoted:false,ts:new Date().toISOString()});saveCustomData();buildCustomGenreChips();buildTrigFilterBar();renderCustomFoods();discardAi();toast('Salvato nel DB ✓');}
+function saveAndPromote(name){if(!currentAiResult)return;const r=currentAiResult;const existing=customFoods.find(f=>f.name.toLowerCase()===r.name.toLowerCase());if(existing){existing.promoted=true;}else{customFoods.push({id:'cf'+Date.now(),name:r.name,risk:r.risk,triggers:r.triggers,rationale:r.rationale,note:r.note||'',promoted:true,ts:new Date().toISOString()});}saveCustomData();buildCustomGenreChips();buildTrigFilterBar();renderCustomFoods();discardAi();toast('Salvato e promosso a chip ✓');}
 
-// ── API KEY ──
-function saveApiKey(){const inp=document.getElementById('apikey-inp');const raw=inp.value.trim();const val=(raw.includes('\u2022')||raw.includes('•'))?apiKey:raw;if(!val||!val.startsWith('sk-ant-')){showKeyStatus('Formato non valido. Deve iniziare con sk-ant-',false);return;}apiKey=val;try{localStorage.setItem('widal-apikey-v1',apiKey);}catch(e){}inp.value=maskKey(apiKey);inp.type='password';showKeyStatus('Chiave salvata \u2713',true);}
+/* ── API KEY ── */
+function saveApiKey(){const inp=document.getElementById('apikey-inp');const raw=inp.value.trim();const val=(raw.includes('\u2022')||raw.includes('•'))?apiKey:raw;if(!val||!val.startsWith('sk-ant-')){showKeyStatus('Formato non valido. Deve iniziare con sk-ant-',false);return;}apiKey=val;try{localStorage.setItem('widal-apikey-v1',apiKey);}catch(e){}inp.value=maskKey(apiKey);inp.type='password';showKeyStatus('Chiave salvata ✓',true);}
 function maskKey(k){if(!k||k.length<12)return k;return k.slice(0,14)+'\u2022'.repeat(16)+k.slice(-4);}
 function toggleKeyVisibility(){const inp=document.getElementById('apikey-inp');if(inp.type==='password'){inp.type='text';if(apiKey)inp.value=apiKey;}else{inp.type='password';if(apiKey)inp.value=maskKey(apiKey);}}
 function showKeyStatus(msg,ok){const el=document.getElementById('apikey-status');el.textContent=msg;el.className='apikey-status '+(ok?'ok':'err');el.style.display='block';if(ok)setTimeout(()=>{el.style.display='none';},3000);}
-function initApiKeyUI(){const inp=document.getElementById('apikey-inp');if(!inp)return;if(apiKey){inp.value=maskKey(apiKey);inp.type='password';const box=document.getElementById('apikey-box');if(box)box.style.borderColor='var(--green)';showKeyStatus('Chiave presente \u2713',true);}}
+function initApiKeyUI(){const inp=document.getElementById('apikey-inp');if(!inp)return;if(apiKey){inp.value=maskKey(apiKey);inp.type='password';const box=document.getElementById('apikey-box');if(box)box.style.borderColor='var(--green)';showKeyStatus('Chiave presente ✓',true);}}
 
-// ── GRAFICO CANVAS COMBINATO (arricchito per medico) ──
+/* ── ANALISI + GRAFICO ── */
 function drawCombinedChart(){
-  const box=document.getElementById('chart-box');
-  const canvas=document.getElementById('combined-chart');
-  const legEl=document.getElementById('chart-legend');
+  const box=document.getElementById('chart-box'),canvas=document.getElementById('combined-chart'),legEl=document.getElementById('chart-legend');
   if(!canvas||!box)return;
   const allDates=new Set();
   statoEntries.slice(-30).forEach(e=>allDates.add(e.ts.slice(0,10)));
@@ -927,78 +1117,24 @@ function drawCombinedChart(){
   const DPR=window.devicePixelRatio||1;
   const W=canvas.parentElement.clientWidth-20||340;
   const H=200;
-  canvas.width=W*DPR;canvas.height=H*DPR;
-  canvas.style.width=W+'px';canvas.style.height=H+'px';
-  const ctx=canvas.getContext('2d');
-  ctx.scale(DPR,DPR);
+  canvas.width=W*DPR;canvas.height=H*DPR;canvas.style.width=W+'px';canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');ctx.scale(DPR,DPR);
   const ML=28,MT=14,MR=10,MB=36,CW=W-ML-MR,CH=H-MT-MB;
   const N=dates.length;
   const xF=i=>ML+(N>1?i*CW/(N-1):CW/2);
   const yF=v=>MT+(5-v)/4*CH;
   ctx.fillStyle='#f7f7f6';ctx.fillRect(0,0,W,H);
-  // Griglia
   ctx.strokeStyle='rgba(0,0,0,0.07)';ctx.lineWidth=0.5;
-  for(let v=1;v<=5;v++){
-    ctx.beginPath();ctx.moveTo(ML,yF(v));ctx.lineTo(W-MR,yF(v));
-    if(v===3)ctx.setLineDash([3,3]);else ctx.setLineDash([]);
-    ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='#aaa';ctx.font=`bold 8px -apple-system,sans-serif`;ctx.textAlign='right';
-    ctx.fillText(String(v),ML-4,yF(v)+3);
-  }
-  // Label asse Y
-  ctx.save();ctx.fillStyle='#999';ctx.font='7px -apple-system,sans-serif';
-  ctx.translate(8,MT+CH/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';
-  ctx.fillText('Scala 1-5',0,0);ctx.restore();
-
-  // Curve stato
-  CONDS.forEach(({key,color})=>{
-    ctx.strokeStyle=color;ctx.lineWidth=2;ctx.setLineDash([]);ctx.beginPath();
-    let started=false;
-    dates.forEach((date,i)=>{const e=statoEntries.filter(x=>x.ts.slice(0,10)===date);if(!e.length)return;const val=e[e.length-1][key];if(val==null)return;if(!started){ctx.moveTo(xF(i),yF(val));started=true;}else ctx.lineTo(xF(i),yF(val));});
-    ctx.stroke();
-    dates.forEach((date,i)=>{const e=statoEntries.filter(x=>x.ts.slice(0,10)===date);if(!e.length)return;const val=e[e.length-1][key];if(val==null)return;ctx.fillStyle=color;ctx.beginPath();ctx.arc(xF(i),yF(val),3,0,Math.PI*2);ctx.fill();});
-  });
-  // Curva rischio pasto
-  const riskColor='#8B5E00';
-  ctx.strokeStyle=riskColor;ctx.lineWidth=2;ctx.setLineDash([5,3]);ctx.beginPath();
-  let rStarted=false;
-  dates.forEach((date,i)=>{const de=entries.filter(e=>e.ts.slice(0,10)===date);if(!de.length)return;const maxR=Math.max(...de.map(e=>e.maxRisk||0));if(!rStarted){ctx.moveTo(xF(i),yF(maxR));rStarted=true;}else ctx.lineTo(xF(i),yF(maxR));});
-  ctx.stroke();ctx.setLineDash([]);
-  dates.forEach((date,i)=>{const de=entries.filter(e=>e.ts.slice(0,10)===date);if(!de.length)return;const maxR=Math.max(...de.map(e=>e.maxRisk||0));ctx.fillStyle=riskColor;ctx.beginPath();ctx.arc(xF(i),yF(maxR),3,0,Math.PI*2);ctx.fill();});
-
-  // Etichette date asse X (ogni 3 giorni o ogni giorno se pochi)
-  const step=N<=7?1:N<=14?2:3;
-  ctx.fillStyle='#888';ctx.font='8px -apple-system,sans-serif';
-  dates.forEach((date,i)=>{
-    if(i%step===0||i===N-1){
-      ctx.textAlign='center';
-      ctx.fillText(date.slice(5).replace('-','/'),xF(i),H-MB+14);
-    }
-  });
-
-  // Titolo e data export
-  ctx.fillStyle='#555';ctx.font='bold 9px -apple-system,sans-serif';ctx.textAlign='left';
-  ctx.fillText('Diario Widal — Andamento infiammazione',ML,10);
-  ctx.fillStyle='#aaa';ctx.font='7px -apple-system,sans-serif';ctx.textAlign='right';
-  const today=new Date().toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'});
-  ctx.fillText('Esportato il '+today,W-MR,10);
-
-  // Legenda
+  for(let v=1;v<=5;v++){ctx.beginPath();ctx.moveTo(ML,yF(v));ctx.lineTo(W-MR,yF(v));if(v===3)ctx.setLineDash([3,3]);else ctx.setLineDash([]);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#aaa';ctx.font='bold 8px -apple-system,sans-serif';ctx.textAlign='right';ctx.fillText(String(v),ML-4,yF(v)+3);}
+  CONDS.forEach(({key,color})=>{ctx.strokeStyle=color;ctx.lineWidth=2;ctx.setLineDash([]);ctx.beginPath();let started=false;dates.forEach((date,i)=>{const e=statoEntries.filter(x=>x.ts.slice(0,10)===date);if(!e.length)return;const val=e[e.length-1][key];if(val==null)return;if(!started){ctx.moveTo(xF(i),yF(val));started=true;}else ctx.lineTo(xF(i),yF(val));});ctx.stroke();dates.forEach((date,i)=>{const e=statoEntries.filter(x=>x.ts.slice(0,10)===date);if(!e.length)return;const val=e[e.length-1][key];if(val==null)return;ctx.fillStyle=color;ctx.beginPath();ctx.arc(xF(i),yF(val),3,0,Math.PI*2);ctx.fill();});});
+  const riskColor='#8B5E00';ctx.strokeStyle=riskColor;ctx.lineWidth=2;ctx.setLineDash([5,3]);ctx.beginPath();let rStarted=false;dates.forEach((date,i)=>{const de=entries.filter(e=>e.ts.slice(0,10)===date);if(!de.length)return;const maxR=Math.max(...de.map(e=>e.maxRisk||0));if(!rStarted){ctx.moveTo(xF(i),yF(maxR));rStarted=true;}else ctx.lineTo(xF(i),yF(maxR));});ctx.stroke();ctx.setLineDash([]);dates.forEach((date,i)=>{const de=entries.filter(e=>e.ts.slice(0,10)===date);if(!de.length)return;const maxR=Math.max(...de.map(e=>e.maxRisk||0));ctx.fillStyle=riskColor;ctx.beginPath();ctx.arc(xF(i),yF(maxR),3,0,Math.PI*2);ctx.fill();});
+  // Marker reazioni sul grafico combinato
+  dates.forEach((date,i)=>{const de=entries.filter(e=>e.ts.slice(0,10)===date&&e.symptoms&&e.symptoms.length>0);if(!de.length)return;ctx.strokeStyle='#E24B4A';ctx.lineWidth=1;ctx.setLineDash([2,2]);ctx.globalAlpha=0.4;ctx.beginPath();ctx.moveTo(xF(i),MT);ctx.lineTo(xF(i),MT+CH);ctx.stroke();ctx.globalAlpha=1;ctx.setLineDash([]);});
+  const step=N<=7?1:N<=14?2:3;ctx.fillStyle='#888';ctx.font='8px -apple-system,sans-serif';dates.forEach((date,i)=>{if(i%step===0||i===N-1){ctx.textAlign='center';ctx.fillText(date.slice(5).replace('-','/'),xF(i),H-MB+14);}});
+  ctx.fillStyle='#555';ctx.font='bold 9px -apple-system,sans-serif';ctx.textAlign='left';ctx.fillText('Diario Widal — Andamento',ML,10);
   legEl.innerHTML=CONDS.map(({color,label})=>`<div class="chart-legend-item"><span class="chart-legend-line" style="background:${color}"></span>${label.split(' ')[0]}</div>`).join('')+`<div class="chart-legend-item"><span class="chart-legend-line" style="background:${riskColor};border-top:2px dashed ${riskColor};height:0;margin-top:1px"></span>Rischio pasto</div>`;
 }
-
-function exportChart(){
-  drawCombinedChart();
-  const canvas=document.getElementById('combined-chart');
-  if(!canvas)return;
-  const link=document.createElement('a');
-  link.download='widal-grafico-'+new Date().toISOString().slice(0,10)+'.png';
-  link.href=canvas.toDataURL('image/png');
-  link.click();
-  toast('Grafico salvato ✓');
-}
-
-// ── ANALISI STATS ──
+function exportChart(){drawCombinedChart();const canvas=document.getElementById('combined-chart');if(!canvas)return;const link=document.createElement('a');link.download='widal-grafico-'+new Date().toISOString().slice(0,10)+'.png';link.href=canvas.toDataURL('image/png');link.click();toast('Grafico salvato ✓');}
 function renderStats(){
   const el=document.getElementById('stats-cnt');
   if(entries.length<2){el.innerHTML='<div class="empty">Aggiungi qualche voce<br>per vedere le analisi.</div>';drawCombinedChart();return;}
@@ -1011,83 +1147,35 @@ function renderStats(){
   const topT=Object.entries(trigC).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const totalWithSym=entries.filter(e=>e.symptoms&&e.symptoms.length>0).length||1;
   const mF=topF[0]?.[1]||1,mS=topS[0]?.[1]||1,mT=topT[0]?.[1]||1;
-
-  let html=`<div class="sg">
-    <div class="sc"><div class="sv">${entries.length}</div><div class="sl">pasti registrati</div></div>
-    <div class="sc"><div class="sv">${withS}</div><div class="sl">con reazioni</div></div>
-    <div class="sc"><div class="sv">${Math.round(withS/entries.length*100)}%</div><div class="sl">tasso reazione</div></div>
-    <div class="sc"><div class="sv">${fast}</div><div class="sl">reazioni istantanee</div></div>
-  </div>`;
-
-  if(topF.length){
-    html+='<div class="stit">Alimenti con piu reazioni (%)</div>';
-    topF.forEach(([f,n])=>{
-      const pct=Math.round(n/entries.length*100);
-      html+=`<div class="brow"><div class="bn" title="${f}">${f}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mF*100)}%;background:#E24B4A"><span class="bf-pct">${pct}%</span></div></div><div class="bc">${n}x</div></div>`;
-    });
-  }
-  if(topS.length){
-    html+='<div class="stit">Sintomi piu frequenti</div>';
-    topS.forEach(([s,n])=>{
-      const pct=Math.round(n/totalWithSym*100);
-      html+=`<div class="brow"><div class="bn">${s}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mS*100)}%;background:#D85A30"><span class="bf-pct">${pct}%</span></div></div><div class="bc">${n}x</div></div>`;
-    });
-  }
-  if(topT.length){
-    html+='<div class="stit">Trigger piu coinvolti</div>';
-    topT.forEach(([t,n])=>{
-      const c=(TS[t]||{c:'#888'}).c;
-      const pct=Math.round(n/totalWithSym*100);
-      html+=`<div class="brow"><div class="bn">${t}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mT*100)}%;background:${c}"><span class="bf-pct">${pct}%</span></div></div><div class="bc">${n}x</div></div>`;
-    });
-  }
+  let html=`<div class="sg"><div class="sc"><div class="sv">${entries.length}</div><div class="sl">pasti registrati</div></div><div class="sc"><div class="sv">${withS}</div><div class="sl">con reazioni</div></div><div class="sc"><div class="sv">${Math.round(withS/entries.length*100)}%</div><div class="sl">tasso reazione</div></div><div class="sc"><div class="sv">${fast}</div><div class="sl">reazioni istantanee</div></div></div>`;
+  if(topF.length){html+='<div class="stit">Alimenti con più reazioni (%)</div>';topF.forEach(([f,n])=>{const pct=Math.round(n/entries.length*100);html+=`<div class="brow"><div class="bn" title="${f}">${f}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mF*100)}%;background:#E24B4A"><span class="bf-pct">${pct}%</span></div></div><div class="bc">${n}x</div></div>`;});}
+  if(topS.length){html+='<div class="stit">Sintomi più frequenti</div>';topS.forEach(([s,n])=>{const pct=Math.round(n/totalWithSym*100);html+=`<div class="brow"><div class="bn">${s}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mS*100)}%;background:#D85A30"><span class="bf-pct">${pct}%</span></div></div><div class="bc">${n}x</div></div>`;});}
+  if(topT.length){html+='<div class="stit">Trigger più coinvolti</div>';topT.forEach(([t,n])=>{const c=(TS[t]||{c:'#888'}).c;const pct=Math.round(n/totalWithSym*100);html+=`<div class="brow"><div class="bn">${t}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mT*100)}%;background:${c}"><span class="bf-pct">${pct}%</span></div></div><div class="bc">${n}x</div></div>`;});}
   el.innerHTML=html;
   drawCombinedChart();
 }
 
-// ── EXPORT/IMPORT JSON ──
-function exportData(){
-  const data={version:1,exported:new Date().toISOString(),entries,statoEntries,customFoods};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='widal-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);
-  showSyncStatus('Esportato! Salvalo in iCloud Drive / Diario Widal.','ok');
-}
-function importData(input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    try{
-      const data=JSON.parse(e.target.result);
-      if(!data.entries&&!data.statoEntries){showSyncStatus('File non valido.','err');return;}
-      if(data.entries)entries=data.entries;
-      if(data.statoEntries)statoEntries=data.statoEntries;
-      if(data.customFoods)customFoods=data.customFoods;
-      saveData();saveStatoData();saveCustomData();
-      buildCustomGenreChips();renderCustomFoods();
-      showSyncStatus('Importati: '+entries.length+' pasti, '+statoEntries.length+' valutazioni, '+customFoods.length+' alimenti.','ok');
-      toast('Dati importati ✓');
-    }catch(err){showSyncStatus('Errore JSON: '+err.message,'err');}
-  };
-  reader.readAsText(file);input.value='';
-}
+/* ── EXPORT/IMPORT ── */
+function exportData(){const data={version:1,exported:new Date().toISOString(),entries,statoEntries,customFoods};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='widal-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);showSyncStatus('Esportato! Salvalo in iCloud Drive.','ok');}
+function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){try{const data=JSON.parse(e.target.result);if(!data.entries&&!data.statoEntries){showSyncStatus('File non valido.','err');return;}if(data.entries)entries=data.entries;if(data.statoEntries)statoEntries=data.statoEntries;if(data.customFoods)customFoods=data.customFoods;saveData();saveStatoData();saveCustomData();buildCustomGenreChips();buildTrigFilterBar();renderCustomFoods();showSyncStatus('Importati: '+entries.length+' pasti, '+statoEntries.length+' valutazioni, '+customFoods.length+' alimenti.','ok');toast('Dati importati ✓');}catch(err){showSyncStatus('Errore JSON: '+err.message,'err');}};reader.readAsText(file);input.value='';}
 function showSyncStatus(msg,type){const el=document.getElementById('sync-status');el.textContent=msg;el.className='sync-status '+(type||'ok');el.style.display='block';}
 function copyForClaude(){const txt='DATI DIARIO WIDAL\n\nPasti recenti:\n'+JSON.stringify(entries.slice(0,12),null,2)+'\n\nStato infiammatorio:\n'+JSON.stringify(statoEntries.slice(-15),null,2)+'\n\nAlimenti personalizzati:\n'+JSON.stringify(customFoods,null,2)+'\n\nChiedo: analizza i pattern, i trigger dominanti e le eventuali correlazioni tra pasti e stato infiammatorio.';navigator.clipboard.writeText(txt).then(()=>toast('Dati copiati ✓')).catch(()=>toast('Errore copia'));}
 
-// ── TABS ──
+/* ── TABS ── */
 function showTab(t){
   ['pasto','hist','stato','alim','stats'].forEach(x=>{document.getElementById('v'+x).style.display=x===t?'block':'none';document.getElementById('tab-'+x).className='tab'+(x===t?' on':'');});
   if(t==='hist')renderHist();
   if(t==='stato')renderStato();
-  if(t==='alim'){renderCustomFoods();initApiKeyUI();}
+  if(t==='alim'){buildTrigFilterBar();renderCustomFoods();initApiKeyUI();}
   if(t==='stats')renderStats();
 }
 
-// ── INIT ──
+/* ── INIT ── */
 loadData();
 initDatePicker();
 buildGenreChips();
 buildCustomGenreChips();
+buildTrigFilterBar();
 buildSyms();buildSevs();buildStatoInput();
 updateTriggers();
 </script>
