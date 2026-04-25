@@ -862,12 +862,12 @@ function togEntry(id){
 }
 function openAnnota(id){
   const el=document.getElementById('annota-panel-'+id);if(!el)return;
-  if(el.innerHTML){el.innerHTML='';document.getElementById('entry-'+id)?.classList.remove('editing');return;}
+  if(el.innerHTML){el.innerHTML='';const _el865=document.getElementById('entry-'+id);if(_el865)_el865.classList.remove('editing');return;}
   const e=entries.find(x=>x.id===id);if(!e)return;
   const symHtml=SYMS.map(s=>{const on=(e.symptoms||[]).includes(s);return`<div class="schip${on?' on':''}" id="ann-sc-${id}-${s.replace(/ /g,'_')}" onclick="annTogSym(${id},'${s}')">${s}</div>`;}).join('');
   const sevHtml=SEVS.map((s,i)=>{const on=e.severity===s;const style=on?`style="background:${SS[i].bg};color:${SS[i].c};border-color:${SS[i].c}"`:'';return`<div class="sevchip" id="ann-sv-${id}-${i}" onclick="annTogSev(${id},'${s}',${i})" ${style}>${s}</div>`;}).join('');
   el.innerHTML=`<div class="annota-panel"><div class="lbl" style="margin-bottom:6px">Sintomi</div><div class="chips" style="margin-bottom:8px">${symHtml}</div><div class="lbl" style="margin-bottom:6px">Gravità</div><div class="chips" style="margin-bottom:8px">${sevHtml}</div><div class="lbl" style="margin-bottom:4px">Note</div><input class="inp" id="ann-note-${id}" value="${(e.note||'').replace(/"/g,'&quot;')}" placeholder="annotazione..." style="margin-bottom:8px"/><div style="display:flex;gap:8px"><button class="annota-save" onclick="saveAnnota(${id})">Salva</button><button class="annota-cancel" onclick="openAnnota(${id})">Annulla</button></div></div>`;
-  document.getElementById('entry-'+id)?.classList.add('editing');
+  const _el870=document.getElementById('entry-'+id);if(_el870)_el870.classList.add('editing');
 }
 function annTogSym(id,s){const e=entries.find(x=>x.id===id);if(!e)return;if(!e.symptoms)e.symptoms=[];const idx=e.symptoms.indexOf(s);if(idx>=0)e.symptoms.splice(idx,1);else e.symptoms.push(s);const el=document.getElementById('ann-sc-'+id+'-'+s.replace(/ /g,'_'));if(el)el.className='schip'+(e.symptoms.includes(s)?' on':'');}
 function annTogSev(id,s,i){const e=entries.find(x=>x.id===id);if(!e)return;e.severity=e.severity===s?null:s;SEVS.forEach((_,j)=>{const el=document.getElementById('ann-sv-'+id+'-'+j);if(el){el.style.cssText='';if(j===i&&e.severity===s){el.style.background=SS[i].bg;el.style.color=SS[i].c;el.style.borderColor=SS[i].c;}}});}
@@ -1041,7 +1041,7 @@ function renderCustomFoods(){
             <div class="cf-info">
               <div class="cf-row1">${rdot(f.risk)}<span class="cf-name">${f.name}</span>${f.promoted?'<span class="promo-badge">chip</span>':''}</div>
               <div class="cf-tags-row">${tH}</div>
-              <div class="cf-meta" id="cf-meta-${f.id}">${f.rationale||''}${f.note?'<br><em style=\'color:var(--tx3)\''>'+f.note+'</em>':''}</div>
+              <div class="cf-meta" id="cf-meta-${f.id}">${f.rationale||''}${f.note?('<br><em>'+f.note+'</em>'):''}</div>
             </div>
             <div class="cf-actions" onclick="event.stopPropagation()">
               <button class="cf-promo-btn" onclick="togglePromotion('${f.id}')" title="${f.promoted?'Rimuovi dai chip':'Aggiungi ai chip'}">${f.promoted?'&#9733;':'&#9734;'}</button>
@@ -1079,7 +1079,7 @@ async function analyzeFood(){
     const response=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:prompt}]})});
     const data=await response.json();
     if(!response.ok){resEl.innerHTML=`<div style="font-size:12px;color:#A32D2D;padding:8px">Errore API (${response.status})</div>`;btn.disabled=false;btn.textContent='Analizza';return;}
-    const raw=data.content?.find(b=>b.type==='text')?.text||'';
+    const raw=((data.content&&data.content.find(function(b){return b.type==='text'}))||{}).text||'';
     let result;try{const match=raw.match(/\{[\s\S]*\}/);if(!match)throw new Error();result=JSON.parse(match[0]);}catch(e){resEl.innerHTML=`<div style="font-size:12px;color:#A32D2D;padding:8px">Parsing fallito.</div>`;btn.disabled=false;btn.textContent='Analizza';return;}
     result.portions=portions;currentAiResult=result;renderAiResult(result);
   }catch(err){resEl.innerHTML=`<div style="font-size:13px;color:#A32D2D;padding:8px">Errore: ${err.message}</div>`;}
@@ -1146,7 +1146,7 @@ function renderStats(){
   const topF=Object.entries(foodC).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const topT=Object.entries(trigC).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const totalWithSym=entries.filter(e=>e.symptoms&&e.symptoms.length>0).length||1;
-  const mF=topF[0]?.[1]||1,mS=topS[0]?.[1]||1,mT=topT[0]?.[1]||1;
+  const mF=topF[0]&&topF[0][1]||1,mS=topS[0]&&topS[0][1]||1,mT=topT[0]&&topT[0][1]||1;
   let html=`<div class="sg"><div class="sc"><div class="sv">${entries.length}</div><div class="sl">pasti registrati</div></div><div class="sc"><div class="sv">${withS}</div><div class="sl">con reazioni</div></div><div class="sc"><div class="sv">${Math.round(withS/entries.length*100)}%</div><div class="sl">tasso reazione</div></div><div class="sc"><div class="sv">${fast}</div><div class="sl">reazioni istantanee</div></div></div>`;
   if(topF.length){html+='<div class="stit">Alimenti con più reazioni (%)</div>';topF.forEach(([f,n])=>{const pct=Math.round(n/entries.length*100);html+=`<div class="brow"><div class="bn" title="${f}">${f}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mF*100)}%;background:#E24B4A"><span class="bf-pct">${pct}%</span></div></div><div class="bc">${n}x</div></div>`;});}
   if(topS.length){html+='<div class="stit">Sintomi più frequenti</div>';topS.forEach(([s,n])=>{const pct=Math.round(n/totalWithSym*100);html+=`<div class="brow"><div class="bn">${s}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mS*100)}%;background:#D85A30"><span class="bf-pct">${pct}%</span></div></div><div class="bc">${n}x</div></div>`;});}
