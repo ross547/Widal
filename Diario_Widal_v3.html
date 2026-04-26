@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="Widal"/>
-<title>Diario Widal v4</title>
+<title>Diario Widal v6</title>
 <style>
 :root{
   --bg:#ffffff;--bg2:#f5f5f4;--bg3:#ececea;
@@ -216,11 +216,19 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 /* ══════════════════════════════
    STATO v4 — con marker reazioni
    ══════════════════════════════ */
-.cond-row{margin-bottom:14px;}
-.cond-name{font-size:14px;font-weight:600;}
-.cond-sub{font-size:11px;color:var(--tx3);}
-.rating-btns{display:flex;gap:8px;margin-top:7px;}
-.rbtn{width:42px;height:42px;border-radius:50%;border:0.5px solid var(--bd2);background:var(--bg2);font-size:15px;font-weight:600;cursor:pointer;color:var(--tx2);flex-shrink:0;}
+.momento-btn{flex:1;padding:8px 6px;border-radius:var(--r);border:0.5px solid var(--bd2);background:var(--bg2);font-size:13px;font-weight:600;cursor:pointer;color:var(--tx2);}
+.momento-btn.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);}
+.stato-cond{margin-bottom:14px;border:0.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;}
+.stato-cond-hdr{display:flex;align-items:center;gap:7px;padding:9px 12px;background:var(--bg2);}
+.stato-cond-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.stato-cond-title{font-size:13px;font-weight:600;}
+.stato-cond-sub{font-size:11px;color:var(--tx3);}
+.stato-cond-body{padding:10px 12px;}
+.stato-side-lbl{font-size:10px;font-weight:600;color:var(--tx2);text-align:center;margin-bottom:5px;}
+.stato-divider{width:1px;background:var(--bd);flex-shrink:0;margin:0 4px;}
+.stato-avg{font-size:10px;color:var(--tx3);text-align:center;margin-top:5px;min-height:14px;}
+.rating-btns{display:flex;gap:6px;justify-content:center;}
+.rbtn{width:40px;height:40px;border-radius:50%;border:0.5px solid var(--bd2);background:var(--bg2);font-size:14px;font-weight:600;cursor:pointer;color:var(--tx2);flex-shrink:0;}
 .rbtn:active{transform:scale(.93);}
 .sentry{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--bd);}
 .sentry-time{font-size:11px;color:var(--tx3);min-width:72px;padding-top:2px;}
@@ -378,12 +386,68 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     <div id="hist-list"></div>
   </div>
 
-  <!-- TAB STATO (invariato nel form, arricchito nel rendering) -->
+  <!-- TAB STATO v6: giorno/notte + poliposi dx/sx -->
   <div id="vstato" class="view" style="display:none">
+
+    <!-- Selettore momento -->
     <div class="field">
-      <label class="lbl">Come stai adesso &mdash; 1 (assente) &rarr; 5 (severo)</label>
-      <div id="stato-input"></div>
+      <label class="lbl">Momento della valutazione</label>
+      <div style="display:flex;gap:6px;">
+        <button class="momento-btn on" id="smb-giorno" onclick="setMomento(0)">&#9728; Giorno</button>
+        <button class="momento-btn" id="smb-notte" onclick="setMomento(1)">&#9790; Notte / Mattino</button>
+      </div>
+      <div id="momento-hint" style="font-size:10px;color:var(--tx3);margin-top:5px;">Valutazione diurna corrente</div>
     </div>
+
+    <!-- Poliposi: dx e sx separati -->
+    <div class="stato-cond">
+      <div class="stato-cond-hdr">
+        <span class="stato-cond-dot" style="background:#378ADD"></span>
+        <span class="stato-cond-title" style="color:#378ADD">Poliposi nasale</span>
+        <span class="stato-cond-sub">ostruzione, congestione</span>
+      </div>
+      <div class="stato-cond-body">
+        <div style="display:flex;gap:0;">
+          <div style="flex:1;">
+            <div class="stato-side-lbl">&#8592; Sinistro</div>
+            <div class="rating-btns" id="rbtn-poli-sx"></div>
+          </div>
+          <div class="stato-divider"></div>
+          <div style="flex:1;">
+            <div class="stato-side-lbl">Destro &#8594;</div>
+            <div class="rating-btns" id="rbtn-poli-dx"></div>
+          </div>
+        </div>
+        <div class="stato-avg" id="poli-avg"></div>
+      </div>
+    </div>
+
+    <!-- Asma -->
+    <div class="stato-cond">
+      <div class="stato-cond-hdr">
+        <span class="stato-cond-dot" style="background:#EF9F27"></span>
+        <span class="stato-cond-title" style="color:#EF9F27">Asma / respiro</span>
+        <span class="stato-cond-sub">dispnea, sibilo, oppressione</span>
+      </div>
+      <div class="stato-cond-body">
+        <div class="rating-btns" id="rbtn-asma"></div>
+      </div>
+    </div>
+
+    <!-- Dermatosi -->
+    <div class="stato-cond">
+      <div class="stato-cond-hdr">
+        <span class="stato-cond-dot" style="background:#D85A30"></span>
+        <span class="stato-cond-title" style="color:#D85A30">Dermatosi</span>
+        <span class="stato-cond-sub">prurito, eritema, eruzioni</span>
+      </div>
+      <div class="stato-cond-body">
+        <div class="rating-btns" id="rbtn-dermatosi"></div>
+      </div>
+    </div>
+
+    <div style="font-size:10px;color:var(--tx3);text-align:right;margin-bottom:10px;">1 = assente &nbsp;&middot;&nbsp; 5 = severo / invalidante</div>
+
     <div class="field">
       <label class="lbl">Note (farmaci, stagione, stress&hellip;)</label>
       <input class="inp" id="stato-note" placeholder="es. montelukast, fioritura, forte stress&hellip;"/>
@@ -547,6 +611,11 @@ const SS=[{bg:"#EAF3DE",c:"#3B6D11"},{bg:"#FAEEDA",c:"#633806"},{bg:"#FAECE7",c:
 const SYMS=["Rinite","Lacrimazione","Starnuti","Prurito nasale","Tosse","Dispnea","Orticaria","Cefalea","Gonfiore addominale"];
 const SEVS=["1 -- Lieve","2 -- Moderata","3 -- Notevole","4 -- Intensa","5 -- Severa"];
 const CONDS=[{key:"poliposi",label:"Poliposi nasale",sub:"ostruzione, congestione",color:"#378ADD"},{key:"asma",label:"Asma / respiro",sub:"dispnea, sibilo",color:"#EF9F27"},{key:"dermatosi",label:"Dermatosi",sub:"prurito, eritema",color:"#D85A30"}];
+// v6 stato: 0=giorno 1=notte; chiavi: poli_sx, poli_dx, asma, dermatosi
+var statoMomento=0;
+var statoG={poli_sx:null,poli_dx:null,asma:null,dermatosi:null};
+var statoN={poli_sx:null,poli_dx:null,asma:null,dermatosi:null};
+function getStoSel(){return statoMomento===0?statoG:statoN;}
 const MEAL_COLORS={Colazione:"#EF9F27",Pranzo:"#378ADD",Cena:"#3C3489",Spuntino:"#5DCAA5",Snack:"#E24B4A"};
 
 // Sezioni rischio per la lista Alimenti
@@ -559,7 +628,7 @@ const RISK_SECTIONS=[
 ];
 
 let selItems={},selSym={},selSev=null,selMeal=null;
-let statoSel={poliposi:null,asma:null,dermatosi:null};
+// statoSel legacy (kept for import compat)
 let entries=[],statoEntries=[],customFoods=[],apiKey='',currentAiResult=null;
 // Stato filtri storico
 let histFilter='all',histSearchQuery='';
@@ -917,54 +986,227 @@ function drawSparkline(){
 /* ══════════════════════════════
    STATO v4 — con riferimenti ai pasti vicini
    ══════════════════════════════ */
-function buildStatoInput(){
-  document.getElementById('stato-input').innerHTML=
-    CONDS.map(c=>`<div class="cond-row"><div><span class="cond-name" style="color:${c.color}">${c.label}</span>&ensp;<span class="cond-sub">${c.sub}</span></div><div class="rating-btns">${[1,2,3,4,5].map(v=>`<button class="rbtn" id="ss-${c.key}-${v}" onclick="togStato('${c.key}',${v})">${v}</button>`).join('')}</div></div>`).join('')+
-    '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--tx3);margin-top:-4px"><span>1 = assente</span><span>5 = severo</span></div>';
+function setMomento(m){
+  statoMomento=m;
+  document.getElementById('smb-giorno').className='momento-btn'+(m===0?' on':'');
+  document.getElementById('smb-notte').className='momento-btn'+(m===1?' on':'');
+  document.getElementById('momento-hint').textContent=m===0?'Valutazione diurna corrente':'Valutazione notturna / al risveglio';
+  buildStatoInput();
 }
-function togStato(key,val){const prev=statoSel[key];statoSel[key]=prev===val?null:val;const cond=CONDS.find(c=>c.key===key);[1,2,3,4,5].forEach(v=>{const el=document.getElementById('ss-'+key+'-'+v);if(!el)return;el.style.cssText='';if(v===statoSel[key]){el.style.background=cond.color;el.style.color='white';el.style.borderColor=cond.color;}});}
-function saveStato(){if(!statoSel.poliposi&&!statoSel.asma&&!statoSel.dermatosi){const el=document.getElementById('stato-input');el.style.outline='2px solid #E24B4A';el.style.borderRadius='8px';setTimeout(()=>{el.style.outline='';el.style.borderRadius='';},1500);return;}statoEntries.push({id:Date.now(),ts:new Date().toISOString(),poliposi:statoSel.poliposi,asma:statoSel.asma,dermatosi:statoSel.dermatosi,note:document.getElementById('stato-note').value.trim()});saveStatoData();statoSel={poliposi:null,asma:null,dermatosi:null};document.getElementById('stato-note').value='';CONDS.forEach(c=>[1,2,3,4,5].forEach(v=>{const el=document.getElementById('ss-'+c.key+'-'+v);if(el)el.style.cssText='';}));toast('Valutazione salvata ✓');renderStato();}
-function calcTrend(key){const vals=statoEntries.filter(d=>d[key]!=null).map(d=>d[key]);if(vals.length<4)return null;const h=Math.floor(vals.length/2),old=vals.slice(0,h),rec=vals.slice(h),aO=old.reduce((s,v)=>s+v,0)/old.length,aR=rec.reduce((s,v)=>s+v,0)/rec.length,d=aR-aO;if(Math.abs(d)<0.3)return{a:'stab.',c:'#808080'};return d>0?{a:'↑ aum.',c:'#E24B4A'}:{a:'↓ calo',c:'#5DCAA5'};}
-
-// Trova pasti con reazione nelle 6h precedenti a una valutazione stato
+function buildStatoInput(){
+  var sel=getStoSel();
+  buildRbtns('rbtn-poli-sx','poli_sx','#378ADD');
+  buildRbtns('rbtn-poli-dx','poli_dx','#378ADD');
+  buildRbtns('rbtn-asma','asma','#EF9F27');
+  buildRbtns('rbtn-dermatosi','dermatosi','#D85A30');
+  updatePoliAvg();
+}
+function buildRbtns(containerId,key,color){
+  var el=document.getElementById(containerId);
+  if(!el)return;
+  var sel=getStoSel();
+  var html='';
+  for(var v=1;v<=5;v++){
+    var active=sel[key]===v;
+    var style=active?'background:'+color+';color:white;border-color:'+color+';':'';
+    html+='<button class="rbtn" data-key="'+key+'" data-val="'+v+'" data-color="'+color+'" style="'+style+'" onclick="togRbtn(this)">'+v+'</button>';
+  }
+  el.innerHTML=html;
+}
+function togRbtn(btn){
+  var key=btn.dataset.key,val=parseInt(btn.dataset.val),color=btn.dataset.color;
+  var sel=getStoSel();
+  sel[key]=(sel[key]===val)?null:val;
+  // Refresh only this group
+  var containerId='rbtn-'+key.replace('_','-');
+  buildRbtns(containerId,key,color);
+  if(key==='poli_sx'||key==='poli_dx')updatePoliAvg();
+}
+function updatePoliAvg(){
+  var sel=getStoSel();
+  var hint=document.getElementById('poli-avg');if(!hint)return;
+  var sx=sel.poli_sx,dx=sel.poli_dx;
+  if(sx!=null&&dx!=null)hint.textContent='Media: '+((sx+dx)/2).toFixed(1)+'/5 \u2014 sx '+sx+' \u00b7 dx '+dx;
+  else if(sx!=null)hint.textContent='Sinistro: '+sx+'/5 (destro non ancora valutato)';
+  else if(dx!=null)hint.textContent='Destro: '+dx+'/5 (sinistro non ancora valutato)';
+  else hint.textContent='';
+}
+function saveStato(){
+  var sG=statoG,sN=statoN;
+  var hasG=sG.poli_sx!=null||sG.poli_dx!=null||sG.asma!=null||sG.dermatosi!=null;
+  var hasN=sN.poli_sx!=null||sN.poli_dx!=null||sN.asma!=null||sN.dermatosi!=null;
+  if(!hasG&&!hasN){
+    var el=document.getElementById('vstato');
+    el.style.outline='2px solid #E24B4A';el.style.borderRadius='8px';
+    setTimeout(function(){el.style.outline='';el.style.borderRadius='';},1500);return;
+  }
+  function avg2(a,b){if(a==null&&b==null)return null;if(a==null)return b;if(b==null)return a;return Math.round((a+b)*10/2)/10;}
+  var entry={
+    id:Date.now(),ts:new Date().toISOString(),
+    poli_sx_g:sG.poli_sx, poli_dx_g:sG.poli_dx,
+    asma_g:sG.asma, dermatosi_g:sG.dermatosi,
+    poli_sx_n:sN.poli_sx, poli_dx_n:sN.poli_dx,
+    asma_n:sN.asma, dermatosi_n:sN.dermatosi,
+    poliposi:avg2(sG.poli_sx,sG.poli_dx),
+    asma:sG.asma, dermatosi:sG.dermatosi,
+    note:document.getElementById('stato-note').value.trim()
+  };
+  statoEntries.push(entry);saveStatoData();
+  statoG={poli_sx:null,poli_dx:null,asma:null,dermatosi:null};
+  statoN={poli_sx:null,poli_dx:null,asma:null,dermatosi:null};
+  document.getElementById('stato-note').value='';
+  setMomento(0);
+  toast('Valutazione salvata \u2713');renderStato();
+}
+function calcTrend(vals){
+  if(!vals||vals.length<4)return null;
+  var h=Math.floor(vals.length/2);
+  var old=vals.slice(0,h),rec=vals.slice(h);
+  var aO=old.reduce(function(s,v){return s+v;},0)/old.length;
+  var aR=rec.reduce(function(s,v){return s+v;},0)/rec.length;
+  var d=aR-aO;
+  if(Math.abs(d)<0.3)return{a:'stab.',c:'#808080'};
+  return d>0?{a:'\u2191 aum.',c:'#E24B4A'}:{a:'\u2193 calo',c:'#5DCAA5'};
+}
 function getRecentReactionMeals(ts,hours){
-  const t=new Date(ts).getTime();
-  return entries.filter(e=>{
-    const et=new Date(e.ts).getTime();
-    return et<=t && et>=(t-hours*3600000) && e.symptoms && e.symptoms.length>0;
+  var t=new Date(ts).getTime();
+  return entries.filter(function(e){
+    var et=new Date(e.ts).getTime();
+    return et<=t&&et>=(t-hours*3600000)&&e.symptoms&&e.symptoms.length>0;
   });
 }
-
-function makeStatoSvg(){const N=Math.min(statoEntries.length,28),recent=statoEntries.slice(-N);if(N<2)return'<p style="font-size:12px;color:var(--tx3);text-align:center;padding:16px 0">Registra almeno 2 valutazioni per il grafico</p>';const W=370,H=118,ML=22,MT=8,MR=8,MB=22,CW=W-ML-MR,CH=H-MT-MB,xF=i=>ML+(N>1?i*CW/(N-1):CW/2),yF=v=>MT+(5-v)/4*CH;let svg=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;display:block">`;for(let v=1;v<=5;v++){const y=yF(v);svg+=`<line x1="${ML}" y1="${y}" x2="${W-MR}" y2="${y}" stroke="#ccc" stroke-width="0.5" stroke-dasharray="${v===3?'3,3':''}"/><text x="${ML-4}" y="${y+3}" font-size="8" fill="#999" text-anchor="end">${v}</text>`;}CONDS.forEach(({key,color})=>{let p='',open=false;recent.forEach((d,i)=>{if(d[key]!=null){const x=xF(i),y=yF(d[key]);p+=open?`L${x},${y}`:`M${x},${y}`;open=true;}else open=false;});if(p)svg+=`<path d="${p}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/>`;recent.forEach((d,i)=>{if(d[key]!=null)svg+=`<circle cx="${xF(i)}" cy="${yF(d[key])}" r="2.5" fill="${color}"/>`;});});
-// Marker pasti con reazione
-recent.forEach((d,i)=>{
-  const meals=getRecentReactionMeals(d.ts,6);
-  if(meals.length>0){
-    const x=xF(i);
-    svg+=`<line x1="${x}" y1="${MT}" x2="${x}" y2="${MT+CH}" stroke="#E24B4A" stroke-width="0.8" stroke-dasharray="2,2" opacity="0.5"/>`;
-    svg+=`<text x="${x}" y="${MT-1}" font-size="7" fill="#E24B4A" text-anchor="middle">R</text>`;
+function pMed(e,sfx){
+  var sx=e['poli_sx'+sfx],dx=e['poli_dx'+sfx];
+  if(sx==null&&dx==null)return null;
+  if(sx==null)return dx;if(dx==null)return sx;
+  return (sx+dx)/2;
+}
+function makeStatoSvg(){
+  var N=Math.min(statoEntries.length,28),recent=statoEntries.slice(-N);
+  if(N<2)return '<p style="font-size:12px;color:var(--tx3);text-align:center;padding:16px 0">Registra almeno 2 valutazioni per il grafico</p>';
+  var W=370,H=168,ML=24,MT=14,MR=8,MB=22,CW=W-ML-MR,CH=H-MT-MB;
+  var xF=function(i){return ML+(N>1?i*CW/(N-1):CW/2);};
+  var yF=function(v){return MT+(5-v)/4*CH;};
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;display:block">';
+  for(var v=1;v<=5;v++){
+    var y=yF(v);
+    svg+='<line x1="'+ML+'" y1="'+y+'" x2="'+(W-MR)+'" y2="'+y+'" stroke="#ccc" stroke-width="0.5"'+(v===3?' stroke-dasharray="3,3"':'')+'/>';
+    svg+='<text x="'+(ML-4)+'" y="'+(y+3)+'" font-size="8" fill="#999" text-anchor="end">'+v+'</text>';
   }
-});
-const fs=ts=>new Date(ts).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'});svg+=`<text x="${ML}" y="${H-6}" font-size="8" fill="#999">${fs(recent[0].ts)}</text><text x="${W-MR}" y="${H-6}" font-size="8" fill="#999" text-anchor="end">${fs(recent[N-1].ts)}</text></svg>`;let leg='<div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:7px 0 6px">';CONDS.forEach(({color,label})=>leg+=`<span style="font-size:11px;color:var(--tx2);display:flex;align-items:center;gap:4px"><span style="width:10px;height:2px;background:${color};display:inline-block;border-radius:1px"></span>${label.split(' ')[0]}</span>`);leg+=`<span style="font-size:11px;color:var(--tx2);display:flex;align-items:center;gap:4px"><span style="font-size:9px;color:#E24B4A;font-weight:700">R</span>reazione 6h prima</span>`;return svg+leg+'</div>';}
-
+  // helper: draw one series
+  function drawSeries(getV,color,dashed){
+    var hasAny=false;
+    for(var i=0;i<recent.length;i++){if(getV(recent[i])!=null){hasAny=true;break;}}
+    if(!hasAny)return;
+    var p='',open=false;
+    recent.forEach(function(d,i){
+      var v=getV(d);
+      if(v!=null){p+=open?'L'+xF(i)+','+yF(v):'M'+xF(i)+','+yF(v);open=true;}
+      else open=false;
+    });
+    if(!p)return;
+    svg+='<path d="'+p+'" fill="none" stroke="'+color+'" stroke-width="'+(dashed?'1.2':'1.8')+'" stroke-linejoin="round"'+(dashed?' stroke-dasharray="4,3" opacity="0.75"':'')+'/>';
+    var r=dashed?2:2.5;
+    recent.forEach(function(d,i){
+      var v=getV(d);
+      if(v!=null){
+        svg+='<circle cx="'+xF(i)+'" cy="'+yF(v)+'" r="'+r+'" fill="'+color+'"';
+        if(dashed)svg+=' stroke="white" stroke-width="1" opacity="0.8"';
+        svg+='/>';
+      }
+    });
+  }
+  // Poliposi giorno (piena) e notte (tratteggiata)
+  drawSeries(function(d){return d.poliposi!=null?d.poliposi:pMed(d,'_g');},'#378ADD',false);
+  drawSeries(function(d){return pMed(d,'_n');},'#378ADD',true);
+  // Asma giorno + notte
+  drawSeries(function(d){return d.asma_g!=null?d.asma_g:d.asma!=null?d.asma:null;},'#EF9F27',false);
+  drawSeries(function(d){return d.asma_n!=null?d.asma_n:null;},'#EF9F27',true);
+  // Dermatosi giorno + notte
+  drawSeries(function(d){return d.dermatosi_g!=null?d.dermatosi_g:d.dermatosi!=null?d.dermatosi:null;},'#D85A30',false);
+  drawSeries(function(d){return d.dermatosi_n!=null?d.dermatosi_n:null;},'#D85A30',true);
+  // Marker reazioni pasti
+  recent.forEach(function(d,i){
+    if(getRecentReactionMeals(d.ts,6).length>0){
+      var x=xF(i);
+      svg+='<line x1="'+x+'" y1="'+MT+'" x2="'+x+'" y2="'+(MT+CH)+'" stroke="#E24B4A" stroke-width="0.8" stroke-dasharray="2,2" opacity="0.4"/>';
+      svg+='<text x="'+x+'" y="'+(MT-2)+'" font-size="7" fill="#E24B4A" text-anchor="middle">R</text>';
+    }
+  });
+  var fsd=function(ts){return new Date(ts).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'});};
+  svg+='<text x="'+ML+'" y="'+(H-5)+'" font-size="8" fill="#999">'+fsd(recent[0].ts)+'</text>';
+  svg+='<text x="'+(W-MR)+'" y="'+(H-5)+'" font-size="8" fill="#999" text-anchor="end">'+fsd(recent[N-1].ts)+'</text>';
+  svg+='</svg>';
+  var leg='<div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:5px 0;font-size:10px;color:var(--tx2);padding:0 4px">';
+  [{c:'#378ADD',l:'Pol.'},{c:'#EF9F27',l:'Asma'},{c:'#D85A30',l:'Derm.'}].forEach(function(x){
+    leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:2px;background:'+x.c+';display:inline-block;border-radius:1px"></span>'+x.l+' g.</span> ';
+    leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:0;border-top:1.5px dashed '+x.c+';display:inline-block;opacity:.7"></span>'+x.l+' n.</span> ';
+  });
+  leg+='<span style="display:flex;align-items:center;gap:3px"><b style="color:#E24B4A;font-size:9px">R</b>reazione 6h prima</span>';
+  leg+='</div>';
+  return svg+leg;
+}
 function renderStato(){
-  const el=document.getElementById('stato-results');if(!statoEntries.length){el.innerHTML='';return;}
-  let html=makeStatoSvg();
+  var el=document.getElementById('stato-results');if(!statoEntries.length){el.innerHTML='';return;}
+  var html=makeStatoSvg();
   if(statoEntries.length>=2){
-    html+='<div style="border:0.5px solid var(--bd);border-radius:var(--r);padding:11px 13px;margin-bottom:14px">';
-    CONDS.forEach(({key,label,color})=>{const vals=statoEntries.filter(d=>d[key]!=null).map(d=>d[key]);if(!vals.length)return;const last7=vals.slice(-7),avg=last7.reduce((s,v)=>s+v,0)/last7.length,tr=calcTrend(key);html+=`<div style="display:flex;align-items:center;gap:8px;padding:4px 0"><span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0"></span><span style="font-size:12px;font-weight:600;color:var(--tx);min-width:100px">${label}</span><span style="font-size:12px;color:var(--tx2)">media: ${avg.toFixed(1)}/5</span>${tr?`<span style="font-size:12px;color:${tr.c};margin-left:auto">${tr.a}</span>`:''}</div>`;});
+    html+='<div style="border:0.5px solid var(--bd);border-radius:var(--r);padding:10px 13px;margin-bottom:12px">';
+    // Poliposi
+    var pAll=statoEntries.filter(function(d){return d.poliposi!=null||d.poli_sx_g!=null||d.poli_dx_g!=null;});
+    if(pAll.length){
+      var last7=pAll.slice(-7);
+      var avgP=last7.reduce(function(s,d){var v=d.poliposi!=null?d.poliposi:((d.poli_sx_g||0)+(d.poli_dx_g||0))/2;return s+v;},0)/last7.length;
+      var tr=calcTrend(last7.map(function(d){return d.poliposi!=null?d.poliposi:((d.poli_sx_g||0)+(d.poli_dx_g||0))/2;}));
+      var withBoth=last7.filter(function(d){return d.poli_sx_g!=null&&d.poli_dx_g!=null;});
+      var asimStr='';
+      if(withBoth.length>=2){
+        var aSx=withBoth.reduce(function(s,d){return s+d.poli_sx_g;},0)/withBoth.length;
+        var aDx=withBoth.reduce(function(s,d){return s+d.poli_dx_g;},0)/withBoth.length;
+        var diff=aSx-aDx;
+        if(Math.abs(diff)>=0.5)asimStr='&nbsp;<span style="font-size:10px;color:#854F0B">\u25b2 asim. '+(diff>0?'sx':'dx')+' +'+Math.abs(diff).toFixed(1)+'</span>';
+      }
+      html+='<div style="display:flex;align-items:center;gap:8px;padding:3px 0">'
+        +'<span style="width:8px;height:8px;border-radius:50%;background:#378ADD;flex-shrink:0"></span>'
+        +'<span style="font-size:12px;font-weight:600;color:var(--tx);min-width:90px">Poliposi</span>'
+        +'<span style="font-size:12px;color:var(--tx2)">media: '+avgP.toFixed(1)+'/5'+asimStr+'</span>'
+        +(tr?'<span style="font-size:12px;color:'+tr.c+';margin-left:auto">'+tr.a+'</span>':'')+'</div>';
+    }
+    [{gk:'asma_g',fk:'asma',label:'Asma',color:'#EF9F27'},{gk:'dermatosi_g',fk:'dermatosi',label:'Dermatosi',color:'#D85A30'}].forEach(function(c){
+      var vals=statoEntries.filter(function(d){return d[c.gk]!=null||d[c.fk]!=null;}).slice(-7).map(function(d){return d[c.gk]!=null?d[c.gk]:d[c.fk];});
+      if(!vals.length)return;
+      var avg=vals.reduce(function(s,v){return s+v;},0)/vals.length;
+      var tr=calcTrend(vals);
+      html+='<div style="display:flex;align-items:center;gap:8px;padding:3px 0">'
+        +'<span style="width:8px;height:8px;border-radius:50%;background:'+c.color+';flex-shrink:0"></span>'
+        +'<span style="font-size:12px;font-weight:600;color:var(--tx);min-width:90px">'+c.label+'</span>'
+        +'<span style="font-size:12px;color:var(--tx2)">media: '+avg.toFixed(1)+'/5</span>'
+        +(tr?'<span style="font-size:12px;color:'+tr.c+';margin-left:auto">'+tr.a+'</span>':'')+'</div>';
+    });
     html+='</div>';
   }
-  const rec=statoEntries.slice(-5).reverse();
-  html+=`<div class="stit">Ultime valutazioni</div>`;
-  html+=rec.map(e=>{
-    const reactionMeals=getRecentReactionMeals(e.ts,6);
-    const reactionHint=reactionMeals.length?`<div style="font-size:10px;color:#E24B4A;margin-top:3px">&#128276; Reazione ${reactionMeals.length>1?reactionMeals.length+'x ':''} nelle 6h precedenti: ${reactionMeals.map(m=>m.foods.slice(0,2).join(', ')).join(' / ')}</div>`:'';
-    return`<div class="sentry"><div class="sentry-time">${fmtT(e.ts)}</div><div style="flex:1"><div style="display:flex;flex-wrap:wrap;gap:8px">${CONDS.map(c=>e[c.key]!=null?`<span style="font-size:12px;color:var(--tx2)">${c.label.split(' ')[0].slice(0,4)}.: <span style="color:${c.color};font-weight:600">${e[c.key]}/5</span></span>`:'').join('')}</div>${e.note?`<div class="sentry-note">${e.note}</div>`:''}${reactionHint}</div><button class="delbtn" onclick="delStato(${e.id})">&#10005;</button></div>`;
+  var rec=statoEntries.slice(-5).reverse();
+  html+='<div class="stit">Ultime valutazioni</div>';
+  html+=rec.map(function(e){
+    var rxM=getRecentReactionMeals(e.ts,6);
+    var rxH=rxM.length?'<div style="font-size:10px;color:#E24B4A;margin-top:3px">&#128276; Reazione 6h prec.: '+rxM.map(function(m){return m.foods.slice(0,2).join(', ');}).join(' / ')+'</div>':'';
+    var poliStr='';
+    if(e.poli_sx_g!=null||e.poli_dx_g!=null){
+      poliStr='Pol. sx<b style="color:#378ADD"> '+(e.poli_sx_g!=null?e.poli_sx_g:'\u2014')+'</b> dx<b style="color:#378ADD"> '+(e.poli_dx_g!=null?e.poli_dx_g:'\u2014')+'</b>';
+      if(e.poli_sx_n!=null||e.poli_dx_n!=null)poliStr+=' / notte sx<b style="color:#7ab4e8"> '+(e.poli_sx_n!=null?e.poli_sx_n:'\u2014')+'</b> dx<b style="color:#7ab4e8"> '+(e.poli_dx_n!=null?e.poli_dx_n:'\u2014')+'</b>';
+    }else if(e.poliposi!=null){poliStr='Pol.<b style="color:#378ADD"> '+e.poliposi+'</b>';}
+    var asmaG=e.asma_g!=null?e.asma_g:e.asma;
+    var asmaStr=asmaG!=null?'Asma g<b style="color:#EF9F27"> '+asmaG+'</b>'+(e.asma_n!=null?' n<b style="color:#f5c842"> '+e.asma_n+'</b>':''):'';
+    var dermG=e.dermatosi_g!=null?e.dermatosi_g:e.dermatosi;
+    var dermStr=dermG!=null?'Derm. g<b style="color:#D85A30"> '+dermG+'</b>'+(e.dermatosi_n!=null?' n<b style="color:#e8804a"> '+e.dermatosi_n+'</b>':''):'';
+    var row=[poliStr,asmaStr,dermStr].filter(Boolean).join(' \u00b7 ');
+    return '<div class="sentry"><div class="sentry-time">'+fmtT(e.ts)+'</div>'
+      +'<div style="flex:1"><div style="font-size:11px;color:var(--tx2);line-height:1.7">'+row+'</div>'
+      +(e.note?'<div class="sentry-note">'+e.note+'</div>':'')+rxH+'</div>'
+      +'<button class="delbtn" onclick="delStato('+e.id+')">&#10005;</button></div>';
   }).join('');
   el.innerHTML=html;
 }
-function delStato(id){statoEntries=statoEntries.filter(e=>e.id!==id);saveStatoData();renderStato();}
+function delStato(id){statoEntries=statoEntries.filter(function(e){return e.id!==id;});saveStatoData();renderStato();}
 
 /* ══════════════════════════════
    ALIMENTI v4 — sezioni rischio + filtri
@@ -1176,7 +1418,7 @@ initDatePicker();
 buildGenreChips();
 buildCustomGenreChips();
 buildTrigFilterBar();
-buildSyms();buildSevs();buildStatoInput();
+buildSyms();buildSevs();setMomento(0);
 updateTriggers();
 </script>
 </body>
