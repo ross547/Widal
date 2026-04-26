@@ -226,6 +226,8 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .stato-cond-body{padding:10px 12px;}
 .stato-side-lbl{font-size:10px;font-weight:600;color:var(--tx2);text-align:center;margin-bottom:5px;}
 .stato-avg{font-size:10px;color:var(--tx3);text-align:center;margin-top:6px;min-height:14px;}
+.scpbtn{flex:1;padding:5px 0;border-radius:20px;font-size:11px;font-weight:600;border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);cursor:pointer;}
+.scpbtn.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);}
 .poli-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
 .poli-row:last-of-type{margin-bottom:0;}
 .poli-side-lbl{font-size:10px;font-weight:600;color:var(--tx2);width:52px;flex-shrink:0;}
@@ -453,6 +455,24 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     </div>
     <button class="savebtn" onclick="saveStato()">Salva valutazione</button>
     <div id="stato-results" style="margin-top:18px"></div>
+
+    <!-- Grafico combinato stato + rischio pasto -->
+    <div id="stato-chart-box" style="display:none;margin-top:16px;border:0.5px solid var(--bd2);border-radius:var(--rl);padding:12px 12px 10px;background:var(--bg);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:12px;font-weight:600;color:var(--tx2);">Stato + rischio pasto</span>
+        <button onclick="exportChartStato()" style="font-size:11px;padding:4px 10px;border-radius:var(--r);border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);cursor:pointer;">&#8681; PNG</button>
+      </div>
+      <div style="display:flex;gap:4px;margin-bottom:8px;">
+        <button class="scpbtn on" id="scpb-7" onclick="setStatoPeriod(7)">7g</button>
+        <button class="scpbtn" id="scpb-14" onclick="setStatoPeriod(14)">14g</button>
+        <button class="scpbtn" id="scpb-30" onclick="setStatoPeriod(30)">30g</button>
+        <button class="scpbtn" id="scpb-all" onclick="setStatoPeriod(0)">Tutto</button>
+      </div>
+      <div style="background:var(--bg2);border-radius:var(--r);padding:6px;overflow:hidden;margin-bottom:6px;">
+        <canvas id="stato-combined-chart" style="width:100%;display:block;"></canvas>
+      </div>
+      <div id="stato-chart-legend" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;font-size:10px;color:var(--tx2);"></div>
+    </div>
   </div>
 
   <!-- TAB ALIMENTI v4 -->
@@ -612,6 +632,7 @@ const SEVS=["1 -- Lieve","2 -- Moderata","3 -- Notevole","4 -- Intensa","5 -- Se
 const CONDS=[{key:"poliposi",label:"Poliposi nasale",sub:"ostruzione, congestione",color:"#378ADD"},{key:"asma",label:"Asma / respiro",sub:"dispnea, sibilo",color:"#EF9F27"},{key:"dermatosi",label:"Dermatosi",sub:"prurito, eritema",color:"#D85A30"}];
 // v6 stato: 0=giorno 1=notte; chiavi: poli_sx, poli_dx, asma, dermatosi
 var statoMomento=0;
+var statoPeriodDays=14;
 var statoG={poli_sx:null,poli_dx:null,asma:null,dermatosi:null};
 var statoN={poli_sx:null,poli_dx:null,asma:null,dermatosi:null};
 function getStoSel(){return statoMomento===0?statoG:statoN;}
@@ -1145,6 +1166,132 @@ function makeStatoSvg(){
   leg+='</div>';
   return svg+leg;
 }
+function setStatoPeriod(days){
+  statoPeriodDays=days;
+  ['7','14','30','all'].forEach(function(k){
+    var el=document.getElementById('scpb-'+k);
+    if(el)el.className='scpbtn';
+  });
+  var activeId=days===7?'scpb-7':days===14?'scpb-14':days===30?'scpb-30':'scpb-all';
+  var activeEl=document.getElementById(activeId);
+  if(activeEl)activeEl.className='scpbtn on';
+  drawStatoChart();
+}
+function filterStatoPeriod(arr){
+  if(!statoPeriodDays||!arr||!arr.length)return arr||[];
+  var maxTs=Math.max.apply(null,arr.map(function(e){return new Date(e.ts).getTime();}));
+  var cutoff=new Date(maxTs-statoPeriodDays*86400000);
+  return arr.filter(function(e){return new Date(e.ts)>=cutoff;});
+}
+function drawStatoChart(){
+  var box=document.getElementById('stato-chart-box');
+  var canvas=document.getElementById('stato-combined-chart');
+  var legEl=document.getElementById('stato-chart-legend');
+  if(!canvas||!box)return;
+  var filteredStato=filterStatoPeriod(statoEntries.slice());
+  var filteredEntries=filterStatoPeriod(entries.slice());
+  var allDates=new Set();
+  filteredStato.forEach(function(e){allDates.add(e.ts.slice(0,10));});
+  filteredEntries.forEach(function(e){allDates.add(e.ts.slice(0,10));});
+  var dates=[].concat(Array.from?Array.from(allDates):[]).sort();
+  if(dates.length<2){box.style.display='none';return;}
+  box.style.display='block';
+  var DPR=window.devicePixelRatio||1;
+  var W=canvas.parentElement.clientWidth-12||310;
+  var H=180;
+  canvas.width=W*DPR;canvas.height=H*DPR;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  var ctx=canvas.getContext('2d');ctx.scale(DPR,DPR);
+  var ML=26,MT=14,MR=8,MB=36,CW=W-ML-MR,CH=H-MT-MB;
+  var N=dates.length;
+  var xF=function(i){return ML+(N>1?i*CW/(N-1):CW/2);};
+  var yF=function(v){return MT+(5-v)/4*CH;};
+  ctx.fillStyle=getComputedStyle(canvas).getPropertyValue('--bg2')||'#f5f5f4';
+  ctx.fillRect(0,0,W,H);
+  for(var v=1;v<=5;v++){
+    ctx.strokeStyle='rgba(0,0,0,0.08)';ctx.lineWidth=0.5;
+    if(v===3){ctx.setLineDash([3,3]);}else{ctx.setLineDash([]);}
+    ctx.beginPath();ctx.moveTo(ML,yF(v));ctx.lineTo(W-MR,yF(v));ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#aaa';ctx.font='bold 8px -apple-system,sans-serif';ctx.textAlign='right';
+    ctx.fillText(String(v),ML-4,yF(v)+3);
+  }
+  // Stato lines (giorno)
+  CONDS.forEach(function(cond){
+    ctx.strokeStyle=cond.color;ctx.lineWidth=2;ctx.setLineDash([]);
+    ctx.beginPath();var started=false;
+    dates.forEach(function(date,i){
+      var es=filteredStato.filter(function(x){return x.ts.slice(0,10)===date;});
+      if(!es.length)return;
+      var d=es[es.length-1];
+      var val=d[cond.key+'_g']!=null?d[cond.key+'_g']:(d[cond.key]!=null?d[cond.key]:null);
+      if(cond.key==='poliposi') val=d.poliposi!=null?d.poliposi:null;
+      if(val==null)return;
+      if(!started){ctx.moveTo(xF(i),yF(val));started=true;}else ctx.lineTo(xF(i),yF(val));
+    });
+    ctx.stroke();
+    dates.forEach(function(date,i){
+      var es=filteredStato.filter(function(x){return x.ts.slice(0,10)===date;});
+      if(!es.length)return;
+      var d=es[es.length-1];
+      var val=d[cond.key+'_g']!=null?d[cond.key+'_g']:(d[cond.key]!=null?d[cond.key]:null);
+      if(cond.key==='poliposi') val=d.poliposi!=null?d.poliposi:null;
+      if(val==null)return;
+      ctx.fillStyle=cond.color;ctx.beginPath();ctx.arc(xF(i),yF(val),3,0,Math.PI*2);ctx.fill();
+    });
+  });
+  // Rischio pasto (tratteggiato)
+  var riskColor='#8B5E00';
+  ctx.strokeStyle=riskColor;ctx.lineWidth=2;ctx.setLineDash([5,3]);
+  ctx.beginPath();var rStarted=false;
+  dates.forEach(function(date,i){
+    var de=filteredEntries.filter(function(e){return e.ts.slice(0,10)===date;});
+    if(!de.length)return;
+    var maxR=Math.max.apply(null,de.map(function(e){return e.maxRisk||0;}));
+    if(!rStarted){ctx.moveTo(xF(i),yF(maxR));rStarted=true;}else ctx.lineTo(xF(i),yF(maxR));
+  });
+  ctx.stroke();ctx.setLineDash([]);
+  dates.forEach(function(date,i){
+    var de=filteredEntries.filter(function(e){return e.ts.slice(0,10)===date;});
+    if(!de.length)return;
+    var maxR=Math.max.apply(null,de.map(function(e){return e.maxRisk||0;}));
+    ctx.fillStyle=riskColor;ctx.beginPath();ctx.arc(xF(i),yF(maxR),3,0,Math.PI*2);ctx.fill();
+    // Marker reazione diretta
+    var hasReact=de.some(function(e){return e.symptoms&&e.symptoms.length>0;});
+    if(hasReact){
+      ctx.strokeStyle='#E24B4A';ctx.lineWidth=1;ctx.setLineDash([2,2]);ctx.globalAlpha=0.5;
+      ctx.beginPath();ctx.moveTo(xF(i),MT);ctx.lineTo(xF(i),MT+CH);ctx.stroke();
+      ctx.globalAlpha=1;ctx.setLineDash([]);
+      ctx.fillStyle='#E24B4A';ctx.font='bold 8px -apple-system,sans-serif';ctx.textAlign='center';
+      ctx.fillText('R',xF(i),MT-2);
+    }
+  });
+  // Assi date
+  var step=Math.max(1,Math.floor(N/6));
+  ctx.fillStyle='#888';ctx.font='8px -apple-system,sans-serif';
+  dates.forEach(function(date,i){
+    if(i===0||i===N-1||i%step===0){
+      ctx.textAlign='center';
+      ctx.fillText(date.slice(5).replace('-','/'),xF(i),H-MB+14);
+    }
+  });
+  // Legenda
+  var legHtml='';
+  CONDS.forEach(function(c){
+    legHtml+='<span style="display:flex;align-items:center;gap:3px"><span style="width:12px;height:2px;background:'+c.color+';display:inline-block;border-radius:1px"></span>'+c.label.split(' ')[0]+'</span>';
+  });
+  legHtml+='<span style="display:flex;align-items:center;gap:3px"><span style="width:12px;height:0;border-top:2px dashed '+riskColor+';display:inline-block"></span>Rischio pasto</span>';
+  legHtml+='<span style="display:flex;align-items:center;gap:3px"><b style="color:#E24B4A;font-size:9px">R</b>reazione</span>';
+  legEl.innerHTML=legHtml;
+}
+function exportChartStato(){
+  drawStatoChart();
+  var canvas=document.getElementById('stato-combined-chart');if(!canvas)return;
+  var link=document.createElement('a');
+  link.download='widal-grafico-'+new Date().toISOString().slice(0,10)+'.png';
+  link.href=canvas.toDataURL('image/png');
+  link.click();toast('Grafico salvato ✓');
+}
 function renderStato(){
   var el=document.getElementById('stato-results');if(!statoEntries.length){el.innerHTML='';return;}
   var html=makeStatoSvg();
@@ -1204,6 +1351,7 @@ function renderStato(){
       +'<button class="delbtn" onclick="delStato('+e.id+')">&#10005;</button></div>';
   }).join('');
   el.innerHTML=html;
+  drawStatoChart();
 }
 function delStato(id){statoEntries=statoEntries.filter(function(e){return e.id!==id;});saveStatoData();renderStato();}
 
