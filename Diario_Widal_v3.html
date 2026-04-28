@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="Widal"/>
-<title>Diario Widal v7</title>
+<title>Diario Widal v7.1</title>
 <style>
 :root{
   --bg:#ffffff;--bg2:#f5f5f4;--bg3:#ececea;
@@ -1161,9 +1161,12 @@ function makeStatoSvg(){
   var hasPoliN=recent.some(function(d){return pMed(d,'_n')!=null;});
   var hasAsmaN=recent.some(function(d){return d.asma_n!=null;});
   var hasDermN=recent.some(function(d){return d.dermatosi_n!=null;});
-  [{c:'#378ADD',l:'Pol.',hasN:hasPoliN},{c:'#EF9F27',l:'Asma',hasN:hasAsmaN},{c:'#D85A30',l:'Derm.',hasN:hasDermN}].forEach(function(x){
+  var countPoliN=recent.filter(function(d){return pMed(d,'_n')!=null;}).length;
+  var countAsmaN=recent.filter(function(d){return d.asma_n!=null;}).length;
+  var countDermN=recent.filter(function(d){return d.dermatosi_n!=null;}).length;
+  [{c:'#378ADD',l:'Pol.',cnt:countPoliN},{c:'#EF9F27',l:'Asma',cnt:countAsmaN},{c:'#D85A30',l:'Derm.',cnt:countDermN}].forEach(function(x){
     leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:2px;background:'+x.c+';display:inline-block;border-radius:1px"></span>'+x.l+' g.</span> ';
-    if(x.hasN)leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:0;border-top:1.5px dashed '+x.c+';display:inline-block;opacity:.7"></span>'+x.l+' n.</span> ';
+    if(x.cnt>=2)leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:0;border-top:1.5px dashed '+x.c+';display:inline-block;opacity:.7"></span>'+x.l+' n.</span> ';
   });
   leg+='<span style="display:flex;align-items:center;gap:3px"><b style="color:#E24B4A;font-size:9px">R</b>reazione 6h prima</span>';
   leg+='</div>';
@@ -1332,10 +1335,8 @@ function drawStatoChart(){
   });
   legHtml+='<span style="display:flex;align-items:center;gap:3px"><span style="width:12px;height:0;border-top:2px dashed '+riskColor+';display:inline-block"></span>Rischio pasto</span>';
   // night series in legend - only per color if data exists
-  [{c:'#378ADD',kSx:'poli_sx_n',kDx:'poli_dx_n',kSingle:null},{c:'#EF9F27',kSx:null,kDx:null,kSingle:'asma_n'},{c:'#D85A30',kSx:null,kDx:null,kSingle:'dermatosi_n'}].forEach(function(nc){
-    var hasN=filteredStato.some(function(d){return nc.kSingle?d[nc.kSingle]!=null:(d[nc.kSx]!=null||d[nc.kDx]!=null);});
-    if(hasN)legHtml+='<span style="display:flex;align-items:center;gap:3px"><span style="width:12px;height:0;border-top:1.5px dashed '+nc.c+';display:inline-block;opacity:.75"></span>n.</span>';
-  });
+  var hasAnyNight=filteredStato.some(function(d){return d.poli_sx_n!=null||d.poli_dx_n!=null||d.asma_n!=null||d.dermatosi_n!=null;});
+  if(hasAnyNight)legHtml+='<span style="display:flex;align-items:center;gap:3px"><span style="width:12px;height:0;border-top:1.5px dashed #888;display:inline-block;opacity:.6"></span>notte</span>';
   legHtml+='<span style="display:flex;align-items:center;gap:3px"><b style="color:#E24B4A;font-size:9px">R</b>reazione</span>';
   legEl.innerHTML=legHtml;
 }
