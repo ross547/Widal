@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="Widal"/>
-<title>Diario Widal v7.3</title>
+<title>Diario Widal v7.4</title>
 <style>
 :root{
   --bg:#ffffff;--bg2:#f5f5f4;--bg3:#ececea;
@@ -457,8 +457,8 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     </div>
     <button class="savebtn" onclick="saveStato()">Salva valutazione</button>
     <div style="display:flex;gap:4px;margin-top:14px;margin-bottom:4px;">
-      <button class="svgpbtn" id="svgpb-7" onclick="setSvgPeriod(7)">7g</button>
-      <button class="svgpbtn on" id="svgpb-14" onclick="setSvgPeriod(14)">14g</button>
+      <button class="svgpbtn on" id="svgpb-7" onclick="setSvgPeriod(7)">7g</button>
+      <button class="svgpbtn" id="svgpb-14" onclick="setSvgPeriod(14)">14g</button>
       <button class="svgpbtn" id="svgpb-30" onclick="setSvgPeriod(30)">30g</button>
       <button class="svgpbtn" id="svgpb-all" onclick="setSvgPeriod(0)">Tutto</button>
     </div>
@@ -641,7 +641,7 @@ const CONDS=[{key:"poliposi",label:"Poliposi nasale",sub:"ostruzione, congestion
 // v6 stato: 0=giorno 1=notte; chiavi: poli_sx, poli_dx, asma, dermatosi
 var statoMomento=0;
 var statoPeriodDays=14;
-var svgPeriodDays=14;
+var svgPeriodDays=7;
 var statoG={poli_sx:null,poli_dx:null,asma:null,dermatosi:null};
 var statoN={poli_sx:null,poli_dx:null,asma:null,dermatosi:null};
 function getStoSel(){return statoMomento===0?statoG:statoN;}
@@ -1128,9 +1128,9 @@ function makeStatoSvg(){
     var cutoffSvg=new Date(maxTsSvg-svgPeriodDays*86400000);
     allSvg=allSvg.filter(function(e){return new Date(e.ts)>=cutoffSvg;});
   }
-  var N=Math.min(allSvg.length,28),recent=allSvg.slice(-N);
+  var N=allSvg.length,recent=allSvg.slice();
   if(N<2)return '<p style="font-size:12px;color:var(--tx3);text-align:center;padding:16px 0">Registra almeno 2 valutazioni per il grafico</p>';
-  var W=370,H=168,ML=24,MT=14,MR=8,MB=22,CW=W-ML-MR,CH=H-MT-MB;
+  var W=370,H=172,ML=24,MT=18,MR=8,MB=24,CW=W-ML-MR,CH=H-MT-MB;
   var xF=function(i){return ML+(N>1?i*CW/(N-1):CW/2);};
   var yF=function(v){return MT+(5-v)/4*CH;};
   var svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;display:block">';
@@ -1176,12 +1176,18 @@ function makeStatoSvg(){
     if(getRecentReactionMeals(d.ts,6).length>0){
       var x=xF(i);
       svg+='<line x1="'+x+'" y1="'+MT+'" x2="'+x+'" y2="'+(MT+CH)+'" stroke="#E24B4A" stroke-width="0.8" stroke-dasharray="2,2" opacity="0.4"/>';
-      svg+='<text x="'+x+'" y="'+(MT-2)+'" font-size="7" fill="#E24B4A" text-anchor="middle">R</text>';
+      svg+='<text x="'+x+'" y="'+(MT+8)+'" font-size="7" fill="#E24B4A" text-anchor="middle">R</text>';
     }
   });
   var fsd=function(ts){return new Date(ts).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'});};
-  svg+='<text x="'+ML+'" y="'+(H-5)+'" font-size="8" fill="#999">'+fsd(recent[0].ts)+'</text>';
-  svg+='<text x="'+(W-MR)+'" y="'+(H-5)+'" font-size="8" fill="#999" text-anchor="end">'+fsd(recent[N-1].ts)+'</text>';
+  // Date labels: first, last, and intermediates every ~5 points
+  var dateStep=Math.max(1,Math.floor(N/5));
+  recent.forEach(function(d,i){
+    if(i===0||i===N-1||i%dateStep===0){
+      var anchor=i===0?'start':i===N-1?'end':'middle';
+      svg+='<text x="'+xF(i)+'" y="'+(H-5)+'" font-size="8" fill="#999" text-anchor="'+anchor+'">'+fsd(d.ts)+'</text>';
+    }
+  });
   svg+='</svg>';
   var leg='<div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:5px 0;font-size:10px;color:var(--tx2);padding:0 4px">';
   var hasPoliN=recent.some(function(d){return pMed(d,'_n')!=null;});
@@ -1190,10 +1196,11 @@ function makeStatoSvg(){
   var countPoliN=recent.filter(function(d){return pMed(d,'_n')!=null;}).length;
   var countAsmaN=recent.filter(function(d){return d.asma_n!=null;}).length;
   var countDermN=recent.filter(function(d){return d.dermatosi_n!=null;}).length;
+  var hasAnyNight=countPoliN>0||countAsmaN>0||countDermN>0;
   [{c:'#378ADD',l:'Pol.',cnt:countPoliN},{c:'#EF9F27',l:'Asma',cnt:countAsmaN},{c:'#9B30FF',l:'Derm.',cnt:countDermN}].forEach(function(x){
-    leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:2px;background:'+x.c+';display:inline-block;border-radius:1px"></span>'+x.l+' g.</span> ';
-    if(x.cnt>=1)leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:0;border-top:1.5px dashed '+x.c+';display:inline-block;opacity:.7"></span>'+x.l+' n.</span> ';
+    leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:2px;background:'+x.c+';display:inline-block;border-radius:1px"></span>'+x.l+'</span> ';
   });
+  if(hasAnyNight)leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:0;border-top:1.5px dashed #888;display:inline-block;opacity:.6"></span>notte</span> ';
   leg+='<span style="display:flex;align-items:center;gap:3px"><b style="color:#E24B4A;font-size:9px">R</b>reazione 6h prima</span>';
   leg+='</div>';
   return svg+leg;
