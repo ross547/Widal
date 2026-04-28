@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="Widal"/>
-<title>Diario Widal v7.4</title>
+<title>Diario Widal v7.5</title>
 <style>
 :root{
   --bg:#ffffff;--bg2:#f5f5f4;--bg3:#ececea;
@@ -1148,16 +1148,16 @@ function makeStatoSvg(){
     recent.forEach(function(d,i){
       var v=getV(d);
       if(v!=null){p+=open?'L'+xF(i)+','+yF(v):'M'+xF(i)+','+yF(v);open=true;}
-      else open=false;
+      // nulls don't reset open — line bridges the gap to next valid point
     });
     if(!p)return;
     svg+='<path d="'+p+'" fill="none" stroke="'+color+'" stroke-width="'+(dashed?'1.2':'1.8')+'" stroke-linejoin="round"'+(dashed?' stroke-dasharray="4,3" opacity="0.75"':'')+'/>';
-    var r=dashed?2:2.5;
+    var r=dashed?3:2.5;
     recent.forEach(function(d,i){
       var v=getV(d);
       if(v!=null){
         svg+='<circle cx="'+xF(i)+'" cy="'+yF(v)+'" r="'+r+'" fill="'+color+'"';
-        if(dashed)svg+=' stroke="'+color+'" stroke-width="1.5" fill="white" opacity="0.9"';
+        if(dashed)svg+=' stroke="'+color+'" stroke-width="2" fill="white" opacity="1"';
         svg+='/>';
       }
     });
