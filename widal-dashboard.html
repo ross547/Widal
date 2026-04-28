@@ -6,10 +6,21 @@
 <title>Diario Widal — Dashboard</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
-:root{--ink:#1a1814;--ink2:#5a5650;--ink3:#9a9590;--paper:#faf9f6;--paper2:#f2f0eb;--paper3:#e8e5de;--accent:#2a5c8a;--accent2:#e8f0f8;--r1:#5aaa44;--r1bg:#edf6ea;--r2:#e8a020;--r2bg:#fdf3e0;--r3:#d4601a;--r3bg:#faeae0;--r4:#c02828;--r4bg:#fbeaea;--r5:#8a1a1a;--r5bg:#f5e0e0;}
+:root{
+  --ink:#1a1814;--ink2:#5a5650;--ink3:#9a9590;
+  --paper:#faf9f6;--paper2:#f2f0eb;--paper3:#e8e5de;
+  --accent:#2a5c8a;--accent2:#e8f0f8;
+  --r1:#5aaa44;--r1bg:#edf6ea;
+  --r2:#e8a020;--r2bg:#fdf3e0;
+  --r3:#d4601a;--r3bg:#faeae0;
+  --r4:#c02828;--r4bg:#fbeaea;
+  --r5:#8a1a1a;--r5bg:#f5e0e0;
+}
 *{box-sizing:border-box;margin:0;padding:0;}
 html{background:var(--paper);}
 body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);line-height:1.5;}
+
+/* UPLOAD */
 #upload-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;padding:40px;}
 #upload-screen h1{font-family:'DM Serif Display',serif;font-size:36px;}
 #upload-screen p{color:var(--ink2);max-width:400px;text-align:center;line-height:1.7;}
@@ -19,8 +30,10 @@ body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);line-heigh
 .upload-icon{font-size:40px;margin-bottom:12px;}
 .upload-label{font-size:15px;font-weight:500;color:var(--accent);}
 .upload-sub{font-size:12px;color:var(--ink3);margin-top:4px;}
-#dashboard{display:none;padding:28px 36px 60px;max-width:1080px;margin:0 auto;}
-.top-bar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;padding-bottom:14px;border-bottom:1.5px solid var(--paper3);}
+
+/* DASHBOARD LAYOUT */
+#dashboard{display:none;padding:28px 36px 60px;max-width:1100px;margin:0 auto;}
+.top-bar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:1.5px solid var(--paper3);}
 .top-bar h1{font-family:'DM Serif Display',serif;font-size:26px;}
 .export-date{font-size:12px;color:var(--ink3);margin-top:2px;}
 .top-bar-right{display:flex;gap:8px;align-items:center;}
@@ -28,16 +41,27 @@ body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);line-heigh
 .btn:hover{background:var(--paper3);}
 .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);}
 .btn-primary:hover{background:#1e4a72;}
-.period-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:10px 14px;background:var(--paper2);border-radius:8px;border:1px solid var(--paper3);}
-.period-bar label{font-size:12px;font-weight:500;color:var(--ink2);}
-.period-bar select{padding:5px 10px;border-radius:6px;border:1px solid var(--paper3);font-size:13px;background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;}
+
+/* PERIOD BAR */
+.period-bar{display:flex;align-items:center;gap:8px;margin-bottom:20px;padding:10px 14px;background:var(--paper2);border-radius:8px;border:1px solid var(--paper3);flex-wrap:wrap;}
+.period-bar-label{font-size:12px;font-weight:600;color:var(--ink2);margin-right:4px;}
+.period-btns{display:flex;gap:4px;}
+.pbtn{padding:5px 12px;border-radius:20px;border:1px solid var(--paper3);background:var(--paper);color:var(--ink2);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.pbtn:hover{background:var(--paper3);}
+.pbtn.on{background:var(--accent);color:#fff;border-color:var(--accent);}
 .period-info{font-size:12px;color:var(--ink3);margin-left:auto;}
+
+/* STAT CARDS */
 .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
 .stat-card{background:var(--paper2);border-radius:10px;padding:16px 18px;border:1px solid var(--paper3);}
 .stat-val{font-family:'DM Serif Display',serif;font-size:32px;color:var(--ink);line-height:1;}
 .stat-lbl{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:5px;}
 .stat-sub{font-size:11px;color:var(--ink2);margin-top:3px;}
+
+/* SECTION TITLES */
 .section-title{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin:20px 0 10px;}
+
+/* PANELS */
 .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px;}
 .one-col{margin-bottom:20px;}
 .panel{background:var(--paper2);border-radius:10px;border:1px solid var(--paper3);overflow:hidden;}
@@ -55,22 +79,56 @@ body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);line-heigh
 .risk3{background:var(--r3bg);color:var(--r3);}
 .risk4{background:var(--r4bg);color:var(--r4);}
 .risk5{background:var(--r5bg);color:var(--r5);}
+
+/* STATO CHART */
 .stato-wrap{padding:12px 12px 0;}
-.stato-legend{display:flex;gap:14px;justify-content:center;padding:6px 0 8px;}
 .stato-notes{border-top:1px solid var(--paper3);}
 .stato-note-row{display:flex;gap:8px;padding:5px 14px;border-bottom:1px solid var(--paper3);font-size:11px;align-items:baseline;}
 .stato-note-row:last-child{border-bottom:none;}
 .stato-note-date{color:var(--ink3);min-width:65px;flex-shrink:0;}
 .stato-note-vals{color:var(--accent);font-weight:500;flex-shrink:0;min-width:140px;}
 .stato-note-txt{color:var(--ink3);font-style:italic;}
-.custom-table{width:100%;border-collapse:collapse;}
-.custom-table th{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;padding:7px 12px;text-align:left;border-bottom:1px solid var(--paper3);}
-.custom-table td{font-size:12px;padding:6px 12px;border-bottom:1px solid var(--paper3);vertical-align:middle;}
-.custom-table tr:last-child td{border-bottom:none;}
-.custom-table tr:hover td{background:var(--accent2);}
+
+/* ════════════════════════════
+   ALIMENTI — card per fascia rischio
+   ════════════════════════════ */
+.alim-controls{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+.alim-search{padding:6px 11px;border-radius:6px;border:1px solid var(--paper3);font-size:13px;background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;width:220px;}
+.trig-filter-row{display:flex;gap:4px;flex-wrap:wrap;}
+.tfbtn{padding:3px 9px;border-radius:20px;border:1px solid var(--paper3);background:var(--paper2);color:var(--ink2);font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.tfbtn.on{border-width:1.5px;}
+.alim-count{font-size:12px;color:var(--ink3);margin-left:auto;}
+
+.risk-section{margin-bottom:10px;border-radius:10px;overflow:hidden;border:1px solid var(--paper3);}
+.risk-section-hdr{display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer;user-select:none;}
+.risk-section-hdr:active{opacity:.85;}
+.risk-section-label{font-size:12px;font-weight:600;flex:1;}
+.risk-section-cnt{font-size:11px;font-weight:700;padding:1px 7px;border-radius:20px;background:rgba(0,0,0,.07);}
+.risk-section-arrow{font-size:10px;color:var(--ink3);transition:transform .15s;margin-left:2px;}
+.risk-section-arrow.open{transform:rotate(90deg);}
+.risk-section-body{background:var(--paper);display:none;}
+.risk-section-body.open{display:block;}
+
+/* Grid card alimenti */
+.alim-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;background:var(--paper3);}
+.alim-card{background:var(--paper);padding:11px 14px;cursor:pointer;transition:background .1s;}
+.alim-card:hover{background:var(--accent2);}
+.alim-card-top{display:flex;align-items:center;gap:7px;}
+.alim-card-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.alim-card-name{font-size:13px;font-weight:600;color:var(--ink);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.alim-card-badge{font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;flex-shrink:0;}
+.alim-card-chips{display:flex;flex-wrap:wrap;gap:2px;margin-top:5px;}
+.alim-card-detail{display:none;margin-top:7px;padding-top:7px;border-top:1px solid var(--paper3);font-size:11px;color:var(--ink2);line-height:1.5;}
+.alim-card-detail.open{display:block;}
+.alim-card-note{font-size:10px;color:var(--ink3);font-style:italic;margin-top:3px;}
+.alim-card-chip-row{font-size:10px;color:var(--ink3);margin-top:2px;}
+.no-data{text-align:center;padding:20px;color:var(--ink3);font-size:13px;}
+
+/* ENTRIES */
 .entries-controls{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;}
 .entries-controls select,.entries-controls input{padding:6px 10px;border-radius:6px;border:1px solid var(--paper3);font-size:13px;background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;}
 .entry-row{border:1px solid var(--paper3);border-radius:8px;margin-bottom:6px;overflow:hidden;background:var(--paper);}
+.entry-row.has-react{border-left:3px solid var(--r4);}
 .entry-head{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;user-select:none;}
 .entry-head:hover{background:var(--paper2);}
 .entry-date{font-size:11px;color:var(--ink3);min-width:104px;flex-shrink:0;}
@@ -82,8 +140,8 @@ body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);line-heigh
 .entry-detail-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;align-items:center;}
 .entry-note{font-size:12px;color:var(--ink2);font-style:italic;margin-top:5px;}
 .entry-react{font-size:11px;color:var(--ink3);margin-top:3px;}
-.no-data{text-align:center;padding:20px;color:var(--ink3);font-size:13px;}
-/* PRINT DIALOG */
+
+/* PRINT */
 #print-dialog{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;}
 #print-dialog.open{display:flex;}
 .print-modal{background:var(--paper);border-radius:12px;padding:28px 32px;min-width:340px;box-shadow:0 8px 40px rgba(0,0,0,.15);}
@@ -94,14 +152,17 @@ body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);line-heigh
 .print-check label{font-size:14px;color:var(--ink);cursor:pointer;flex:1;}
 .print-check .print-sub{font-size:11px;color:var(--ink3);display:block;margin-top:1px;}
 .print-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
+
 @media print{
-  #upload-screen,#print-dialog,.top-bar-right,.entries-controls,.period-bar{display:none!important;}
+  #upload-screen,#print-dialog,.top-bar-right,.entries-controls,.period-bar,.alim-controls,.trig-filter-row{display:none!important;}
   body{font-size:11px;}
   .stat-val{font-size:24px;}
   .entry-body{display:block!important;}
   .entry-head{cursor:default;}
   #dashboard{padding:0;max-width:none;display:block!important;}
-  .panel,.stat-card,.entry-row{break-inside:avoid;}
+  .panel,.stat-card,.entry-row,.risk-section{break-inside:avoid;}
+  .risk-section-body{display:block!important;}
+  .alim-card-detail{display:block!important;}
 }
 </style>
 </head>
@@ -123,8 +184,8 @@ body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);line-heigh
     <h2>Cosa stampare</h2>
     <div class="print-check"><input type="checkbox" id="pc-stats" checked/><label for="pc-stats">Statistiche e grafici<span class="print-sub">Card riassuntive, trigger, sintomi, alimenti con reazioni</span></label></div>
     <div class="print-check"><input type="checkbox" id="pc-stato" checked/><label for="pc-stato">Stato infiammatorio<span class="print-sub">Grafico poliposi / asma / dermatosi + note</span></label></div>
-    <div class="print-check"><input type="checkbox" id="pc-alim"/><label for="pc-alim">Tabella alimenti codificati<span class="print-sub">Tutti gli alimenti analizzati con AI, ordinati per rischio</span></label></div>
-    <div class="print-check"><input type="checkbox" id="pc-entries"/><label for="pc-entries">Registro pasti<span class="print-sub">Voci del periodo selezionato, con filtri applicati</span></label></div>
+    <div class="print-check"><input type="checkbox" id="pc-alim"/><label for="pc-alim">Alimenti codificati<span class="print-sub">Card per fascia di rischio</span></label></div>
+    <div class="print-check"><input type="checkbox" id="pc-entries"/><label for="pc-entries">Registro pasti<span class="print-sub">Voci del periodo selezionato</span></label></div>
     <div class="print-actions">
       <button class="btn" onclick="closePrint()">Annulla</button>
       <button class="btn btn-primary" onclick="doPrint()">🖨 Stampa</button>
@@ -145,14 +206,16 @@ body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);line-heigh
     </div>
   </div>
 
+  <!-- PERIOD BAR con bottoni rapidi -->
   <div class="period-bar">
-    <label>Periodo:</label>
-    <select id="period-sel" onchange="applyPeriod()">
-      <option value="1">Ultima settimana</option>
-      <option value="2" selected>Ultime 2 settimane</option>
-      <option value="4">Ultime 4 settimane</option>
-      <option value="all">Tutto il diario</option>
-    </select>
+    <span class="period-bar-label">Periodo:</span>
+    <div class="period-btns">
+      <button class="pbtn" id="pb-7" onclick="setPeriod(7)">Settimana</button>
+      <button class="pbtn on" id="pb-14" onclick="setPeriod(14)">2 settimane</button>
+      <button class="pbtn" id="pb-30" onclick="setPeriod(30)">Mese</button>
+      <button class="pbtn" id="pb-90" onclick="setPeriod(90)">3 mesi</button>
+      <button class="pbtn" id="pb-all" onclick="setPeriod(null)">Tutto</button>
+    </div>
     <span class="period-info" id="period-info"></span>
   </div>
 
@@ -184,19 +247,15 @@ body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);line-heigh
     <div class="panel" id="stato-chart"></div>
   </div>
 
+  <!-- ALIMENTI — nuova vista a card per fascia rischio -->
   <div id="sec-alim">
     <div class="section-title">Alimenti codificati — profilo di rischio</div>
-    <div class="panel" style="overflow-x:auto;">
-      <table class="custom-table">
-        <thead><tr>
-          <th style="width:190px">Alimento</th>
-          <th>Trigger</th>
-          <th style="width:110px">Rischio</th>
-          <th>Nota sintetica</th>
-        </tr></thead>
-        <tbody id="custom-tbody"></tbody>
-      </table>
+    <div class="alim-controls">
+      <input class="alim-search" type="text" id="alim-search" placeholder="🔍 Cerca alimento…" oninput="renderAlim()"/>
+      <div class="trig-filter-row" id="trig-filter-row"></div>
+      <span class="alim-count" id="alim-count"></span>
     </div>
+    <div id="alim-sections"></div>
   </div>
 
   <div id="sec-entries">
@@ -220,9 +279,20 @@ body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);line-heigh
 <script>
 const TS_C={"Istamina":{bg:"#FCEBEB",c:"#A32D2D"},"Salicilati":{bg:"#FAEEDA",c:"#854F0B"},"Ammine biogene":{bg:"#FAECE7",c:"#993C1D"},"Tiramina":{bg:"#FCEBEB",c:"#791F1F"},"TRPA1":{bg:"#EEEDFE",c:"#3C3489"},"Istamina-lib.":{bg:"#FBEAF0",c:"#993556"}};
 const RL=["","Basso","Lieve","Medio","Alto","Molto alto"];
-const CONDS=[{key:"poliposi",label:"Poliposi",color:"#2a5c8a"},{key:"asma",label:"Asma",color:"#EF9F27"},{key:"dermatosi",label:"Dermatosi",color:"#D85A30"}];
-let RAW=null, PERIOD_DAYS=14;
+const CONDS=[{key:"poliposi",label:"Poliposi",color:"#2a5c8a"},{key:"asma",label:"Asma",color:"#EF9F27"},{key:"dermatosi",label:"Dermatosi",color:"#9B30FF"}];
 
+const RISK_SECTIONS=[
+  {id:"rs5",label:"🔴 Evitare — Rischio 5/5",minR:5,maxR:5,bg:"#f5e0e0",c:"#8a1a1a"},
+  {id:"rs4",label:"🟠 Quasi sempre evitare — 4/5",minR:4,maxR:4,bg:"#fbeaea",c:"#c02828"},
+  {id:"rs3",label:"🟡 Cautela — 3/5",minR:3,maxR:3,bg:"#fdf3e0",c:"#b07000"},
+  {id:"rs2",label:"🟢 Monitorare — 2/5",minR:2,maxR:2,bg:"#edf6ea",c:"#3a7a28"},
+  {id:"rs01",label:"✅ Sicuri — 0-1/5",minR:0,maxR:1,bg:"#e8f6f0",c:"#2a6b4a"},
+];
+const RDOT_C=["#5aaa44","#5aaa44","#e8a020","#d4601a","#c02828","#8a1a1a"];
+
+let RAW=null, PERIOD_DAYS=14, alimTrigFilter=null;
+
+/* ── FILE LOAD ── */
 function loadFile(e){
   const file=e.target.files[0];if(!file)return;
   const r=new FileReader();
@@ -233,39 +303,50 @@ function processData(json){
   RAW=json;
   document.getElementById('upload-screen').style.display='none';
   document.getElementById('dashboard').style.display='block';
-  if(RAW.exported) document.getElementById('export-date').textContent='Esportato il '+new Date(RAW.exported).toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'});
+  if(RAW.exported)document.getElementById('export-date').textContent='Esportato il '+new Date(RAW.exported).toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'});
+  buildTrigFilterBar();
   applyPeriod();
-  renderCustomTable();
+}
+
+/* ── PERIOD ── */
+function setPeriod(days){
+  PERIOD_DAYS=days;
+  const ids=['pb-7','pb-14','pb-30','pb-90','pb-all'];
+  const vals=[7,14,30,90,null];
+  ids.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el)el.className='pbtn'+(vals[i]===days?' on':'');
+  });
+  renderAll();
 }
 function applyPeriod(){
-  const sel=document.getElementById('period-sel').value;
-  PERIOD_DAYS=sel==='all'?null:parseInt(sel)*7;
+  // default = 14 giorni già selezionato
   renderAll();
 }
 function filterByPeriod(arr){
-  if(!PERIOD_DAYS||!arr.length)return arr;
-  const maxTs=Math.max(...arr.map(e=>new Date(e.ts).getTime()));
+  if(!PERIOD_DAYS||!arr||!arr.length)return arr||[];
+  const maxTs=Math.max.apply(null,arr.map(function(e){return new Date(e.ts).getTime();}));
   const cutoff=new Date(maxTs-PERIOD_DAYS*86400000);
-  return arr.filter(e=>new Date(e.ts)>=cutoff);
+  return arr.filter(function(e){return new Date(e.ts)>=cutoff;});
 }
+
+/* ── RENDER ALL ── */
 function renderAll(){
   if(!RAW)return;
-  const allEntries=(RAW.entries||[]).slice().sort((a,b)=>new Date(a.ts)-new Date(b.ts));
-  const allStato=(RAW.statoEntries||RAW.stato||[]).slice().sort((a,b)=>new Date(a.ts)-new Date(b.ts));
+  const allEntries=(RAW.entries||[]).slice().sort(function(a,b){return new Date(a.ts)-new Date(b.ts);});
+  const allStato=(RAW.statoEntries||RAW.stato||[]).slice().sort(function(a,b){return new Date(a.ts)-new Date(b.ts);});
   const entries=filterByPeriod(allEntries);
   const stato=filterByPeriod(allStato);
 
-  // Period info
-  const pi=document.getElementById('period-info');
+  var pi=document.getElementById('period-info');
   if(entries.length>=1){
-    const d1=new Date(entries[0].ts),d2=new Date(entries[entries.length-1].ts);
-    pi.textContent=fmt2(d1)+(entries.length>1?' → '+fmt2(d2):'')+' · '+entries.length+' pasti · '+stato.length+' valutazioni stato';
-  } else pi.textContent='Nessun dato nel periodo';
+    var d1=new Date(entries[0].ts),d2=new Date(entries[entries.length-1].ts);
+    pi.textContent=fmt2(d1)+(entries.length>1?' → '+fmt2(d2):'')+' · '+entries.length+' pasti · '+stato.length+' valutazioni';
+  }else pi.textContent='Nessun dato nel periodo';
 
-  // Stats
-  const withReact=entries.filter(e=>e.symptoms&&e.symptoms.length>0);
-  const instant=entries.filter(e=>e.reactionTime&&e.reactionTime.includes('Istantanea'));
-  const allFoods=new Set(entries.flatMap(e=>e.foods));
+  var withReact=entries.filter(function(e){return e.symptoms&&e.symptoms.length>0;});
+  var instant=entries.filter(function(e){return e.reactionTime&&e.reactionTime.includes('Istantanea');});
+  var allFoods=new Set(entries.reduce(function(acc,e){return acc.concat(e.foods);},[]) );
   document.getElementById('st-entries').textContent=entries.length;
   document.getElementById('st-reactions').textContent=withReact.length;
   document.getElementById('st-react-pct').textContent=entries.length?Math.round(withReact.length/entries.length*100)+'% dei pasti':'';
@@ -273,144 +354,214 @@ function renderAll(){
   document.getElementById('st-foods').textContent=allFoods.size;
   document.getElementById('st-custom').textContent=(RAW.customFoods||[]).length+' codificati';
   if(entries.length>=2){
-    const d1=new Date(entries[0].ts),d2=new Date(entries[entries.length-1].ts);
-    const days=Math.round((d2-d1)/86400000)+1;
+    var da=new Date(entries[0].ts),db=new Date(entries[entries.length-1].ts);
+    var days=Math.round((db-da)/86400000)+1;
     document.getElementById('st-days').textContent=days+' giorni';
   }
 
-  // Charts
-  const trigC={},trigReactC={};
-  entries.forEach(e=>(e.triggers||[]).forEach(t=>trigC[t]=(trigC[t]||0)+1));
-  withReact.forEach(e=>(e.triggers||[]).forEach(t=>trigReactC[t]=(trigReactC[t]||0)+1));
-  renderBarChart('trigger-chart',Object.entries(trigC).sort((a,b)=>b[1]-a[1]),t=>(TS_C[t]||{c:'#888'}).c,null,trigReactC);
+  var trigC={},trigReactC={};
+  entries.forEach(function(e){(e.triggers||[]).forEach(function(t){trigC[t]=(trigC[t]||0)+1;});});
+  withReact.forEach(function(e){(e.triggers||[]).forEach(function(t){trigReactC[t]=(trigReactC[t]||0)+1;});});
+  renderBarChart('trigger-chart',Object.entries(trigC).sort(function(a,b){return b[1]-a[1];}),function(t){return(TS_C[t]||{c:'#888'}).c;},null,trigReactC);
 
-  const symC={};
-  withReact.forEach(e=>(e.symptoms||[]).forEach(s=>symC[s]=(symC[s]||0)+1));
-  renderBarChart('symptom-chart',Object.entries(symC).sort((a,b)=>b[1]-a[1]),()=>'#c02828');
+  var symC={};
+  withReact.forEach(function(e){(e.symptoms||[]).forEach(function(s){symC[s]=(symC[s]||0)+1;});});
+  renderBarChart('symptom-chart',Object.entries(symC).sort(function(a,b){return b[1]-a[1];}),function(){return'#c02828';});
 
-  const foodReactC={};
-  withReact.forEach(e=>e.foods.forEach(f=>foodReactC[f]=(foodReactC[f]||0)+1));
-  renderBarChart('food-chart',Object.entries(foodReactC).sort((a,b)=>b[1]-a[1]).slice(0,7),()=>'#2a5c8a');
+  var foodReactC={};
+  withReact.forEach(function(e){e.foods.forEach(function(f){foodReactC[f]=(foodReactC[f]||0)+1;});});
+  renderBarChart('food-chart',Object.entries(foodReactC).sort(function(a,b){return b[1]-a[1];}).slice(0,7),function(){return'#2a5c8a';});
 
   renderStatoChart(stato);
   renderEntries();
 }
 
 function renderBarChart(id,data,colorFn,head,subData){
-  const el=document.getElementById(id);
+  var el=document.getElementById(id);
   if(!data.length){el.innerHTML='<div class="no-data">Nessun dato</div>';return;}
-  const max=data[0][1];
-  el.innerHTML=(head?`<div class="panel-head">${head}</div>`:'')+
-    data.map(([label,count])=>{
-      const pct=Math.round(count/max*100),col=colorFn(label);
-      const sub=subData&&subData[label]?`<span style="color:var(--r4);font-size:10px;margin-left:2px">(${subData[label]})</span>`:'';
-      return`<div class="bar-row"><div class="bar-label" title="${label}">${label}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><div class="bar-count">${count}${sub}</div></div>`;
+  var max=data[0][1];
+  el.innerHTML=(head?'<div class="panel-head">'+head+'</div>':'')+
+    data.map(function(item){
+      var label=item[0],count=item[1];
+      var pct=Math.round(count/max*100),col=colorFn(label);
+      var sub=subData&&subData[label]?'<span style="color:var(--r4);font-size:10px;margin-left:2px">('+subData[label]+')</span>':'';
+      return'<div class="bar-row"><div class="bar-label" title="'+label+'">'+label+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+col+'"></div></div><div class="bar-count">'+count+sub+'</div></div>';
     }).join('');
 }
 
 function renderStatoChart(stato){
-  const el=document.getElementById('stato-chart');
+  var el=document.getElementById('stato-chart');
   if(!stato.length){el.innerHTML='<div class="no-data">Nessuna valutazione nel periodo</div>';return;}
-  const N=stato.length;
-  const W=940,H=150,ML=24,MT=10,MR=10,MB=24;
-  const CW=W-ML-MR,CH=H-MT-MB;
-  const xF=i=>ML+(N>1?i*CW/(N-1):CW/2);
-  const yF=v=>MT+(5-v)/4*CH;
-  let svg=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;display:block">`;
-  for(let v=1;v<=5;v++){
-    const y=yF(v);
-    svg+=`<line x1="${ML}" y1="${y}" x2="${W-MR}" y2="${y}" stroke="#e0ddd6" stroke-width="0.5" stroke-dasharray="${v===3?'4,3':''}"/>`;
-    svg+=`<text x="${ML-4}" y="${y+3}" font-size="9" fill="#9a9590" text-anchor="end">${v}</text>`;
+  var N=stato.length;
+  var W=940,H=150,ML=24,MT=10,MR=10,MB=24;
+  var CW=W-ML-MR,CH=H-MT-MB;
+  var xF=function(i){return ML+(N>1?i*CW/(N-1):CW/2);};
+  var yF=function(v){return MT+(5-v)/4*CH;};
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;display:block">';
+  for(var v=1;v<=5;v++){
+    var y=yF(v);
+    svg+='<line x1="'+ML+'" y1="'+y+'" x2="'+(W-MR)+'" y2="'+y+'" stroke="#e0ddd6" stroke-width="0.5" stroke-dasharray="'+(v===3?'4,3':'')+'"/>';
+    svg+='<text x="'+(ML-4)+'" y="'+(y+3)+'" font-size="9" fill="#9a9590" text-anchor="end">'+v+'</text>';
   }
-  // Date labels — adattive
-  const step=Math.max(1,Math.floor(N/12));
-  stato.forEach((d,i)=>{
+  var step=Math.max(1,Math.floor(N/12));
+  stato.forEach(function(d,i){
     if(i===0||i===N-1||i%step===0)
-      svg+=`<text x="${xF(i)}" y="${H-5}" font-size="8" fill="#9a9590" text-anchor="middle">${fmtShort(d.ts)}</text>`;
+      svg+='<text x="'+xF(i)+'" y="'+(H-5)+'" font-size="8" fill="#9a9590" text-anchor="middle">'+fmtShort(d.ts)+'</text>';
   });
-  CONDS.forEach(({key,color})=>{
-    let p='',open=false;
-    stato.forEach((d,i)=>{
-      if(d[key]!=null){const x=xF(i),y=yF(d[key]);p+=open?`L${x},${y}`:`M${x},${y}`;open=true;}
+  CONDS.forEach(function(cond){
+    var p='',open=false;
+    stato.forEach(function(d,i){
+      if(d[cond.key]!=null){var x=xF(i),y=yF(d[cond.key]);p+=open?'L'+x+','+y:'M'+x+','+y;open=true;}
       else open=false;
     });
-    if(p)svg+=`<path d="${p}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
-    stato.forEach((d,i)=>{if(d[key]!=null)svg+=`<circle cx="${xF(i)}" cy="${yF(d[key])}" r="2.5" fill="${color}" stroke="white" stroke-width="1"/>`;});
+    if(p)svg+='<path d="'+p+'" fill="none" stroke="'+cond.color+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+    stato.forEach(function(d,i){if(d[cond.key]!=null)svg+='<circle cx="'+xF(i)+'" cy="'+yF(d[cond.key])+'" r="2.5" fill="'+cond.color+'" stroke="white" stroke-width="1"/>';});
   });
   svg+='</svg>';
-  const leg='<div style="display:flex;gap:16px;justify-content:center;padding:6px 0 8px;border-top:1px solid var(--paper3)">'+
-    CONDS.map(c=>`<span style="font-size:11px;color:var(--ink2);display:flex;align-items:center;gap:5px"><span style="width:16px;height:2px;background:${c.color};display:inline-block;border-radius:1px"></span>${c.label}</span>`).join('')+'</div>';
-  const noteRows=stato.filter(e=>e.note&&e.note.trim());
-  let notes='';
+  var leg='<div style="display:flex;gap:16px;justify-content:center;padding:6px 0 8px;border-top:1px solid var(--paper3)">'+
+    CONDS.map(function(c){return'<span style="font-size:11px;color:var(--ink2);display:flex;align-items:center;gap:5px"><span style="width:16px;height:2px;background:'+c.color+';display:inline-block;border-radius:1px"></span>'+c.label+'</span>';}).join('')+'</div>';
+  var noteRows=stato.filter(function(e){return e.note&&e.note.trim();});
+  var notes='';
   if(noteRows.length){
     notes='<div class="stato-notes">'+
-      noteRows.map(e=>`<div class="stato-note-row"><span class="stato-note-date">${fmtShort(e.ts)}</span><span class="stato-note-vals">${CONDS.map(c=>e[c.key]!=null?`${c.label} ${e[c.key]}/5`:null).filter(Boolean).join(' · ')}</span><span class="stato-note-txt">${e.note}</span></div>`).join('')+'</div>';
+      noteRows.map(function(e){return'<div class="stato-note-row"><span class="stato-note-date">'+fmtShort(e.ts)+'</span><span class="stato-note-vals">'+CONDS.map(function(c){return e[c.key]!=null?c.label+' '+e[c.key]+'/5':null;}).filter(Boolean).join(' · ')+'</span><span class="stato-note-txt">'+e.note+'</span></div>';}).join('')+'</div>';
   }
-  el.innerHTML=`<div class="stato-wrap">${svg}</div>${leg}${notes}`;
+  el.innerHTML='<div class="stato-wrap">'+svg+'</div>'+leg+notes;
 }
 
-function renderCustomTable(){
-  const custom=(RAW.customFoods||[]).slice().sort((a,b)=>b.risk-a.risk);
-  const tbody=document.getElementById('custom-tbody');
-  if(!custom.length){tbody.innerHTML='<tr><td colspan="4" class="no-data">Nessun alimento codificato</td></tr>';return;}
-  tbody.innerHTML=custom.map(f=>{
-    const rc=`risk${Math.min(f.risk,5)}`;
-    const tH=f.triggers.map(t=>{const s=TS_C[t]||{bg:'#eee',c:'#555'};return`<span class="chip" style="background:${s.bg};color:${s.c}">${t}</span>`;}).join('')||'<span style="font-size:11px;color:var(--ink3)">—</span>';
-    const noteShort=f.note?f.note.split('.')[0]+'.':'';
-    return`<tr><td style="font-weight:500">${f.name}</td><td>${tH}</td><td><span class="risk ${rc}">${f.risk}/5 ${RL[f.risk]||''}</span></td><td style="font-size:11px;color:var(--ink3);font-style:italic">${noteShort}</td></tr>`;
-  }).join('');
+/* ════════════════════════════
+   ALIMENTI — card per fascia rischio
+   ════════════════════════════ */
+function buildTrigFilterBar(){
+  var trigSet=new Set();
+  (RAW.customFoods||[]).forEach(function(f){f.triggers.forEach(function(t){trigSet.add(t);});});
+  var bar=document.getElementById('trig-filter-row');if(!bar)return;
+  var html='<button class="tfbtn on" id="tf-all" onclick="setTrigFilter(null)">Tutti</button>';
+  trigSet.forEach(function(t){
+    var s=TS_C[t]||{c:'#888'};
+    html+='<button class="tfbtn" data-trig="'+t+'" onclick="setTrigFilter(\''+t+'\')" style="border-color:'+s.c+';color:'+s.c+'">'+t+'</button>';
+  });
+  bar.innerHTML=html;
+}
+function setTrigFilter(trig){
+  alimTrigFilter=trig;
+  document.querySelectorAll('.tfbtn').forEach(function(el){
+    var bt=el.dataset.trig||null;
+    el.className='tfbtn'+(bt===trig?' on':'');
+  });
+  renderAlim();
+}
+function renderAlim(){
+  if(!RAW)return;
+  var custom=(RAW.customFoods||[]).slice();
+  var q=(document.getElementById('alim-search')||{}).value||'';
+  q=q.trim().toLowerCase();
+  if(q)custom=custom.filter(function(f){return f.name.toLowerCase().includes(q);});
+  if(alimTrigFilter)custom=custom.filter(function(f){return f.triggers.includes(alimTrigFilter);});
+
+  var cntEl=document.getElementById('alim-count');
+  if(cntEl)cntEl.textContent=custom.length+' aliment'+(custom.length===1?'o':'i');
+
+  var container=document.getElementById('alim-sections');
+  if(!container)return;
+  if(!custom.length){container.innerHTML='<div class="no-data" style="padding:24px">Nessun alimento corrisponde ai filtri.</div>';return;}
+
+  var html='';
+  RISK_SECTIONS.forEach(function(sec){
+    var items=custom.filter(function(f){return f.risk>=sec.minR&&f.risk<=sec.maxR;}).sort(function(a,b){return b.risk-a.risk||a.name.localeCompare(b.name,'it');});
+    if(!items.length)return;
+    html+='<div class="risk-section">';
+    html+='<div class="risk-section-hdr" style="background:'+sec.bg+'" onclick="togRiskSec(\'rs-body-'+sec.id+'\')">';
+    html+='<span class="risk-section-arrow open" id="rs-arr-'+sec.id+'">▶</span>';
+    html+='<span class="risk-section-label" style="color:'+sec.c+'">'+sec.label+'</span>';
+    html+='<span class="risk-section-cnt" style="color:'+sec.c+'">'+items.length+'</span>';
+    html+='</div>';
+    html+='<div class="risk-section-body open" id="rs-body-'+sec.id+'">';
+    html+='<div class="alim-grid">';
+    items.forEach(function(f,fi){
+      var dot='<span class="alim-card-dot" style="background:'+(RDOT_C[f.risk]||'#aaa')+'"></span>';
+      var badge='<span class="alim-card-badge" style="background:'+sec.bg+';color:'+sec.c+'">'+f.risk+'/5</span>';
+      var chips=(f.triggers||[]).map(function(t){var s=TS_C[t]||{bg:'#eee',c:'#555'};return'<span class="chip" style="background:'+s.bg+';color:'+s.c+'">'+t+'</span>';}).join('')||'<span style="font-size:10px;color:var(--ink3)">nessun trigger</span>';
+      var promoBadge=f.promoted?'<span style="font-size:9px;background:var(--accent2);color:var(--accent);padding:1px 5px;border-radius:10px;margin-left:4px">chip</span>':'';
+      html+='<div class="alim-card" onclick="togCard(\'ac-'+sec.id+'-'+fi+'\')">';
+      html+='<div class="alim-card-top">'+dot+'<span class="alim-card-name" title="'+f.name+'">'+f.name+promoBadge+'</span>'+badge+'</div>';
+      html+='<div class="alim-card-chips">'+chips+'</div>';
+      html+='<div class="alim-card-detail" id="ac-'+sec.id+'-'+fi+'">';
+      if(f.rationale)html+='<div>'+f.rationale+'</div>';
+      if(f.note)html+='<div class="alim-card-note">⚠ '+f.note+'</div>';
+      html+='</div>';
+      html+='</div>';
+    });
+    html+='</div></div></div>';
+  });
+  container.innerHTML=html;
+}
+function togRiskSec(bodyId){
+  var body=document.getElementById(bodyId);if(!body)return;
+  var open=body.classList.contains('open');
+  body.className='risk-section-body'+(open?'':' open');
+  // rotate arrow
+  var secId=bodyId.replace('rs-body-','');
+  var arr=document.getElementById('rs-arr-'+secId);
+  if(arr)arr.style.transform=open?'rotate(90deg)':'';
+}
+function togCard(id){
+  var el=document.getElementById(id);if(!el)return;
+  el.className='alim-card-detail'+(el.className.includes('open')?'':' open');
 }
 
+/* ── ENTRIES ── */
 function renderEntries(){
   if(!RAW)return;
-  const allEntries=(RAW.entries||[]).slice().sort((a,b)=>new Date(a.ts)-new Date(b.ts));
-  let entries=filterByPeriod(allEntries);
-  const fr=document.getElementById('filter-reaction').value;
-  const so=document.getElementById('sort-order').value;
-  const ft=document.getElementById('filter-text').value.toLowerCase();
-  if(fr==='reaction')entries=entries.filter(e=>e.symptoms&&e.symptoms.length>0);
-  if(fr==='no-reaction')entries=entries.filter(e=>!e.symptoms||e.symptoms.length===0);
-  if(ft)entries=entries.filter(e=>e.foods.some(f=>f.toLowerCase().includes(ft)));
-  if(so==='desc')entries=[...entries].reverse();
-  const el=document.getElementById('entries-list');
+  var allEntries=(RAW.entries||[]).slice().sort(function(a,b){return new Date(a.ts)-new Date(b.ts);});
+  var entries=filterByPeriod(allEntries);
+  var fr=document.getElementById('filter-reaction').value;
+  var so=document.getElementById('sort-order').value;
+  var ft=document.getElementById('filter-text').value.toLowerCase();
+  if(fr==='reaction')entries=entries.filter(function(e){return e.symptoms&&e.symptoms.length>0;});
+  if(fr==='no-reaction')entries=entries.filter(function(e){return !e.symptoms||e.symptoms.length===0;});
+  if(ft)entries=entries.filter(function(e){return e.foods.some(function(f){return f.toLowerCase().includes(ft);});});
+  if(so==='desc')entries=entries.slice().reverse();
+  var el=document.getElementById('entries-list');
   if(!entries.length){el.innerHTML='<div class="no-data">Nessun risultato</div>';return;}
-  el.innerHTML=entries.map((e,i)=>{
-    const hasSym=e.symptoms&&e.symptoms.length>0;
-    const rc=`risk${Math.min(e.maxRisk||0,5)}`;
-    const tH=(e.triggers||[]).map(t=>{const s=TS_C[t]||{bg:'#eee',c:'#555'};return`<span class="chip" style="background:${s.bg};color:${s.c}">${t}</span>`;}).join('');
-    const symH=(e.symptoms||[]).map(s=>`<span class="chip" style="background:#FCEBEB;color:#A32D2D">${s}</span>`).join('');
-    const sevH=e.severity?`<span class="chip" style="background:#FAEEDA;color:#854F0B">${e.severity}</span>`:'';
-    const mealH=e.meal?`<span class="entry-meal-tag">${e.meal}</span>`:'';
-    const symIcon=hasSym?`<span class="entry-sym">⚠ ${e.symptoms.join(', ')}</span>`:'';
-    return`<div class="entry-row"><div class="entry-head" onclick="togE('eb${i}','ar${i}')"><span class="entry-date">${fmt(e.ts)}</span>${mealH}<span class="entry-foods">${e.foods.join(', ')}</span>${symIcon}<span class="risk ${rc}" style="flex-shrink:0">${e.maxRisk||0}/5</span><span style="font-size:11px;color:var(--ink3);flex-shrink:0" id="ar${i}">▼</span></div><div class="entry-body" id="eb${i}">${tH?`<div class="entry-detail-row">${tH}</div>`:''}${hasSym?`<div class="entry-detail-row" style="margin-top:4px">${symH}${sevH}</div>`:''}${e.reactionTime?`<div class="entry-react">Reazione: ${e.reactionTime}</div>`:''}${e.note?`<div class="entry-note">${e.note}</div>`:''}</div></div>`;
+  el.innerHTML=entries.map(function(e,i){
+    var hasSym=e.symptoms&&e.symptoms.length>0;
+    var rc='risk'+Math.min(e.maxRisk||0,5);
+    var tH=(e.triggers||[]).map(function(t){var s=TS_C[t]||{bg:'#eee',c:'#555'};return'<span class="chip" style="background:'+s.bg+';color:'+s.c+'">'+t+'</span>';}).join('');
+    var symH=(e.symptoms||[]).map(function(s){return'<span class="chip" style="background:#FCEBEB;color:#A32D2D">'+s+'</span>';}).join('');
+    var sevH=e.severity?'<span class="chip" style="background:#FAEEDA;color:#854F0B">'+e.severity+'</span>':'';
+    var mealH=e.meal?'<span class="entry-meal-tag">'+e.meal+'</span>':'';
+    var symIcon=hasSym?'<span class="entry-sym">⚠ '+e.symptoms.join(', ')+'</span>':'';
+    return'<div class="entry-row'+(hasSym?' has-react':'')+'"><div class="entry-head" onclick="togE(\'eb'+i+'\',\'ar'+i+'\')"><span class="entry-date">'+fmt(e.ts)+'</span>'+mealH+'<span class="entry-foods">'+e.foods.join(', ')+'</span>'+symIcon+'<span class="risk '+rc+'" style="flex-shrink:0">'+(e.maxRisk||0)+'/5</span><span style="font-size:11px;color:var(--ink3);flex-shrink:0" id="ar'+i+'">▼</span></div><div class="entry-body" id="eb'+i+'">'+(tH?'<div class="entry-detail-row">'+tH+'</div>':'')+(hasSym?'<div class="entry-detail-row" style="margin-top:4px">'+symH+sevH+'</div>':'')+(e.reactionTime?'<div class="entry-react">Reazione: '+e.reactionTime+'</div>':'')+(e.note?'<div class="entry-note">'+e.note+'</div>':'')+'</div></div>';
   }).join('');
 }
 function togE(id,aid){
-  const el=document.getElementById(id),ar=document.getElementById(aid);
-  if(!el)return;const open=el.classList.toggle('open');
+  var el=document.getElementById(id),ar=document.getElementById(aid);
+  if(!el)return;var open=el.classList.toggle('open');
   if(ar)ar.textContent=open?'▲':'▼';
 }
 
-// PRINT
+/* ── PRINT ── */
 function openPrint(){document.getElementById('print-dialog').classList.add('open');}
 function closePrint(){document.getElementById('print-dialog').classList.remove('open');}
 function doPrint(){
-  const secs=['stats','stato','alim','entries'];
-  secs.forEach(s=>{
-    const el=document.getElementById('sec-'+s);
-    const checked=document.getElementById('pc-'+s).checked;
+  var secs=['stats','stato','alim','entries'];
+  secs.forEach(function(s){
+    var el=document.getElementById('sec-'+s);
+    var checked=document.getElementById('pc-'+s).checked;
     if(el)el.style.display=checked?'':'none';
   });
-  document.querySelectorAll('.entry-body').forEach(el=>el.classList.add('open'));
+  document.querySelectorAll('.entry-body').forEach(function(el){el.classList.add('open');});
   closePrint();
-  setTimeout(()=>{
+  setTimeout(function(){
     window.print();
-    secs.forEach(s=>{const el=document.getElementById('sec-'+s);if(el)el.style.display='';});
-    document.querySelectorAll('.entry-body').forEach(el=>el.classList.remove('open'));
+    secs.forEach(function(s){var el=document.getElementById('sec-'+s);if(el)el.style.display='';});
+    document.querySelectorAll('.entry-body').forEach(function(el){el.classList.remove('open');});
   },200);
 }
 
-function fmt(ts){const d=new Date(ts);return d.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});}
+/* ── UTILS ── */
+function fmt(ts){var d=new Date(ts);return d.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});}
 function fmt2(d){return d.toLocaleDateString('it-IT',{day:'2-digit',month:'short'});}
 function fmtShort(ts){return new Date(ts).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'});}
 </script>
