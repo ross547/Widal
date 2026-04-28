@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="Widal"/>
-<title>Diario Widal v7.1</title>
+<title>Diario Widal v7.2</title>
 <style>
 :root{
   --bg:#ffffff;--bg2:#f5f5f4;--bg3:#ececea;
@@ -1131,7 +1131,7 @@ function makeStatoSvg(){
       var v=getV(d);
       if(v!=null){
         svg+='<circle cx="'+xF(i)+'" cy="'+yF(v)+'" r="'+r+'" fill="'+color+'"';
-        if(dashed)svg+=' stroke="white" stroke-width="1" opacity="0.8"';
+        if(dashed)svg+=' stroke="'+color+'" stroke-width="1.5" fill="white" opacity="0.9"';
         svg+='/>';
       }
     });
@@ -1166,7 +1166,7 @@ function makeStatoSvg(){
   var countDermN=recent.filter(function(d){return d.dermatosi_n!=null;}).length;
   [{c:'#378ADD',l:'Pol.',cnt:countPoliN},{c:'#EF9F27',l:'Asma',cnt:countAsmaN},{c:'#D85A30',l:'Derm.',cnt:countDermN}].forEach(function(x){
     leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:2px;background:'+x.c+';display:inline-block;border-radius:1px"></span>'+x.l+' g.</span> ';
-    if(x.cnt>=2)leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:0;border-top:1.5px dashed '+x.c+';display:inline-block;opacity:.7"></span>'+x.l+' n.</span> ';
+    if(x.cnt>=1)leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:0;border-top:1.5px dashed '+x.c+';display:inline-block;opacity:.7"></span>'+x.l+' n.</span> ';
   });
   leg+='<span style="display:flex;align-items:center;gap:3px"><b style="color:#E24B4A;font-size:9px">R</b>reazione 6h prima</span>';
   leg+='</div>';
@@ -1224,7 +1224,7 @@ function drawStatoChart(){
   }
   // Stato lines (giorno)
   CONDS.forEach(function(cond){
-    ctx.strokeStyle=cond.color;ctx.lineWidth=2;ctx.setLineDash([]);
+    ctx.strokeStyle=cond.color;ctx.lineWidth=2.5;ctx.setLineDash([]);
     ctx.beginPath();var started=false;
     dates.forEach(function(date,i){
       var es=filteredStato.filter(function(x){return x.ts.slice(0,10)===date;});
@@ -1293,9 +1293,22 @@ function drawStatoChart(){
     });
   });
 
-  // Rischio pasto (tratteggiato)
+  // Rischio pasto — barre sottili sul fondo, colore attenuato
   var riskColor='#8B5E00';
-  ctx.strokeStyle=riskColor;ctx.lineWidth=2;ctx.setLineDash([5,3]);
+  ctx.globalAlpha=0.35;
+  dates.forEach(function(date,i){
+    var de=filteredEntries.filter(function(e){return e.ts.slice(0,10)===date;});
+    if(!de.length)return;
+    var maxR=Math.max.apply(null,de.map(function(e){return e.maxRisk||0;}));
+    if(!maxR)return;
+    var x=xF(i),barW=Math.max(2,Math.floor(CW/dates.length*0.5));
+    var barH=(maxR/5)*CH;
+    ctx.fillStyle=riskColor;
+    ctx.fillRect(x-barW/2, MT+CH-barH, barW, barH);
+  });
+  ctx.globalAlpha=1;
+  // Rischio pasto — linea sottile sovrapposta
+  ctx.strokeStyle=riskColor;ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.globalAlpha=0.6;
   ctx.beginPath();var rStarted=false;
   dates.forEach(function(date,i){
     var de=filteredEntries.filter(function(e){return e.ts.slice(0,10)===date;});
@@ -1303,12 +1316,12 @@ function drawStatoChart(){
     var maxR=Math.max.apply(null,de.map(function(e){return e.maxRisk||0;}));
     if(!rStarted){ctx.moveTo(xF(i),yF(maxR));rStarted=true;}else ctx.lineTo(xF(i),yF(maxR));
   });
-  ctx.stroke();ctx.setLineDash([]);
+  ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
   dates.forEach(function(date,i){
     var de=filteredEntries.filter(function(e){return e.ts.slice(0,10)===date;});
     if(!de.length)return;
     var maxR=Math.max.apply(null,de.map(function(e){return e.maxRisk||0;}));
-    ctx.fillStyle=riskColor;ctx.beginPath();ctx.arc(xF(i),yF(maxR),3,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=riskColor;ctx.globalAlpha=0.7;ctx.beginPath();ctx.arc(xF(i),yF(maxR),2,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
     // Marker reazione diretta
     var hasReact=de.some(function(e){return e.symptoms&&e.symptoms.length>0;});
     if(hasReact){
