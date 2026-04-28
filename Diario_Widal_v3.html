@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="Widal"/>
-<title>Diario Widal v7.2</title>
+<title>Diario Widal v7.3</title>
 <style>
 :root{
   --bg:#ffffff;--bg2:#f5f5f4;--bg3:#ececea;
@@ -228,6 +228,8 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .stato-avg{font-size:10px;color:var(--tx3);text-align:center;margin-top:6px;min-height:14px;}
 .scpbtn{flex:1;padding:5px 0;border-radius:20px;font-size:11px;font-weight:600;border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);cursor:pointer;}
 .scpbtn.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);}
+.svgpbtn{flex:1;padding:4px 0;border-radius:20px;font-size:11px;font-weight:600;border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);cursor:pointer;}
+.svgpbtn.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);}
 .poli-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
 .poli-row:last-of-type{margin-bottom:0;}
 .poli-side-lbl{font-size:10px;font-weight:600;color:var(--tx2);width:52px;flex-shrink:0;}
@@ -438,8 +440,8 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     <!-- Dermatosi -->
     <div class="stato-cond">
       <div class="stato-cond-hdr">
-        <span class="stato-cond-dot" style="background:#D85A30"></span>
-        <span class="stato-cond-title" style="color:#D85A30">Dermatosi</span>
+        <span class="stato-cond-dot" style="background:#9B30FF"></span>
+        <span class="stato-cond-title" style="color:#9B30FF">Dermatosi</span>
         <span class="stato-cond-sub">prurito, eritema, eruzioni</span>
       </div>
       <div class="stato-cond-body">
@@ -454,7 +456,13 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       <input class="inp" id="stato-note" placeholder="es. montelukast, fioritura, forte stress&hellip;"/>
     </div>
     <button class="savebtn" onclick="saveStato()">Salva valutazione</button>
-    <div id="stato-results" style="margin-top:18px"></div>
+    <div style="display:flex;gap:4px;margin-top:14px;margin-bottom:4px;">
+      <button class="svgpbtn" id="svgpb-7" onclick="setSvgPeriod(7)">7g</button>
+      <button class="svgpbtn on" id="svgpb-14" onclick="setSvgPeriod(14)">14g</button>
+      <button class="svgpbtn" id="svgpb-30" onclick="setSvgPeriod(30)">30g</button>
+      <button class="svgpbtn" id="svgpb-all" onclick="setSvgPeriod(0)">Tutto</button>
+    </div>
+    <div id="stato-results" style="margin-top:6px"></div>
 
     <!-- Grafico combinato stato + rischio pasto -->
     <div id="stato-chart-box" style="display:none;margin-top:16px;border:0.5px solid var(--bd2);border-radius:var(--rl);padding:12px 12px 10px;background:var(--bg);">
@@ -629,10 +637,11 @@ const RL=["--","Basso","Lieve","Medio","Alto","Molto alto"];
 const SS=[{bg:"#EAF3DE",c:"#3B6D11"},{bg:"#FAEEDA",c:"#633806"},{bg:"#FAECE7",c:"#993C1D"},{bg:"#FCEBEB",c:"#791F1F"},{bg:"#F7C1C1",c:"#501313"}];
 const SYMS=["Rinite","Lacrimazione","Starnuti","Prurito nasale","Tosse","Dispnea","Orticaria","Cefalea","Gonfiore addominale"];
 const SEVS=["1 -- Lieve","2 -- Moderata","3 -- Notevole","4 -- Intensa","5 -- Severa"];
-const CONDS=[{key:"poliposi",label:"Poliposi nasale",sub:"ostruzione, congestione",color:"#378ADD"},{key:"asma",label:"Asma / respiro",sub:"dispnea, sibilo",color:"#EF9F27"},{key:"dermatosi",label:"Dermatosi",sub:"prurito, eritema",color:"#D85A30"}];
+const CONDS=[{key:"poliposi",label:"Poliposi nasale",sub:"ostruzione, congestione",color:"#378ADD"},{key:"asma",label:"Asma / respiro",sub:"dispnea, sibilo",color:"#EF9F27"},{key:"dermatosi",label:"Dermatosi",sub:"prurito, eritema",color:"#9B30FF"}];
 // v6 stato: 0=giorno 1=notte; chiavi: poli_sx, poli_dx, asma, dermatosi
 var statoMomento=0;
 var statoPeriodDays=14;
+var svgPeriodDays=14;
 var statoG={poli_sx:null,poli_dx:null,asma:null,dermatosi:null};
 var statoN={poli_sx:null,poli_dx:null,asma:null,dermatosi:null};
 function getStoSel(){return statoMomento===0?statoG:statoN;}
@@ -1018,7 +1027,7 @@ function buildStatoInput(){
   buildRbtns('rbtn-poli-sx','poli_sx','#378ADD');
   buildRbtns('rbtn-poli-dx','poli_dx','#378ADD');
   buildRbtns('rbtn-asma','asma','#EF9F27');
-  buildRbtns('rbtn-dermatosi','dermatosi','#D85A30');
+  buildRbtns('rbtn-dermatosi','dermatosi','#9B30FF');
   updatePoliAvg();
 }
 function buildRbtns(containerId,key,color){
@@ -1101,8 +1110,25 @@ function pMed(e,sfx){
   if(sx==null)return dx;if(dx==null)return sx;
   return (sx+dx)/2;
 }
+function setSvgPeriod(days){
+  svgPeriodDays=days;
+  ['7','14','30','all'].forEach(function(k){
+    var el=document.getElementById('svgpb-'+k);
+    if(el)el.className='svgpbtn';
+  });
+  var activeId=days===7?'svgpb-7':days===14?'svgpb-14':days===30?'svgpb-30':'svgpb-all';
+  var activeEl=document.getElementById(activeId);
+  if(activeEl)activeEl.className='svgpbtn on';
+  renderStato();
+}
 function makeStatoSvg(){
-  var N=Math.min(statoEntries.length,28),recent=statoEntries.slice(-N);
+  var allSvg=statoEntries.slice();
+  if(svgPeriodDays>0&&allSvg.length>0){
+    var maxTsSvg=Math.max.apply(null,allSvg.map(function(e){return new Date(e.ts).getTime();}));
+    var cutoffSvg=new Date(maxTsSvg-svgPeriodDays*86400000);
+    allSvg=allSvg.filter(function(e){return new Date(e.ts)>=cutoffSvg;});
+  }
+  var N=Math.min(allSvg.length,28),recent=allSvg.slice(-N);
   if(N<2)return '<p style="font-size:12px;color:var(--tx3);text-align:center;padding:16px 0">Registra almeno 2 valutazioni per il grafico</p>';
   var W=370,H=168,ML=24,MT=14,MR=8,MB=22,CW=W-ML-MR,CH=H-MT-MB;
   var xF=function(i){return ML+(N>1?i*CW/(N-1):CW/2);};
@@ -1143,8 +1169,8 @@ function makeStatoSvg(){
   drawSeries(function(d){return d.asma_g!=null?d.asma_g:d.asma!=null?d.asma:null;},'#EF9F27',false);
   drawSeries(function(d){return d.asma_n!=null?d.asma_n:null;},'#EF9F27',true);
   // Dermatosi giorno + notte
-  drawSeries(function(d){return d.dermatosi_g!=null?d.dermatosi_g:d.dermatosi!=null?d.dermatosi:null;},'#D85A30',false);
-  drawSeries(function(d){return d.dermatosi_n!=null?d.dermatosi_n:null;},'#D85A30',true);
+  drawSeries(function(d){return d.dermatosi_g!=null?d.dermatosi_g:d.dermatosi!=null?d.dermatosi:null;},'#9B30FF',false);
+  drawSeries(function(d){return d.dermatosi_n!=null?d.dermatosi_n:null;},'#9B30FF',true);
   // Marker reazioni pasti
   recent.forEach(function(d,i){
     if(getRecentReactionMeals(d.ts,6).length>0){
@@ -1164,7 +1190,7 @@ function makeStatoSvg(){
   var countPoliN=recent.filter(function(d){return pMed(d,'_n')!=null;}).length;
   var countAsmaN=recent.filter(function(d){return d.asma_n!=null;}).length;
   var countDermN=recent.filter(function(d){return d.dermatosi_n!=null;}).length;
-  [{c:'#378ADD',l:'Pol.',cnt:countPoliN},{c:'#EF9F27',l:'Asma',cnt:countAsmaN},{c:'#D85A30',l:'Derm.',cnt:countDermN}].forEach(function(x){
+  [{c:'#378ADD',l:'Pol.',cnt:countPoliN},{c:'#EF9F27',l:'Asma',cnt:countAsmaN},{c:'#9B30FF',l:'Derm.',cnt:countDermN}].forEach(function(x){
     leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:2px;background:'+x.c+';display:inline-block;border-radius:1px"></span>'+x.l+' g.</span> ';
     if(x.cnt>=1)leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:0;border-top:1.5px dashed '+x.c+';display:inline-block;opacity:.7"></span>'+x.l+' n.</span> ';
   });
@@ -1260,38 +1286,7 @@ function drawStatoChart(){
     for(var i=0;i<es.length;i++){if(es[i][key]!=null)return es[i][key];}
     return null;
   }
-  var nightSeries=[
-    {color:'#378ADD',getFn:function(es){return bestNightVal(es,'poli_sx_n','poli_dx_n');}},
-    {color:'#EF9F27',getFn:function(es){return bestNightSingle(es,'asma_n');}},
-    {color:'#D85A30',getFn:function(es){return bestNightSingle(es,'dermatosi_n');}},
-  ];
-  nightSeries.forEach(function(ns){
-    var hasAny=false;
-    dates.forEach(function(date){
-      var es=filteredStato.filter(function(x){return x.ts.slice(0,10)===date;});
-      if(ns.getFn(es)!=null)hasAny=true;
-    });
-    if(!hasAny)return;
-    ctx.strokeStyle=ns.color;ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.globalAlpha=0.75;
-    ctx.beginPath();var nStarted=false;
-    dates.forEach(function(date,i){
-      var es=filteredStato.filter(function(x){return x.ts.slice(0,10)===date;});
-      var v=ns.getFn(es);
-      if(v!=null){
-        if(!nStarted){ctx.moveTo(xF(i),yF(v));nStarted=true;}
-        else ctx.lineTo(xF(i),yF(v));
-      } else nStarted=false;
-    });
-    ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
-    dates.forEach(function(date,i){
-      var es=filteredStato.filter(function(x){return x.ts.slice(0,10)===date;});
-      var v=ns.getFn(es);
-      if(v!=null){
-        ctx.fillStyle=ns.color;ctx.beginPath();
-        ctx.arc(xF(i),yF(v),2,0,Math.PI*2);ctx.fill();
-      }
-    });
-  });
+  // night series removed
 
   // Rischio pasto — barre sottili sul fondo, colore attenuato
   var riskColor='#8B5E00';
@@ -1307,22 +1302,10 @@ function drawStatoChart(){
     ctx.fillRect(x-barW/2, MT+CH-barH, barW, barH);
   });
   ctx.globalAlpha=1;
-  // Rischio pasto — linea sottile sovrapposta
-  ctx.strokeStyle=riskColor;ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.globalAlpha=0.6;
-  ctx.beginPath();var rStarted=false;
+  // Marker reazione + barre rischio in un unico loop
   dates.forEach(function(date,i){
     var de=filteredEntries.filter(function(e){return e.ts.slice(0,10)===date;});
     if(!de.length)return;
-    var maxR=Math.max.apply(null,de.map(function(e){return e.maxRisk||0;}));
-    if(!rStarted){ctx.moveTo(xF(i),yF(maxR));rStarted=true;}else ctx.lineTo(xF(i),yF(maxR));
-  });
-  ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
-  dates.forEach(function(date,i){
-    var de=filteredEntries.filter(function(e){return e.ts.slice(0,10)===date;});
-    if(!de.length)return;
-    var maxR=Math.max.apply(null,de.map(function(e){return e.maxRisk||0;}));
-    ctx.fillStyle=riskColor;ctx.globalAlpha=0.7;ctx.beginPath();ctx.arc(xF(i),yF(maxR),2,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
-    // Marker reazione diretta
     var hasReact=de.some(function(e){return e.symptoms&&e.symptoms.length>0;});
     if(hasReact){
       ctx.strokeStyle='#E24B4A';ctx.lineWidth=1;ctx.setLineDash([2,2]);ctx.globalAlpha=0.5;
@@ -1348,8 +1331,7 @@ function drawStatoChart(){
   });
   legHtml+='<span style="display:flex;align-items:center;gap:3px"><span style="width:12px;height:0;border-top:2px dashed '+riskColor+';display:inline-block"></span>Rischio pasto</span>';
   // night series in legend - only per color if data exists
-  var hasAnyNight=filteredStato.some(function(d){return d.poli_sx_n!=null||d.poli_dx_n!=null||d.asma_n!=null||d.dermatosi_n!=null;});
-  if(hasAnyNight)legHtml+='<span style="display:flex;align-items:center;gap:3px"><span style="width:12px;height:0;border-top:1.5px dashed #888;display:inline-block;opacity:.6"></span>notte</span>';
+  // notte rimossa dalla legenda canvas
   legHtml+='<span style="display:flex;align-items:center;gap:3px"><b style="color:#E24B4A;font-size:9px">R</b>reazione</span>';
   legEl.innerHTML=legHtml;
 }
@@ -1386,7 +1368,7 @@ function renderStato(){
         +'<span style="font-size:12px;color:var(--tx2)">media: '+avgP.toFixed(1)+'/5'+asimStr+'</span>'
         +(tr?'<span style="font-size:12px;color:'+tr.c+';margin-left:auto">'+tr.a+'</span>':'')+'</div>';
     }
-    [{gk:'asma_g',fk:'asma',label:'Asma',color:'#EF9F27'},{gk:'dermatosi_g',fk:'dermatosi',label:'Dermatosi',color:'#D85A30'}].forEach(function(c){
+    [{gk:'asma_g',fk:'asma',label:'Asma',color:'#EF9F27'},{gk:'dermatosi_g',fk:'dermatosi',label:'Dermatosi',color:'#9B30FF'}].forEach(function(c){
       var vals=statoEntries.filter(function(d){return d[c.gk]!=null||d[c.fk]!=null;}).slice(-7).map(function(d){return d[c.gk]!=null?d[c.gk]:d[c.fk];});
       if(!vals.length)return;
       var avg=vals.reduce(function(s,v){return s+v;},0)/vals.length;
@@ -1412,7 +1394,7 @@ function renderStato(){
     var asmaG=e.asma_g!=null?e.asma_g:e.asma;
     var asmaStr=asmaG!=null?'Asma g<b style="color:#EF9F27"> '+asmaG+'</b>'+(e.asma_n!=null?' n<b style="color:#f5c842"> '+e.asma_n+'</b>':''):'';
     var dermG=e.dermatosi_g!=null?e.dermatosi_g:e.dermatosi;
-    var dermStr=dermG!=null?'Derm. g<b style="color:#D85A30"> '+dermG+'</b>'+(e.dermatosi_n!=null?' n<b style="color:#e8804a"> '+e.dermatosi_n+'</b>':''):'';
+    var dermStr=dermG!=null?'Derm. g<b style="color:#9B30FF"> '+dermG+'</b>'+(e.dermatosi_n!=null?' n<b style="color:#e8804a"> '+e.dermatosi_n+'</b>':''):'';
     var row=[poliStr,asmaStr,dermStr].filter(Boolean).join(' \u00b7 ');
     return '<div class="sentry"><div class="sentry-time">'+fmtT(e.ts)+'</div>'
       +'<div style="flex:1"><div style="font-size:11px;color:var(--tx2);line-height:1.7">'+row+'</div>'
@@ -1607,7 +1589,7 @@ function renderStats(){
   const mF=topF[0]&&topF[0][1]||1,mS=topS[0]&&topS[0][1]||1,mT=topT[0]&&topT[0][1]||1;
   let html=`<div class="sg"><div class="sc"><div class="sv">${entries.length}</div><div class="sl">pasti registrati</div></div><div class="sc"><div class="sv">${withS}</div><div class="sl">con reazioni</div></div><div class="sc"><div class="sv">${Math.round(withS/entries.length*100)}%</div><div class="sl">tasso reazione</div></div><div class="sc"><div class="sv">${fast}</div><div class="sl">reazioni istantanee</div></div></div>`;
   if(topF.length){html+='<div class="stit">Alimenti con più reazioni (%)</div>';topF.forEach(([f,n])=>{const pct=Math.round(n/entries.length*100);html+=`<div class="brow"><div class="bn" title="${f}">${f}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mF*100)}%;background:#E24B4A"><span class="bf-pct">${pct}%</span></div></div><div class="bc">${n}x</div></div>`;});}
-  if(topS.length){html+='<div class="stit">Sintomi più frequenti</div>';topS.forEach(([s,n])=>{const pct=Math.round(n/totalWithSym*100);html+=`<div class="brow"><div class="bn">${s}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mS*100)}%;background:#D85A30"><span class="bf-pct">${pct}%</span></div></div><div class="bc">${n}x</div></div>`;});}
+  if(topS.length){html+='<div class="stit">Sintomi più frequenti</div>';topS.forEach(([s,n])=>{const pct=Math.round(n/totalWithSym*100);html+=`<div class="brow"><div class="bn">${s}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mS*100)}%;background:#9B30FF"><span class="bf-pct">${pct}%</span></div></div><div class="bc">${n}x</div></div>`;});}
   if(topT.length){html+='<div class="stit">Trigger più coinvolti</div>';topT.forEach(([t,n])=>{const c=(TS[t]||{c:'#888'}).c;const pct=Math.round(n/totalWithSym*100);html+=`<div class="brow"><div class="bn">${t}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mT*100)}%;background:${c}"><span class="bf-pct">${pct}%</span></div></div><div class="bc">${n}x</div></div>`;});}
   el.innerHTML=html;
   drawCombinedChart();
@@ -1615,7 +1597,10 @@ function renderStats(){
 
 /* ── EXPORT/IMPORT ── */
 function exportData(){const data={version:1,exported:new Date().toISOString(),entries,statoEntries,customFoods};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='widal-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);showSyncStatus('Esportato! Salvalo in iCloud Drive.','ok');}
-function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){try{const data=JSON.parse(e.target.result);if(!data.entries&&!data.statoEntries){showSyncStatus('File non valido.','err');return;}if(data.entries)entries=data.entries;if(data.statoEntries)statoEntries=data.statoEntries;if(data.customFoods)customFoods=data.customFoods;saveData();saveStatoData();saveCustomData();buildCustomGenreChips();buildTrigFilterBar();renderCustomFoods();showSyncStatus('Importati: '+entries.length+' pasti, '+statoEntries.length+' valutazioni, '+customFoods.length+' alimenti.','ok');toast('Dati importati ✓');}catch(err){showSyncStatus('Errore JSON: '+err.message,'err');}};reader.readAsText(file);input.value='';}
+function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){try{const data=JSON.parse(e.target.result);if(!data.entries&&!data.statoEntries){showSyncStatus('File non valido.','err');return;}if(data.entries)entries=data.entries;if(data.statoEntries)statoEntries=data.statoEntries;if(data.customFoods)customFoods=data.customFoods;saveData();saveStatoData();saveCustomData();buildCustomGenreChips();buildTrigFilterBar();renderCustomFoods();
+var dateStr='';
+if(data.exported){var d=new Date(data.exported);dateStr=' — backup del '+d.toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'});}
+showSyncStatus('Importati: '+entries.length+' pasti, '+statoEntries.length+' valutazioni, '+customFoods.length+' alimenti'+dateStr+'.','ok');toast('Dati importati ✓');}catch(err){showSyncStatus('Errore JSON: '+err.message,'err');}};reader.readAsText(file);input.value='';}
 function showSyncStatus(msg,type){const el=document.getElementById('sync-status');el.textContent=msg;el.className='sync-status '+(type||'ok');el.style.display='block';}
 function copyForClaude(){const txt='DATI DIARIO WIDAL\n\nPasti recenti:\n'+JSON.stringify(entries.slice(0,12),null,2)+'\n\nStato infiammatorio:\n'+JSON.stringify(statoEntries.slice(-15),null,2)+'\n\nAlimenti personalizzati:\n'+JSON.stringify(customFoods,null,2)+'\n\nChiedo: analizza i pattern, i trigger dominanti e le eventuali correlazioni tra pasti e stato infiammatorio.';navigator.clipboard.writeText(txt).then(()=>toast('Dati copiati ✓')).catch(()=>toast('Errore copia'));}
 
