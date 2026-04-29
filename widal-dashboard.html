@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Diario Widal — Dashboard</title>
+<title>Diario Widal — Dashboard v3</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
 :root{
@@ -392,39 +392,110 @@ function renderBarChart(id,data,colorFn,head,subData){
 function renderStatoChart(stato){
   var el=document.getElementById('stato-chart');
   if(!stato.length){el.innerHTML='<div class="no-data">Nessuna valutazione nel periodo</div>';return;}
-  var N=stato.length;
-  var W=940,H=150,ML=24,MT=10,MR=10,MB=24;
+
+  // Aggregate by date — take best day value and best night value per day
+  function pMed(e,sfx){var sx=e['poli_sx'+sfx],dx=e['poli_dx'+sfx];if(sx==null&&dx==null)return null;if(sx==null)return dx;if(dx==null)return sx;return(sx+dx)/2;}
+  function bestNightSingle(es,key){for(var i=0;i<es.length;i++){if(es[i][key]!=null)return es[i][key];}return null;}
+  function bestNightPoli(es){for(var i=0;i<es.length;i++){var v=pMed(es[i],'_n');if(v!=null)return v;}return null;}
+
+  var dateMap={};
+  stato.forEach(function(e){
+    var d=e.ts.slice(0,10);
+    if(!dateMap[d])dateMap[d]=[];
+    dateMap[d].push(e);
+  });
+  var dates=Object.keys(dateMap).sort();
+  var N=dates.length;
+  if(!N){el.innerHTML='<div class="no-data">Nessuna valutazione nel periodo</div>';return;}
+
+  var W=940,H=160,ML=26,MT=18,MR=10,MB=26;
   var CW=W-ML-MR,CH=H-MT-MB;
   var xF=function(i){return ML+(N>1?i*CW/(N-1):CW/2);};
   var yF=function(v){return MT+(5-v)/4*CH;};
+
   var svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;display:block">';
+  // Grid
   for(var v=1;v<=5;v++){
     var y=yF(v);
-    svg+='<line x1="'+ML+'" y1="'+y+'" x2="'+(W-MR)+'" y2="'+y+'" stroke="#e0ddd6" stroke-width="0.5" stroke-dasharray="'+(v===3?'4,3':'')+'"/>';
+    svg+='<line x1="'+ML+'" y1="'+y+'" x2="'+(W-MR)+'" y2="'+y+'" stroke="#e0ddd6" stroke-width="0.5" stroke-dasharray="'+(v===3?'4,3':'')+'" />';
     svg+='<text x="'+(ML-4)+'" y="'+(y+3)+'" font-size="9" fill="#9a9590" text-anchor="end">'+v+'</text>';
   }
-  var step=Math.max(1,Math.floor(N/12));
-  stato.forEach(function(d,i){
-    if(i===0||i===N-1||i%step===0)
-      svg+='<text x="'+xF(i)+'" y="'+(H-5)+'" font-size="8" fill="#9a9590" text-anchor="middle">'+fmtShort(d.ts)+'</text>';
-  });
-  CONDS.forEach(function(cond){
+
+  // Helper: draw a series over dates array
+  function drawLine(getVal, color, dashed){
+    var hasAny=false;
+    dates.forEach(function(d){if(getVal(dateMap[d])!=null)hasAny=true;});
+    if(!hasAny)return;
     var p='',open=false;
-    stato.forEach(function(d,i){
-      if(d[cond.key]!=null){var x=xF(i),y=yF(d[cond.key]);p+=open?'L'+x+','+y:'M'+x+','+y;open=true;}
-      else open=false;
+    dates.forEach(function(d,i){
+      var v=getVal(dateMap[d]);
+      if(v!=null){p+=open?'L'+xF(i)+','+yF(v):'M'+xF(i)+','+yF(v);open=true;}
+      // nulls don't reset open — bridge gap to next valid point
     });
-    if(p)svg+='<path d="'+p+'" fill="none" stroke="'+cond.color+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
-    stato.forEach(function(d,i){if(d[cond.key]!=null)svg+='<circle cx="'+xF(i)+'" cy="'+yF(d[cond.key])+'" r="2.5" fill="'+cond.color+'" stroke="white" stroke-width="1"/>';});
+    if(!p)return;
+    var da=dashed?'stroke-dasharray="5,4" opacity="0.8"':'';
+    svg+='<path d="'+p+'" fill="none" stroke="'+color+'" stroke-width="'+(dashed?'1.5':'2.2')+'" stroke-linejoin="round" stroke-linecap="round" '+da+'/>';
+    var r=dashed?3:3;
+    dates.forEach(function(d,i){
+      var v=getVal(dateMap[d]);
+      if(v!=null){
+        if(dashed){
+          svg+='<circle cx="'+xF(i)+'" cy="'+yF(v)+'" r="'+r+'" fill="white" stroke="'+color+'" stroke-width="2"/>';
+        } else {
+          svg+='<circle cx="'+xF(i)+'" cy="'+yF(v)+'" r="'+r+'" fill="'+color+'" stroke="white" stroke-width="1"/>';
+        }
+      }
+    });
+  }
+
+  // Day series (solid)
+  drawLine(function(es){var d=es[es.length-1];return d.poliposi!=null?d.poliposi:pMed(d,'_g');},'#2a5c8a',false);
+  drawLine(function(es){var d=es[es.length-1];return d.asma_g!=null?d.asma_g:d.asma!=null?d.asma:null;},'#e8a020',false);
+  drawLine(function(es){var d=es[es.length-1];return d.dermatosi_g!=null?d.dermatosi_g:d.dermatosi!=null?d.dermatosi:null;},'#9B30FF',false);
+
+  // Night series (dashed) — best value across all day's entries
+  var hasPoliN=dates.some(function(d){return bestNightPoli(dateMap[d])!=null;});
+  var hasAsmaN=dates.some(function(d){return bestNightSingle(dateMap[d],'asma_n')!=null;});
+  var hasDermN=dates.some(function(d){return bestNightSingle(dateMap[d],'dermatosi_n')!=null;});
+  if(hasPoliN)drawLine(function(es){return bestNightPoli(es);},'#2a5c8a',true);
+  if(hasAsmaN)drawLine(function(es){return bestNightSingle(es,'asma_n');},'#e8a020',true);
+  if(hasDermN)drawLine(function(es){return bestNightSingle(es,'dermatosi_n');},'#9B30FF',true);
+
+  // Date labels
+  var dateStep=Math.max(1,Math.floor(N/10));
+  dates.forEach(function(d,i){
+    if(i===0||i===N-1||i%dateStep===0){
+      var anchor=i===0?'start':i===N-1?'end':'middle';
+      svg+='<text x="'+xF(i)+'" y="'+(H-5)+'" font-size="8" fill="#9a9590" text-anchor="'+anchor+'">'+d.slice(5).replace('-','/')+'</text>';
+    }
   });
   svg+='</svg>';
-  var leg='<div style="display:flex;gap:16px;justify-content:center;padding:6px 0 8px;border-top:1px solid var(--paper3)">'+
-    CONDS.map(function(c){return'<span style="font-size:11px;color:var(--ink2);display:flex;align-items:center;gap:5px"><span style="width:16px;height:2px;background:'+c.color+';display:inline-block;border-radius:1px"></span>'+c.label+'</span>';}).join('')+'</div>';
+
+  // Legend
+  var leg='<div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;padding:6px 0 8px;border-top:1px solid var(--paper3)">';
+  [{c:'#2a5c8a',l:'Poliposi'},{c:'#e8a020',l:'Asma'},{c:'#9B30FF',l:'Dermatosi'}].forEach(function(x){
+    leg+='<span style="font-size:11px;color:var(--ink2);display:flex;align-items:center;gap:5px"><span style="width:16px;height:2px;background:'+x.c+';display:inline-block;border-radius:1px"></span>'+x.l+'</span>';
+  });
+  var hasAnyNight=hasPoliN||hasAsmaN||hasDermN;
+  if(hasAnyNight)leg+='<span style="font-size:11px;color:var(--ink2);display:flex;align-items:center;gap:5px"><span style="width:16px;height:0;border-top:2px dashed #888;display:inline-block;opacity:.6"></span>notte</span>';
+  leg+='</div>';
+
+  // Notes table
   var noteRows=stato.filter(function(e){return e.note&&e.note.trim();});
   var notes='';
   if(noteRows.length){
     notes='<div class="stato-notes">'+
-      noteRows.map(function(e){return'<div class="stato-note-row"><span class="stato-note-date">'+fmtShort(e.ts)+'</span><span class="stato-note-vals">'+CONDS.map(function(c){return e[c.key]!=null?c.label+' '+e[c.key]+'/5':null;}).filter(Boolean).join(' · ')+'</span><span class="stato-note-txt">'+e.note+'</span></div>';}).join('')+'</div>';
+      noteRows.map(function(e){
+        var poliVal=e.poliposi!=null?e.poliposi:(e.poli_sx_g!=null||e.poli_dx_g!=null?((e.poli_sx_g||0)+(e.poli_dx_g||0))/2:null);
+        var asmaVal=e.asma_g!=null?e.asma_g:e.asma;
+        var dermVal=e.dermatosi_g!=null?e.dermatosi_g:e.dermatosi;
+        var vals=[
+          poliVal!=null?'Poliposi '+poliVal+'/5':null,
+          asmaVal!=null?'Asma '+asmaVal+'/5':null,
+          dermVal!=null?'Dermatosi '+dermVal+'/5':null
+        ].filter(Boolean).join(' · ');
+        return'<div class="stato-note-row"><span class="stato-note-date">'+fmtShort(e.ts)+'</span><span class="stato-note-vals">'+vals+'</span><span class="stato-note-txt">'+e.note+'</span></div>';
+      }).join('')+'</div>';
   }
   el.innerHTML='<div class="stato-wrap">'+svg+'</div>'+leg+notes;
 }
