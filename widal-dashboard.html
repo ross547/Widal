@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Diario Widal — Dashboard v3</title>
+<title>Diario Widal — Dashboard v4</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
 :root{
@@ -88,6 +88,21 @@ body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);line-heigh
 .stato-note-date{color:var(--ink3);min-width:65px;flex-shrink:0;}
 .stato-note-vals{color:var(--accent);font-weight:500;flex-shrink:0;min-width:140px;}
 .stato-note-txt{color:var(--ink3);font-style:italic;}
+.stato-range-bar{display:flex;align-items:center;gap:6px;padding:8px 14px 0;}
+.stato-range-lbl{font-size:11px;font-weight:600;color:var(--ink2);}
+.stato-range-btns{display:flex;gap:4px;}
+.srbtn{padding:3px 10px;border-radius:20px;border:1px solid var(--paper3);background:var(--paper);color:var(--ink2);font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.srbtn:hover{background:var(--paper3);}
+.srbtn.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+.canvas-chart-box{border-top:1px solid var(--paper3);padding:12px 14px 14px;}
+.canvas-chart-title{font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.canvas-export-btn{font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--paper3);background:var(--paper2);color:var(--ink2);cursor:pointer;font-family:'DM Sans',sans-serif;}
+.print-check-indent{padding-left:28px;padding-top:4px;padding-bottom:4px;display:flex;gap:6px;flex-wrap:wrap;}
+.print-range-btn{padding:3px 10px;border-radius:20px;border:1px solid var(--paper3);background:var(--paper2);color:var(--ink2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.print-range-btn.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+@media print{
+  .stato-range-bar,.canvas-export-btn{display:none!important;}
+}
 
 /* ════════════════════════════
    ALIMENTI — card per fascia rischio
@@ -183,7 +198,7 @@ body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);line-heigh
   <div class="print-modal">
     <h2>Cosa stampare</h2>
     <div class="print-check"><input type="checkbox" id="pc-stats" checked/><label for="pc-stats">Statistiche e grafici<span class="print-sub">Card riassuntive, trigger, sintomi, alimenti con reazioni</span></label></div>
-    <div class="print-check"><input type="checkbox" id="pc-stato" checked/><label for="pc-stato">Stato infiammatorio<span class="print-sub">Grafico poliposi / asma / dermatosi + note</span></label></div>
+    <div class="print-check"><input type="checkbox" id="pc-stato" checked/><label for="pc-stato">Stato infiammatorio<span class="print-sub">Grafico andamento + grafico rischio pasto, nel range selezionato</span></label></div>
     <div class="print-check"><input type="checkbox" id="pc-alim"/><label for="pc-alim">Alimenti codificati<span class="print-sub">Card per fascia di rischio</span></label></div>
     <div class="print-check"><input type="checkbox" id="pc-entries"/><label for="pc-entries">Registro pasti<span class="print-sub">Voci del periodo selezionato</span></label></div>
     <div class="print-actions">
@@ -244,7 +259,26 @@ body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);line-heigh
 
   <div id="sec-stato">
     <div class="section-title">Stato infiammatorio nel tempo</div>
-    <div class="panel" id="stato-chart"></div>
+    <div class="panel">
+      <div class="stato-range-bar">
+        <span class="stato-range-lbl">Range:</span>
+        <div class="stato-range-btns">
+          <button class="srbtn" id="srb-7" onclick="setStatoRange(7)">7g</button>
+          <button class="srbtn on" id="srb-14" onclick="setStatoRange(14)">14g</button>
+          <button class="srbtn" id="srb-30" onclick="setStatoRange(30)">30g</button>
+          <button class="srbtn" id="srb-all" onclick="setStatoRange(0)">Tutto</button>
+        </div>
+      </div>
+      <div id="stato-chart"></div>
+      <div class="canvas-chart-box">
+        <div class="canvas-chart-title">
+          <span>Stato + rischio pasto</span>
+          <button class="canvas-export-btn" onclick="exportStatoCanvas()">&#8681; PNG</button>
+        </div>
+        <canvas id="stato-canvas" style="width:100%;display:block;border-radius:6px;"></canvas>
+        <div id="stato-canvas-legend" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:8px;font-size:11px;color:var(--ink2);"></div>
+      </div>
+    </div>
   </div>
 
   <!-- ALIMENTI — nuova vista a card per fascia rischio -->
@@ -290,7 +324,7 @@ const RISK_SECTIONS=[
 ];
 const RDOT_C=["#5aaa44","#5aaa44","#e8a020","#d4601a","#c02828","#8a1a1a"];
 
-let RAW=null, PERIOD_DAYS=14, alimTrigFilter=null;
+let RAW=null, PERIOD_DAYS=14, STATO_RANGE=14, alimTrigFilter=null;
 
 /* ── FILE LOAD ── */
 function loadFile(e){
@@ -328,6 +362,130 @@ function filterByPeriod(arr){
   const maxTs=Math.max.apply(null,arr.map(function(e){return new Date(e.ts).getTime();}));
   const cutoff=new Date(maxTs-PERIOD_DAYS*86400000);
   return arr.filter(function(e){return new Date(e.ts)>=cutoff;});
+}
+
+/* ── STATO CANVAS CHART ── */
+function pMedC(e,sfx){var sx=e['poli_sx'+sfx],dx=e['poli_dx'+sfx];if(sx==null&&dx==null)return null;if(sx==null)return dx;if(dx==null)return sx;return(sx+dx)/2;}
+function bestNightC(es,key){for(var i=0;i<es.length;i++){if(es[i][key]!=null)return es[i][key];}return null;}
+function bestNightPoliC(es){for(var i=0;i<es.length;i++){var v=pMedC(es[i],'_n');if(v!=null)return v;}return null;}
+
+function drawStatoCanvas(stato,entries){
+  var canvas=document.getElementById('stato-canvas');
+  var legEl=document.getElementById('stato-canvas-legend');
+  if(!canvas||!stato.length)return;
+  // Build date map
+  var dateMap={};
+  stato.forEach(function(e){var d=e.ts.slice(0,10);if(!dateMap[d])dateMap[d]=[];dateMap[d].push(e);});
+  var eDateMap={};
+  (entries||[]).forEach(function(e){var d=e.ts.slice(0,10);if(!eDateMap[d])eDateMap[d]=[];eDateMap[d].push(e);});
+  // Merge all dates
+  var dateSet=new Set(Object.keys(dateMap).concat(Object.keys(eDateMap)));
+  var dates=Array.from(dateSet).sort();
+  var N=dates.length;
+  if(N<2)return;
+  var DPR=window.devicePixelRatio||1;
+  var W=canvas.parentElement.clientWidth-28||800;
+  var H=200;
+  canvas.width=W*DPR;canvas.height=H*DPR;canvas.style.width=W+'px';canvas.style.height=H+'px';
+  var ctx=canvas.getContext('2d');ctx.scale(DPR,DPR);
+  var ML=28,MT=16,MR=10,MB=30,CW=W-ML-MR,CH=H-MT-MB;
+  var xF=function(i){return ML+(N>1?i*CW/(N-1):CW/2);};
+  var yF=function(v){return MT+(5-v)/4*CH;};
+  // Background
+  ctx.fillStyle='#f8f7f4';ctx.fillRect(0,0,W,H);
+  // Grid
+  for(var v=1;v<=5;v++){
+    ctx.strokeStyle='rgba(0,0,0,0.07)';ctx.lineWidth=0.5;
+    ctx.setLineDash(v===3?[3,3]:[]);
+    ctx.beginPath();ctx.moveTo(ML,yF(v));ctx.lineTo(W-MR,yF(v));ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#aaa';ctx.font='bold 8px DM Sans,sans-serif';ctx.textAlign='right';
+    ctx.fillText(String(v),ML-4,yF(v)+3);
+  }
+  // Risk bars
+  var riskColor='#8B5E00';
+  ctx.globalAlpha=0.3;
+  dates.forEach(function(d,i){
+    var de=eDateMap[d]||[];
+    if(!de.length)return;
+    var maxR=Math.max.apply(null,de.map(function(e){return e.maxRisk||0;}));
+    if(!maxR)return;
+    var barW=Math.max(3,Math.floor(CW/N*0.6));
+    var barH=(maxR/5)*CH;
+    ctx.fillStyle=riskColor;
+    ctx.fillRect(xF(i)-barW/2,MT+CH-barH,barW,barH);
+  });
+  ctx.globalAlpha=1;
+  // Helper draw line
+  function drawLine(getVal,color,dashed){
+    var hasAny=dates.some(function(d){return getVal(dateMap[d]||[])!=null;});
+    if(!hasAny)return;
+    ctx.strokeStyle=color;ctx.lineWidth=dashed?1.5:2.2;
+    ctx.setLineDash(dashed?[5,3]:[]);ctx.globalAlpha=dashed?0.8:1;
+    ctx.beginPath();var started=false;
+    dates.forEach(function(d,i){
+      var v=getVal(dateMap[d]||[]);
+      if(v!=null){
+        if(!started){ctx.moveTo(xF(i),yF(v));started=true;}
+        else ctx.lineTo(xF(i),yF(v));
+      }
+    });
+    ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
+    dates.forEach(function(d,i){
+      var v=getVal(dateMap[d]||[]);
+      if(v==null)return;
+      ctx.fillStyle=dashed?'white':color;
+      ctx.beginPath();ctx.arc(xF(i),yF(v),dashed?3:3,0,Math.PI*2);ctx.fill();
+      if(dashed){ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(xF(i),yF(v),3,0,Math.PI*2);ctx.stroke();}
+    });
+  }
+  // Day lines
+  drawLine(function(es){var d=es[es.length-1];return d?d.poliposi!=null?d.poliposi:pMedC(d,'_g'):null;},'#2a5c8a',false);
+  drawLine(function(es){var d=es[es.length-1];return d?d.asma_g!=null?d.asma_g:d.asma!=null?d.asma:null:null;},'#e8a020',false);
+  drawLine(function(es){var d=es[es.length-1];return d?d.dermatosi_g!=null?d.dermatosi_g:d.dermatosi!=null?d.dermatosi:null:null;},'#9B30FF',false);
+  // Night lines
+  var hasPoliN=dates.some(function(d){return bestNightPoliC(dateMap[d]||[])!=null;});
+  var hasAsmaN=dates.some(function(d){return bestNightC(dateMap[d]||[],'asma_n')!=null;});
+  var hasDermN=dates.some(function(d){return bestNightC(dateMap[d]||[],'dermatosi_n')!=null;});
+  if(hasPoliN)drawLine(function(es){return bestNightPoliC(es);},'#2a5c8a',true);
+  if(hasAsmaN)drawLine(function(es){return bestNightC(es,'asma_n');},'#e8a020',true);
+  if(hasDermN)drawLine(function(es){return bestNightC(es,'dermatosi_n');},'#9B30FF',true);
+  // Reaction markers
+  dates.forEach(function(d,i){
+    var de=eDateMap[d]||[];
+    var hasReact=de.some(function(e){return e.symptoms&&e.symptoms.length>0;});
+    if(!hasReact)return;
+    var x=xF(i);
+    ctx.strokeStyle='#E24B4A';ctx.lineWidth=1;ctx.setLineDash([2,2]);ctx.globalAlpha=0.5;
+    ctx.beginPath();ctx.moveTo(x,MT);ctx.lineTo(x,MT+CH);ctx.stroke();
+    ctx.setLineDash([]);ctx.globalAlpha=1;
+    ctx.fillStyle='#E24B4A';ctx.font='bold 8px DM Sans,sans-serif';ctx.textAlign='center';
+    ctx.fillText('R',x,MT-2);
+  });
+  // Date labels
+  var step=Math.max(1,Math.floor(N/8));
+  ctx.fillStyle='#888';ctx.font='8px DM Sans,sans-serif';
+  dates.forEach(function(d,i){
+    if(i===0||i===N-1||i%step===0){
+      ctx.textAlign=i===0?'left':i===N-1?'right':'center';
+      ctx.fillText(d.slice(5).replace('-','/'),xF(i),H-MB+14);
+    }
+  });
+  // Legend
+  var legHtml='';
+  [{c:'#2a5c8a',l:'Poliposi'},{c:'#e8a020',l:'Asma'},{c:'#9B30FF',l:'Dermatosi'}].forEach(function(x){
+    legHtml+='<span style="display:flex;align-items:center;gap:4px"><span style="width:14px;height:2px;background:'+x.c+';display:inline-block;border-radius:1px"></span>'+x.l+'</span>';
+  });
+  legHtml+='<span style="display:flex;align-items:center;gap:4px"><span style="width:14px;height:0;border-top:2px dashed '+riskColor+';display:inline-block;opacity:.6"></span>Rischio pasto</span>';
+  if(hasPoliN||hasAsmaN||hasDermN)legHtml+='<span style="display:flex;align-items:center;gap:4px"><span style="width:14px;height:0;border-top:2px dashed #888;display:inline-block;opacity:.5"></span>notte</span>';
+  legHtml+='<span style="display:flex;align-items:center;gap:4px"><b style="color:#E24B4A;font-size:9px">R</b>reazione</span>';
+  legEl.innerHTML=legHtml;
+}
+function exportStatoCanvas(){
+  var canvas=document.getElementById('stato-canvas');if(!canvas)return;
+  var link=document.createElement('a');
+  link.download='widal-stato-'+new Date().toISOString().slice(0,10)+'.png';
+  link.href=canvas.toDataURL('image/png');link.click();
 }
 
 /* ── RENDER ALL ── */
@@ -372,7 +530,11 @@ function renderAll(){
   withReact.forEach(function(e){e.foods.forEach(function(f){foodReactC[f]=(foodReactC[f]||0)+1;});});
   renderBarChart('food-chart',Object.entries(foodReactC).sort(function(a,b){return b[1]-a[1];}).slice(0,7),function(){return'#2a5c8a';});
 
-  renderStatoChart(stato);
+  var allStato2=(RAW.statoEntries||RAW.stato||[]).slice().sort(function(a,b){return new Date(a.ts)-new Date(b.ts);});
+  var filtStato=filterStatoRange(allStato2);
+  var filtEntries=filterStatoRange(entries.slice());
+  renderStatoChart(filtStato);
+  drawStatoCanvas(filtStato,filtEntries);
   renderEntries();
 }
 
@@ -389,6 +551,29 @@ function renderBarChart(id,data,colorFn,head,subData){
     }).join('');
 }
 
+function setStatoRange(days){
+  STATO_RANGE=days;
+  ['7','14','30','all'].forEach(function(k){
+    var el=document.getElementById('srb-'+k);
+    if(el)el.className='srbtn';
+  });
+  var activeId=days===7?'srb-7':days===14?'srb-14':days===30?'srb-30':'srb-all';
+  var activeEl=document.getElementById(activeId);
+  if(activeEl)activeEl.className='srbtn on';
+  if(!RAW)return;
+  var allStato=(RAW.statoEntries||RAW.stato||[]).slice().sort(function(a,b){return new Date(a.ts)-new Date(b.ts);});
+  var allEntries=(RAW.entries||[]).slice().sort(function(a,b){return new Date(a.ts)-new Date(b.ts);});
+  var stato=filterStatoRange(allStato);
+  var entries=filterStatoRange(allEntries);
+  renderStatoChart(stato);
+  drawStatoCanvas(stato,entries);
+}
+function filterStatoRange(arr){
+  if(!STATO_RANGE||!arr||!arr.length)return arr||[];
+  var maxTs=Math.max.apply(null,arr.map(function(e){return new Date(e.ts).getTime();}));
+  var cutoff=new Date(maxTs-STATO_RANGE*86400000);
+  return arr.filter(function(e){return new Date(e.ts)>=cutoff;});
+}
 function renderStatoChart(stato){
   var el=document.getElementById('stato-chart');
   if(!stato.length){el.innerHTML='<div class="no-data">Nessuna valutazione nel periodo</div>';return;}
@@ -628,7 +813,7 @@ function doPrint(){
     window.print();
     secs.forEach(function(s){var el=document.getElementById('sec-'+s);if(el)el.style.display='';});
     document.querySelectorAll('.entry-body').forEach(function(el){el.classList.remove('open');});
-  },200);
+  },300);
 }
 
 /* ── UTILS ── */

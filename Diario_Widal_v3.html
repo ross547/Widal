@@ -1139,7 +1139,7 @@ function makeStatoSvg(){
     svg+='<line x1="'+ML+'" y1="'+y+'" x2="'+(W-MR)+'" y2="'+y+'" stroke="#ccc" stroke-width="0.5"'+(v===3?' stroke-dasharray="3,3"':'')+'/>';
     svg+='<text x="'+(ML-4)+'" y="'+(y+3)+'" font-size="8" fill="#999" text-anchor="end">'+v+'</text>';
   }
-  // helper: draw one series
+  // helper: draw one series — one point per individual entry
   function drawSeries(getV,color,dashed){
     var hasAny=false;
     for(var i=0;i<recent.length;i++){if(getV(recent[i])!=null){hasAny=true;break;}}
@@ -1148,7 +1148,7 @@ function makeStatoSvg(){
     recent.forEach(function(d,i){
       var v=getV(d);
       if(v!=null){p+=open?'L'+xF(i)+','+yF(v):'M'+xF(i)+','+yF(v);open=true;}
-      // nulls don't reset open — line bridges the gap to next valid point
+      // nulls don't reset open — bridge gap to next valid point
     });
     if(!p)return;
     svg+='<path d="'+p+'" fill="none" stroke="'+color+'" stroke-width="'+(dashed?'1.2':'1.8')+'" stroke-linejoin="round"'+(dashed?' stroke-dasharray="4,3" opacity="0.75"':'')+'/>';
@@ -1162,16 +1162,15 @@ function makeStatoSvg(){
       }
     });
   }
-  // Poliposi giorno (piena) e notte (tratteggiata)
+  // Day series (solid) — ogni entry individuale
   drawSeries(function(d){return d.poliposi!=null?d.poliposi:pMed(d,'_g');},'#378ADD',false);
-  drawSeries(function(d){return pMed(d,'_n');},'#378ADD',true);
-  // Asma giorno + notte
   drawSeries(function(d){return d.asma_g!=null?d.asma_g:d.asma!=null?d.asma:null;},'#EF9F27',false);
-  drawSeries(function(d){return d.asma_n!=null?d.asma_n:null;},'#EF9F27',true);
-  // Dermatosi giorno + notte
   drawSeries(function(d){return d.dermatosi_g!=null?d.dermatosi_g:d.dermatosi!=null?d.dermatosi:null;},'#9B30FF',false);
+  // Night series (dashed)
+  drawSeries(function(d){return pMed(d,'_n');},'#378ADD',true);
+  drawSeries(function(d){return d.asma_n!=null?d.asma_n:null;},'#EF9F27',true);
   drawSeries(function(d){return d.dermatosi_n!=null?d.dermatosi_n:null;},'#9B30FF',true);
-  // Marker reazioni pasti
+  // Reaction markers
   recent.forEach(function(d,i){
     if(getRecentReactionMeals(d.ts,6).length>0){
       var x=xF(i);
@@ -1179,23 +1178,19 @@ function makeStatoSvg(){
       svg+='<text x="'+x+'" y="'+(MT+8)+'" font-size="7" fill="#E24B4A" text-anchor="middle">R</text>';
     }
   });
-  var fsd=function(ts){return new Date(ts).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'});};
-  // Date labels: first, last, and intermediates every ~5 points
+  // Date labels
   var dateStep=Math.max(1,Math.floor(N/5));
   recent.forEach(function(d,i){
     if(i===0||i===N-1||i%dateStep===0){
       var anchor=i===0?'start':i===N-1?'end':'middle';
-      svg+='<text x="'+xF(i)+'" y="'+(H-5)+'" font-size="8" fill="#999" text-anchor="'+anchor+'">'+fsd(d.ts)+'</text>';
+      svg+='<text x="'+xF(i)+'" y="'+(H-5)+'" font-size="8" fill="#999" text-anchor="'+anchor+'">'+new Date(d.ts).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'})+'</text>';
     }
   });
   svg+='</svg>';
   var leg='<div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:5px 0;font-size:10px;color:var(--tx2);padding:0 4px">';
-  var hasPoliN=recent.some(function(d){return pMed(d,'_n')!=null;});
-  var hasAsmaN=recent.some(function(d){return d.asma_n!=null;});
-  var hasDermN=recent.some(function(d){return d.dermatosi_n!=null;});
-  var countPoliN=recent.filter(function(d){return pMed(d,'_n')!=null;}).length;
-  var countAsmaN=recent.filter(function(d){return d.asma_n!=null;}).length;
-  var countDermN=recent.filter(function(d){return d.dermatosi_n!=null;}).length;
+  var countPoliN=allSvg.filter(function(d){return pMed(d,'_n')!=null;}).length;
+  var countAsmaN=allSvg.filter(function(d){return d.asma_n!=null;}).length;
+  var countDermN=allSvg.filter(function(d){return d.dermatosi_n!=null;}).length;
   var hasAnyNight=countPoliN>0||countAsmaN>0||countDermN>0;
   [{c:'#378ADD',l:'Pol.',cnt:countPoliN},{c:'#EF9F27',l:'Asma',cnt:countAsmaN},{c:'#9B30FF',l:'Derm.',cnt:countDermN}].forEach(function(x){
     leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:2px;background:'+x.c+';display:inline-block;border-radius:1px"></span>'+x.l+'</span> ';
@@ -1394,14 +1389,25 @@ function renderStato(){
     var rxM=getRecentReactionMeals(e.ts,6);
     var rxH=rxM.length?'<div style="font-size:10px;color:#E24B4A;margin-top:3px">&#128276; Reazione 6h prec.: '+rxM.map(function(m){return m.foods.slice(0,2).join(', ');}).join(' / ')+'</div>':'';
     var poliStr='';
-    if(e.poli_sx_g!=null||e.poli_dx_g!=null){
-      poliStr='Pol. sx<b style="color:#378ADD"> '+(e.poli_sx_g!=null?e.poli_sx_g:'\u2014')+'</b> dx<b style="color:#378ADD"> '+(e.poli_dx_g!=null?e.poli_dx_g:'\u2014')+'</b>';
-      if(e.poli_sx_n!=null||e.poli_dx_n!=null)poliStr+=' / notte sx<b style="color:#7ab4e8"> '+(e.poli_sx_n!=null?e.poli_sx_n:'\u2014')+'</b> dx<b style="color:#7ab4e8"> '+(e.poli_dx_n!=null?e.poli_dx_n:'\u2014')+'</b>';
-    }else if(e.poliposi!=null){poliStr='Pol.<b style="color:#378ADD"> '+e.poliposi+'</b>';}
+    var hasDayPoli=e.poli_sx_g!=null||e.poli_dx_g!=null;
+    var hasNightPoli=e.poli_sx_n!=null||e.poli_dx_n!=null;
+    if(hasDayPoli){
+      poliStr='g sx<b style="color:#378ADD"> '+(e.poli_sx_g!=null?e.poli_sx_g:'—')+'</b> dx<b style="color:#378ADD"> '+(e.poli_dx_g!=null?e.poli_dx_g:'—')+'</b>';
+    }else if(e.poliposi!=null){
+      poliStr='Pol.<b style="color:#378ADD"> '+e.poliposi+'</b>';
+    }
+    if(hasNightPoli){
+      poliStr+=(poliStr?' / ':'')+'n sx<b style="color:#7ab4e8"> '+(e.poli_sx_n!=null?e.poli_sx_n:'—')+'</b> dx<b style="color:#7ab4e8"> '+(e.poli_dx_n!=null?e.poli_dx_n:'—')+'</b>';
+    }
+    if(poliStr)poliStr='Pol. '+poliStr;
     var asmaG=e.asma_g!=null?e.asma_g:e.asma;
-    var asmaStr=asmaG!=null?'Asma g<b style="color:#EF9F27"> '+asmaG+'</b>'+(e.asma_n!=null?' n<b style="color:#f5c842"> '+e.asma_n+'</b>':''):'';
+    var asmaStr='';
+    if(asmaG!=null)asmaStr='Asma g<b style="color:#EF9F27"> '+asmaG+'</b>';
+    if(e.asma_n!=null)asmaStr+=(asmaStr?' n':'Asma n')+'<b style="color:#f5c842"> '+e.asma_n+'</b>';
     var dermG=e.dermatosi_g!=null?e.dermatosi_g:e.dermatosi;
-    var dermStr=dermG!=null?'Derm. g<b style="color:#9B30FF"> '+dermG+'</b>'+(e.dermatosi_n!=null?' n<b style="color:#e8804a"> '+e.dermatosi_n+'</b>':''):'';
+    var dermStr='';
+    if(dermG!=null)dermStr='Derm. g<b style="color:#9B30FF"> '+dermG+'</b>';
+    if(e.dermatosi_n!=null)dermStr+=(dermStr?' n':'Derm. n')+'<b style="color:#c060ff"> '+e.dermatosi_n+'</b>';
     var row=[poliStr,asmaStr,dermStr].filter(Boolean).join(' \u00b7 ');
     return '<div class="sentry"><div class="sentry-time">'+fmtT(e.ts)+'</div>'
       +'<div style="flex:1"><div style="font-size:11px;color:var(--tx2);line-height:1.7">'+row+'</div>'
