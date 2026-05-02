@@ -271,6 +271,33 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .sync-status.err{background:#FCEBEB;color:#A32D2D;}
 .toast{position:fixed;bottom:calc(30px + var(--safe-b));left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:9px 20px;border-radius:20px;font-size:13px;z-index:999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;}
+
+/* CTG -- Carico Trigger Giornaliero */
+.ctg-bar{border-radius:var(--r);padding:11px 13px;margin-bottom:14px;border:0.5px solid var(--bd);background:var(--bg2);transition:background .3s,border-color .3s;}
+.ctg-bar.ctg-green{background:#E8F5EE;border-color:#A8D5B5;}
+.ctg-bar.ctg-yellow{background:#FDF5E0;border-color:#F0CC6A;}
+.ctg-bar.ctg-red{background:#FCEAEA;border-color:#F0A0A0;}
+@media(prefers-color-scheme:dark){
+  .ctg-bar.ctg-green{background:#1a3528;border-color:#2E6644;}
+  .ctg-bar.ctg-yellow{background:#2e2610;border-color:#705c10;}
+  .ctg-bar.ctg-red{background:#2e1010;border-color:#702020;}
+}
+.ctg-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.ctg-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx2);}
+.ctg-value{font-size:13px;font-weight:700;}
+.ctg-track{height:6px;background:var(--bd);border-radius:3px;overflow:hidden;margin-bottom:6px;}
+.ctg-fill{height:100%;border-radius:3px;transition:width .35s ease,background .35s;}
+.ctg-meals{display:flex;gap:6px;flex-wrap:wrap;}
+.ctg-meal-dot{font-size:10px;color:var(--tx2);display:flex;align-items:center;gap:3px;}
+.ctg-meal-r{font-size:10px;font-weight:700;}
+.ctg-warning{margin-top:8px;padding:7px 10px;border-radius:6px;font-size:11px;font-weight:600;display:none;}
+.ctg-warning.show{display:block;}
+.ctg-warning.warn-yellow{background:#FFF3C4;color:#7A5A00;}
+.ctg-warning.warn-red{background:#FCEAEA;color:#A32D2D;}
+@media(prefers-color-scheme:dark){
+  .ctg-warning.warn-yellow{background:#3a2e00;color:#e0c060;}
+  .ctg-warning.warn-red{background:#3a1010;color:#f07070;}
+}
 </style>
 </head>
 <body>
@@ -285,8 +312,18 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
   </div>
 
   <!-- TAB PASTO (invariato) -->
-  <div id="vpasto" class="view">
-    <div class="pasto-topbar">
+    <div id="vpasto" class="view">
+    <!-- CTG -->
+    <div class="ctg-bar ctg-green" id="ctg-bar">
+      <div class="ctg-top">
+        <span class="ctg-label">&#9889; Carico trigger oggi (CTG)</span>
+        <span class="ctg-value" id="ctg-value">0 / 9</span>
+      </div>
+      <div class="ctg-track"><div class="ctg-fill" id="ctg-fill" style="width:0%;background:#5DCAA5"></div></div>
+      <div class="ctg-meals" id="ctg-meals"><span style="font-size:10px;color:var(--tx3)">Nessun pasto registrato oggi</span></div>
+      <div class="ctg-warning" id="ctg-warning"></div>
+    </div>
+        <div class="pasto-topbar">
       <input type="date" class="date-inp" id="pasto-date"/>
       <div class="meal-btns">
         <button class="mbtn" id="mb-col" onclick="setMeal('Colazione')" title="Colazione">&#9749;</button>
@@ -807,13 +844,46 @@ function togCustom(id){
   renderSelTags();updateTriggers();
 }
 
+// CTG -- Carico Trigger Giornaliero
+const CTG_SOGLIA_VERDE=6,CTG_SOGLIA_GIALLA=9;
+function getSelectedDateStr(){var v=document.getElementById('pasto-date');return v&&v.value?v.value:new Date().toISOString().slice(0,10);}
+function calcCtgSaved(){var d=getSelectedDateStr();return entries.filter(function(e){return e.ts.slice(0,10)===d;}).reduce(function(s,e){return s+(e.maxRisk||0);},0);}
+function updateCtgBar(){
+  var saved=calcCtgSaved(),cur=computeMaxRisk(),total=saved+cur;
+  var bar=document.getElementById('ctg-bar'),valEl=document.getElementById('ctg-value'),fillEl=document.getElementById('ctg-fill'),mealsEl=document.getElementById('ctg-meals'),warnEl=document.getElementById('ctg-warning');
+  if(!bar)return;
+  var pct=Math.min(total/12*100,100);
+  var fillColor,barClass,warnClass='',warnMsg='';
+  if(cur>=4){fillColor='#E24B4A';barClass='ctg-red';warnClass='warn-red';warnMsg='Alimento ad alto rischio (>=4) -- reazione possibile anche con CTG basso.';}
+  else if(total<=CTG_SOGLIA_VERDE){fillColor='#5DCAA5';barClass='ctg-green';}
+  else if(total<=CTG_SOGLIA_GIALLA){fillColor='#EF9F27';barClass='ctg-yellow';warnClass='warn-yellow';warnMsg='CTG in zona gialla -- considera se questo pasto e necessario o riduci il rischio.';}
+  else{fillColor='#E24B4A';barClass='ctg-red';warnClass='warn-red';warnMsg='CTG superato -- rischio reazione elevato. Scegli alimenti 0-1 o rimanda il pasto.';}
+  bar.className='ctg-bar '+barClass;
+  valEl.textContent=total+' / '+CTG_SOGLIA_GIALLA;valEl.style.color=fillColor;
+  fillEl.style.width=pct+'%';fillEl.style.background=fillColor;
+  var d=getSelectedDateStr(),todayE=entries.filter(function(e){return e.ts.slice(0,10)===d;});
+  if(!todayE.length&&cur===0){
+    mealsEl.innerHTML='<span style="font-size:10px;color:var(--tx3)">Nessun pasto registrato oggi</span>';
+  } else {
+    var dots=todayE.map(function(e){
+      var ml=e.meal?e.meal.slice(0,3):e.ts.slice(11,16);
+      var rc=RC[e.maxRisk]||'#ccc';
+      return '<span class="ctg-meal-dot"><span style="width:6px;height:6px;border-radius:50%;background:'+rc+';display:inline-block"></span>'+ml+'<span class="ctg-meal-r" style="color:'+rc+'">+'+e.maxRisk+'</span></span>';
+    });
+    if(cur>0){var rc=RC[cur]||'#ccc';dots.push('<span class="ctg-meal-dot" style="opacity:.7"><span style="width:6px;height:6px;border-radius:50%;background:'+rc+';display:inline-block;border:1px dashed '+rc+'"></span>ora<span class="ctg-meal-r" style="color:'+rc+'">+'+cur+'</span></span>');}
+    mealsEl.innerHTML=dots.join('')||'<span style="font-size:10px;color:var(--tx3)">Nessun pasto</span>';
+  }
+  if(warnClass){warnEl.className='ctg-warning show '+warnClass;warnEl.textContent=warnMsg;}
+  else{warnEl.className='ctg-warning';}
+}
+
 function updateTriggers(){
   const trigs=computeAllTriggers(),mr=computeMaxRisk();
   const el=document.getElementById('trig-display'),rb=document.getElementById('rbanner');
   if(!trigs.length){el.innerHTML='<div class="notrig">Seleziona alimenti per vedere i trigger</div>';rb.style.display='none';return;}
   el.innerHTML=`<div class="tblock">${trigs.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A',d:''};return`<div class="tchip" style="background:${s.bg};color:${s.c}"><span class="tname">${t}</span><span class="tdesc">${s.d}</span></div>`;}).join('')}</div>`;
   rb.style.display='block';rb.style.background=RBG[mr];rb.style.color=RTC[mr];
-  rb.textContent='Profilo di rischio pasto: '+RL[mr];
+  rb.textContent='Profilo di rischio pasto: '+RL[mr];updateCtgBar();
 }
 
 function setMeal(m){
@@ -843,7 +913,7 @@ function resetPasto(){
   updateGenreCount('piatti');
   updateTriggers();buildSyms();buildSevs();
   document.getElementById('react-time').value='';document.getElementById('note-inp').value='';
-  clearFoodSearch();initDatePicker();
+  clearFoodSearch();initDatePicker();updateCtgBar();
 }
 
 /* ══════════════════════════════
@@ -1620,7 +1690,7 @@ function copyForClaude(){const txt='DATI DIARIO WIDAL\n\nPasti recenti:\n'+JSON.
 /* ── TABS ── */
 function showTab(t){
   ['pasto','hist','stato','alim','stats'].forEach(x=>{document.getElementById('v'+x).style.display=x===t?'block':'none';document.getElementById('tab-'+x).className='tab'+(x===t?' on':'');});
-  if(t==='hist')renderHist();
+  if(t==='pasto')updateCtgBar();if(t==='hist')renderHist();
   if(t==='stato')renderStato();
   if(t==='alim'){buildTrigFilterBar();renderCustomFoods();initApiKeyUI();}
   if(t==='stats')renderStats();
