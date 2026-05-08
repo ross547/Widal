@@ -77,6 +77,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;fo
 .fchip{display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border-radius:20px;font-size:12px;cursor:pointer;border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx2);user-select:none;}
 .fchip.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);font-weight:600;}
 .fchip.custom{border-style:dashed;}
+.fchip.dish-item{border-style:dashed;}
 .rdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .tblock{display:flex;flex-wrap:wrap;gap:4px;}
 .tchip{display:inline-flex;flex-direction:column;padding:5px 9px;border-radius:var(--r);}
@@ -388,30 +389,50 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       <div class="sel-tags" id="sel-tags"></div>
     </div>
     <div class="field">
-      <label class="lbl">Alimenti per categoria</label>
-      <div id="genre-vegetali" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('vegetali')"><span class="genre-arrow" id="ga-vegetali">&#9658;</span><span class="genre-hdr-name">&#129382; Vegetali</span><span class="genre-count" id="gc-cnt-vegetali"></span></div>
-        <div class="genre-chips" id="gc-vegetali" style="display:none"></div>
+      <label class="lbl">Alimenti per categoria <span style="font-size:9px;font-weight:400;color:var(--tx3);font-style:italic">· bordo tratteggiato = piatto composto</span></label>
+      <div id="genre-pasta" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('pasta')"><span class="genre-arrow" id="ga-pasta">&#9658;</span><span class="genre-hdr-name">🍝 Pasta &amp; Cereali</span><span class="genre-count" id="gc-cnt-pasta"></span></div>
+        <div class="genre-chips" id="gc-pasta" style="display:none"></div>
       </div>
-      <div id="genre-frutta" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('frutta')"><span class="genre-arrow" id="ga-frutta">&#9658;</span><span class="genre-hdr-name">&#127822; Frutta</span><span class="genre-count" id="gc-cnt-frutta"></span></div>
-        <div class="genre-chips" id="gc-frutta" style="display:none"></div>
+      <div id="genre-zuppe" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('zuppe')"><span class="genre-arrow" id="ga-zuppe">&#9658;</span><span class="genre-hdr-name">🍲 Zuppe &amp; Minestre</span><span class="genre-count" id="gc-cnt-zuppe"></span></div>
+        <div class="genre-chips" id="gc-zuppe" style="display:none"></div>
       </div>
       <div id="genre-pesce" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('pesce')"><span class="genre-arrow" id="ga-pesce">&#9658;</span><span class="genre-hdr-name">&#127997; Pesce &amp; Carne &amp; Uova</span><span class="genre-count" id="gc-cnt-pesce"></span></div>
+        <div class="genre-hdr" onclick="togGenre('pesce')"><span class="genre-arrow" id="ga-pesce">&#9658;</span><span class="genre-hdr-name">🐟 Pesce</span><span class="genre-count" id="gc-cnt-pesce"></span></div>
         <div class="genre-chips" id="gc-pesce" style="display:none"></div>
       </div>
+      <div id="genre-pollo" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('pollo')"><span class="genre-arrow" id="ga-pollo">&#9658;</span><span class="genre-hdr-name">🍗 Pollo &amp; Tacchino</span><span class="genre-count" id="gc-cnt-pollo"></span></div>
+        <div class="genre-chips" id="gc-pollo" style="display:none"></div>
+      </div>
+      <div id="genre-verdure" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('verdure')"><span class="genre-arrow" id="ga-verdure">&#9658;</span><span class="genre-hdr-name">🥦 Verdure &amp; Uova</span><span class="genre-count" id="gc-cnt-verdure"></span></div>
+        <div class="genre-chips" id="gc-verdure" style="display:none"></div>
+      </div>
       <div id="genre-formaggi" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('formaggi')"><span class="genre-arrow" id="ga-formaggi">&#9658;</span><span class="genre-hdr-name">&#129472; Formaggi</span><span class="genre-count" id="gc-cnt-formaggi"></span></div>
+        <div class="genre-hdr" onclick="togGenre('formaggi')"><span class="genre-arrow" id="ga-formaggi">&#9658;</span><span class="genre-hdr-name">🧀 Formaggi</span><span class="genre-count" id="gc-cnt-formaggi"></span></div>
         <div class="genre-chips" id="gc-formaggi" style="display:none"></div>
       </div>
+      <div id="genre-insalate" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('insalate')"><span class="genre-arrow" id="ga-insalate">&#9658;</span><span class="genre-hdr-name">🥗 Insalate</span><span class="genre-count" id="gc-cnt-insalate"></span></div>
+        <div class="genre-chips" id="gc-insalate" style="display:none"></div>
+      </div>
+      <div id="genre-frutta" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('frutta')"><span class="genre-arrow" id="ga-frutta">&#9658;</span><span class="genre-hdr-name">🍎 Frutta</span><span class="genre-count" id="gc-cnt-frutta"></span></div>
+        <div class="genre-chips" id="gc-frutta" style="display:none"></div>
+      </div>
+      <div id="genre-dolci" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('dolci')"><span class="genre-arrow" id="ga-dolci">&#9658;</span><span class="genre-hdr-name">🍰 Dolci &amp; Snack</span><span class="genre-count" id="gc-cnt-dolci"></span></div>
+        <div class="genre-chips" id="gc-dolci" style="display:none"></div>
+      </div>
       <div id="genre-bevande" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('bevande')"><span class="genre-arrow" id="ga-bevande">&#9658;</span><span class="genre-hdr-name">&#9749; Bevande</span><span class="genre-count" id="gc-cnt-bevande"></span></div>
+        <div class="genre-hdr" onclick="togGenre('bevande')"><span class="genre-arrow" id="ga-bevande">&#9658;</span><span class="genre-hdr-name">☕ Bevande</span><span class="genre-count" id="gc-cnt-bevande"></span></div>
         <div class="genre-chips" id="gc-bevande" style="display:none"></div>
       </div>
-      <div id="genre-piatti" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('piatti')"><span class="genre-arrow" id="ga-piatti">&#9658;</span><span class="genre-hdr-name">&#127869; Piatti composti</span><span class="genre-count" id="gc-cnt-piatti"></span></div>
-        <div class="genre-chips" id="gc-piatti" style="display:none"></div>
+      <div id="genre-altro" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('altro')"><span class="genre-arrow" id="ga-altro">&#9658;</span><span class="genre-hdr-name">🧂 Altro</span><span class="genre-count" id="gc-cnt-altro"></span></div>
+        <div class="genre-chips" id="gc-altro" style="display:none"></div>
       </div>
       <div id="genre-miei" class="genre-block" style="display:none">
         <div class="genre-hdr" onclick="togGenre('miei')"><span class="genre-arrow" id="ga-miei">&#9658;</span><span class="genre-hdr-name">&#11088; Miei alimenti</span><span class="genre-count" id="gc-cnt-miei"></span></div>
@@ -671,63 +692,106 @@ SCALA RISCHIO 0-5: 0=sicuro, 1=minimo, 2=monitorare, 3=cautela, 4=evitare quasi 
 TRIGGER: Istamina, Salicilati, Ammine biogene, Tiramina, TRPA1, Istamina-lib.
 Per piatti composti analizza ogni ingrediente + profilo combinato.`;
 
-const DISHES=[
-  {n:"Minestrone misto",t:["Istamina","Salicilati","Ammine biogene"],r:3},
-  {n:"Minestra ceci/bietole",t:["Istamina","Salicilati","Ammine biogene"],r:3},
-  {n:"Pasta e fagioli",t:["Istamina","Salicilati","Ammine biogene"],r:3},
-  {n:"Passata verdure verdi",t:["Salicilati","Istamina"],r:2},
-  {n:"Pasta al pomodoro",t:["Istamina","Salicilati"],r:3},
-  {n:"Risotto bianco",t:[],r:1},
-  {n:"Pasta in bianco",t:[],r:0},
-  {n:"Branzino con pomodoro",t:["Istamina","Salicilati"],r:3},
-  {n:"Persico impanato fritto",t:["Ammine biogene"],r:1},
-  {n:"Salmone alla griglia",t:["Istamina"],r:2},
-  {n:"Salmone affumicato",t:["Istamina","Tiramina","Ammine biogene"],r:5},
-  {n:"Acciughe sotto sale",t:["Istamina","Tiramina","Ammine biogene"],r:5},
-  {n:"Merluzzo al vapore",t:[],r:1},
-  {n:"Pollo impanato fritto",t:["Ammine biogene"],r:1},
-  {n:"Pollo al curry",t:["Salicilati"],r:3},
-  {n:"Pollo alla cacciatore",t:["Istamina","Salicilati"],r:3},
-  {n:"Petto di pollo alla piastra",t:[],r:0},
-  {n:"Melanzane alla parmigiana",t:["Istamina","Ammine biogene","Salicilati"],r:4},
-  {n:"Insalata mista/pomodori",t:["Istamina","Salicilati"],r:3},
-  {n:"Spinaci aglio/peperoncino",t:["Istamina","Salicilati","TRPA1","Ammine biogene"],r:4},
-  {n:"Cavolfiore al vapore",t:[],r:0},
-  {n:"Patate al forno",t:[],r:0},
-  {n:"Sorbetto di pera",t:[],r:1},
-  {n:"Sorbetto di mango",t:["Salicilati"],r:2},
-  {n:"Crostata marmellata pera",t:["Salicilati"],r:2},
+// ── ALIMENTI RIORGANIZZATI per categoria (ordine alfabetico dentro ogni cat) ──
+// Ogni categoria contiene sia singoli che piatti composti
+const CATEGORIES=[
+  {id:"pasta",  label:"🍝 Pasta & Cereali",    items:[
+    {n:"Pasta e fagioli",       t:["Istamina","Salicilati","Ammine biogene"],r:3, dish:true},
+    {n:"Pasta al pomodoro",     t:["Istamina","Salicilati"],r:3, dish:true},
+    {n:"Pasta in bianco",       t:[],r:0, dish:true},
+    {n:"Riso",                  t:[],r:0},
+    {n:"Risotto bianco",        t:[],r:1, dish:true},
+  ]},
+  {id:"zuppe",  label:"🍲 Zuppe & Minestre",   items:[
+    {n:"Minestra ceci/bietole", t:["Istamina","Salicilati","Ammine biogene"],r:3, dish:true},
+    {n:"Minestrone misto",      t:["Istamina","Salicilati","Ammine biogene"],r:3, dish:true},
+    {n:"Passata verdure verdi", t:["Salicilati","Istamina"],r:2, dish:true},
+  ]},
+  {id:"pesce",  label:"🐟 Pesce",               items:[
+    {n:"Acciughe sotto sale",   t:["Istamina","Tiramina","Ammine biogene"],r:5},
+    {n:"Branzino con pomodoro", t:["Istamina","Salicilati"],r:3, dish:true},
+    {n:"Merluzzo al vapore",    t:[],r:1, dish:true},
+    {n:"Merluzzo fresco",       t:[],r:1},
+    {n:"Pesce persico",         t:["Ammine biogene"],r:1},
+    {n:"Persico impanato fritto",t:["Ammine biogene"],r:1, dish:true},
+    {n:"Salmone affumicato",    t:["Istamina","Tiramina","Ammine biogene"],r:5},
+    {n:"Salmone alla griglia",  t:["Istamina"],r:2, dish:true},
+  ]},
+  {id:"pollo",  label:"🍗 Pollo & Tacchino",    items:[
+    {n:"Bresaola",              t:["Ammine biogene","Tiramina"],r:3},
+    {n:"Petto di pollo",        t:[],r:0},
+    {n:"Petto di pollo alla piastra",t:[],r:0, dish:true},
+    {n:"Pollo al curry",        t:["Salicilati"],r:3, dish:true},
+    {n:"Pollo alla cacciatore", t:["Istamina","Salicilati"],r:3, dish:true},
+    {n:"Pollo impanato fritto", t:["Ammine biogene"],r:1, dish:true},
+    {n:"Uova sode",             t:[],r:0},
+  ]},
+  {id:"verdure",label:"🥦 Verdure & Uova",      items:[
+    {n:"Aglio crudo",           t:["TRPA1"],r:3},
+    {n:"Broccoli",              t:["Salicilati"],r:1},
+    {n:"Carote",                t:[],r:0},
+    {n:"Cavolfiore",            t:[],r:0},
+    {n:"Cavolfiore al vapore",  t:[],r:0, dish:true},
+    {n:"Cipolla",               t:["Salicilati"],r:2},
+    {n:"Fagiolini",             t:["Salicilati"],r:1},
+    {n:"Melanzane",             t:["Istamina","Ammine biogene"],r:4},
+    {n:"Melanzane alla parmigiana",t:["Istamina","Ammine biogene","Salicilati"],r:4, dish:true},
+    {n:"Patate",                t:[],r:0},
+    {n:"Patate al forno",       t:[],r:0, dish:true},
+    {n:"Peperoni",              t:["Salicilati","TRPA1"],r:3},
+    {n:"Pomodoro",              t:["Istamina","Salicilati"],r:3},
+    {n:"Spinaci",               t:["Istamina","Salicilati"],r:3},
+    {n:"Spinaci aglio/peperoncino",t:["Istamina","Salicilati","TRPA1","Ammine biogene"],r:4, dish:true},
+    {n:"Zucchine",              t:["Salicilati"],r:1},
+  ]},
+  {id:"formaggi",label:"🧀 Formaggi",           items:[
+    {n:"Emmental",              t:["Istamina","Ammine biogene"],r:3},
+    {n:"Feta",                  t:["Istamina","Ammine biogene"],r:3},
+    {n:"Mozzarella di bufala",  t:["Istamina"],r:2},
+    {n:"Parmigiano",            t:["Istamina","Tiramina"],r:4},
+    {n:"Pecorino stagionato",   t:["Istamina","Tiramina","Ammine biogene"],r:4},
+  ]},
+  {id:"insalate",label:"🥗 Insalate",           items:[
+    {n:"Insalata mista/pomodori",t:["Istamina","Salicilati"],r:3, dish:true},
+  ]},
+  {id:"frutta", label:"🍎 Frutta",              items:[
+    {n:"Banana",                t:["Ammine biogene"],r:2},
+    {n:"Mela sbucciata cotta",  t:["Salicilati"],r:2},
+    {n:"Mela sbucciata cruda",  t:["Salicilati"],r:3},
+    {n:"Pera",                  t:[],r:1},
+  ]},
+  {id:"dolci",  label:"🍰 Dolci & Snack",       items:[
+    {n:"Crostata marmellata pera",t:["Salicilati"],r:2, dish:true},
+    {n:"Sorbetto di mango",     t:["Salicilati"],r:2},
+    {n:"Sorbetto di pera",      t:[],r:1},
+  ]},
+  {id:"bevande",label:"☕ Bevande",              items:[
+    {n:"Acqua",                 t:[],r:0},
+    {n:"Caffe",                 t:["Istamina-lib.","Salicilati"],r:3},
+    {n:"Caffe decaffeinato",    t:["Salicilati"],r:2},
+    {n:"Cappuccino",            t:["Istamina-lib.","Salicilati"],r:3},
+    {n:"Tisana menta",          t:["Salicilati","TRPA1"],r:3},
+    {n:"Tisana zafferano",      t:[],r:1},
+  ]},
+  {id:"altro",  label:"🧂 Altro",               items:[]},
 ];
+
+// ── Compatibilità: ricostruiamo SINGLES e DISHES per il codice legacy ──
 const SINGLES={
-  vegetali:[
-    {n:"Cavolfiore",t:[],r:0},{n:"Zucchine",t:["Salicilati"],r:1},
-    {n:"Carote",t:[],r:0},{n:"Patate",t:[],r:0},
-    {n:"Spinaci",t:["Istamina","Salicilati"],r:3},{n:"Pomodoro",t:["Istamina","Salicilati"],r:3},
-    {n:"Melanzane",t:["Istamina","Ammine biogene"],r:4},{n:"Peperoni",t:["Salicilati","TRPA1"],r:3},
-    {n:"Aglio crudo",t:["TRPA1"],r:3},{n:"Cipolla",t:["Salicilati"],r:2},
-    {n:"Fagiolini",t:["Salicilati"],r:1},{n:"Broccoli",t:["Salicilati"],r:1},
-  ],
-  frutta:[
-    {n:"Mela sbucciata cotta",t:["Salicilati"],r:2},{n:"Mela sbucciata cruda",t:["Salicilati"],r:3},
-    {n:"Pera",t:[],r:1},{n:"Banana",t:["Ammine biogene"],r:2},
-    {n:"Sorbetto di pera",t:[],r:1},{n:"Sorbetto di mango",t:["Salicilati"],r:2},
-  ],
-  pesce:[
-    {n:"Uova sode",t:[],r:0},{n:"Petto di pollo",t:[],r:0},
-    {n:"Pesce persico",t:["Ammine biogene"],r:1},{n:"Merluzzo fresco",t:[],r:1},
-    {n:"Bresaola",t:["Ammine biogene","Tiramina"],r:3},
-  ],
-  formaggi:[
-    {n:"Mozzarella di bufala",t:["Istamina"],r:2},{n:"Feta",t:["Istamina","Ammine biogene"],r:3},
-    {n:"Emmental",t:["Istamina","Ammine biogene"],r:3},{n:"Parmigiano",t:["Istamina","Tiramina"],r:4},
-    {n:"Pecorino stagionato",t:["Istamina","Tiramina","Ammine biogene"],r:4},
-  ],
-  bevande:[
-    {n:"Acqua",t:[],r:0},{n:"Caffe",t:["Istamina-lib.","Salicilati"],r:3},
-    {n:"Caffe decaffeinato",t:["Salicilati"],r:2},{n:"Cappuccino",t:["Istamina-lib.","Salicilati"],r:3},
-    {n:"Tisana zafferano",t:[],r:1},{n:"Tisana menta",t:["Salicilati","TRPA1"],r:3},
-  ],
+  pasta:    CATEGORIES.find(c=>c.id==='pasta').items.filter(f=>!f.dish),
+  zuppe:    CATEGORIES.find(c=>c.id==='zuppe').items.filter(f=>!f.dish),
+  pesce:    CATEGORIES.find(c=>c.id==='pesce').items.filter(f=>!f.dish),
+  pollo:    CATEGORIES.find(c=>c.id==='pollo').items.filter(f=>!f.dish),
+  verdure:  CATEGORIES.find(c=>c.id==='verdure').items.filter(f=>!f.dish),
+  formaggi: CATEGORIES.find(c=>c.id==='formaggi').items.filter(f=>!f.dish),
+  insalate: CATEGORIES.find(c=>c.id==='insalate').items.filter(f=>!f.dish),
+  frutta:   CATEGORIES.find(c=>c.id==='frutta').items.filter(f=>!f.dish),
+  dolci:    CATEGORIES.find(c=>c.id==='dolci').items.filter(f=>!f.dish),
+  bevande:  CATEGORIES.find(c=>c.id==='bevande').items.filter(f=>!f.dish),
+  altro:    CATEGORIES.find(c=>c.id==='altro').items.filter(f=>!f.dish),
 };
+// DISHES = tutti gli elementi dish:true da tutte le categorie
+const DISHES=CATEGORIES.flatMap(c=>c.items.filter(f=>f.dish).map(f=>({...f,cat:c.label})));
 const TS={"Istamina":{bg:"#FCEBEB",c:"#A32D2D",d:"istamina preformata → degranulazione diretta"},"Salicilati":{bg:"#FAEEDA",c:"#854F0B",d:"COX-1 → leucotrieni"},"Ammine biogene":{bg:"#FAECE7",c:"#993C1D",d:"attivazione mastociti"},"Tiramina":{bg:"#FCEBEB",c:"#791F1F",d:"vasoattiva → degranulazione"},"TRPA1":{bg:"#EEEDFE",c:"#3C3489",d:"neurogeno su mucose"},"Istamina-lib.":{bg:"#FBEAF0",c:"#993556",d:"induce rilascio"}};
 const RC=["","#5DCAA5","#5DCAA5","#EF9F27","#E24B4A","#E24B4A"];
 const RBG=["transparent","#E1F5EE","#E1F5EE","#FAEEDA","#FCEBEB","#FCEBEB"];
@@ -800,8 +864,10 @@ function getAllSelectedNames(){return Object.keys(selItems).map(k=>getItemData(k
 
 function getSearchPool(){
   const pool=[];
-  DISHES.forEach(d=>pool.push({key:'dish:'+d.n,n:d.n,r:d.r,t:d.t,cat:'Piatto'}));
-  Object.entries(SINGLES).forEach(([genre,items])=>items.forEach(f=>pool.push({key:genre+':'+f.n,n:f.n,r:f.r,t:f.t,cat:capFirst(genre)})));
+  CATEGORIES.forEach(cat=>cat.items.forEach(f=>{
+    if(f.dish) pool.push({key:'dish:'+f.n,n:f.n,r:f.r,t:f.t,cat:cat.label.replace(/^\S+\s/,'')});
+    else pool.push({key:cat.id+':'+f.n,n:f.n,r:f.r,t:f.t,cat:cat.label.replace(/^\S+\s/,'')});
+  }));
   customFoods.forEach(f=>pool.push({key:'custom:'+f.id,n:f.name,r:f.risk,t:f.triggers,cat:'Personale'}));
   return pool;
 }
@@ -866,13 +932,15 @@ function togGenre(g){
   if(ar)ar.className='genre-arrow'+(open?'':' open');
 }
 function buildGenreChips(){
-  Object.entries(SINGLES).forEach(([genre,items])=>{
-    const el=document.getElementById('gc-'+genre);if(!el)return;
-    el.innerHTML=items.map(f=>`<div class="fchip" id="sg-${genre}-${escId(f.n)}" onclick="togSingle('${genre}','${escQ(f.n)}')">${rdot(f.r)}${f.n}</div>`).join('');
+  // Nuova struttura: ogni categoria contiene tutti gli item (singoli + piatti) già ordinati A-Z
+  CATEGORIES.forEach(cat=>{
+    const el=document.getElementById('gc-'+cat.id);if(!el)return;
+    el.innerHTML=cat.items.map(f=>{
+      const idPfx=f.dish?'dish-'+cat.id:'sg-'+cat.id;
+      const clickFn=f.dish?`togDishCat('${cat.id}','${escQ(f.n)}')`:`togSingle('${cat.id}','${escQ(f.n)}')`;
+      return `<div class="fchip${f.dish?' dish-item':''}" id="${idPfx}-${escId(f.n)}" onclick="${clickFn}">${rdot(f.r)}${f.n}</div>`;
+    }).join('');
   });
-  const elP=document.getElementById('gc-piatti');if(elP){
-    elP.innerHTML=DISHES.map(d=>`<div class="fchip" id="gc-piatti-${escId(d.n)}" onclick="togDish('${escQ(d.n)}')">${rdot(d.r)}${d.n}</div>`).join('');
-  }
 }
 function togSingle(genre,name){
   const key=genre+':'+name;
@@ -881,17 +949,31 @@ function togSingle(genre,name){
   if(el)el.className='fchip'+(selItems[key]?' on':'');
   updateGenreCount(genre);renderSelTags();updateTriggers();
 }
-function togDish(name){
+function togDishCat(catId,name){
   const key='dish:'+name;
   if(selItems[key]){delete selItems[key];}else{selItems[key]=true;}
-  const el=document.getElementById('gc-piatti-'+escId(name));
-  if(el)el.className='fchip'+(selItems[key]?' on':'');
-  updateGenreCount('piatti');renderSelTags();updateTriggers();
+  const el=document.getElementById('dish-'+catId+'-'+escId(name));
+  if(el)el.className='fchip dish-item'+(selItems[key]?' on':'');
+  updateGenreCount(catId);renderSelTags();updateTriggers();
+}
+function togDish(name){
+  // legacy: cerca in quale categoria è il piatto
+  const d=DISHES.find(x=>x.n===name);
+  if(!d)return;
+  const catId=CATEGORIES.find(c=>c.items.some(f=>f.n===name&&f.dish))?.id||'altro';
+  togDishCat(catId,name);
 }
 function updateGenreCount(genre){
   let cnt=0;
-  if(genre==='piatti')cnt=Object.keys(selItems).filter(k=>k.startsWith('dish:')).length;
-  else cnt=Object.keys(selItems).filter(k=>k.startsWith(genre+':')).length;
+  const cat=CATEGORIES.find(c=>c.id===genre);
+  if(cat){
+    const dishNames=cat.items.filter(f=>f.dish).map(f=>f.n);
+    const singleKeys=cat.items.filter(f=>!f.dish).map(f=>genre+':'+f.n);
+    const dishKeys=dishNames.map(n=>'dish:'+n);
+    cnt=[...singleKeys,...dishKeys].filter(k=>selItems[k]).length;
+  } else {
+    cnt=Object.keys(selItems).filter(k=>k.startsWith(genre+':')).length;
+  }
   const el=document.getElementById('gc-cnt-'+genre);if(el)el.textContent=cnt>0?String(cnt):'';
 }
 function buildCustomGenreChips(){
@@ -976,7 +1058,7 @@ function resetPasto(){
   renderSelTags();
   document.querySelectorAll('.fchip.on').forEach(el=>el.classList.remove('on'));
   Object.keys(SINGLES).forEach(g=>updateGenreCount(g));
-  updateGenreCount('piatti');
+  CATEGORIES.forEach(c=>updateGenreCount(c.id));
   reactingFood=null;updateReactFoodBox();updateTriggers();buildSyms();buildSevs();
   document.getElementById('react-time').value='';document.getElementById('note-inp').value='';
   clearFoodSearch();initDatePicker();updateCtgBar();
