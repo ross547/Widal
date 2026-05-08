@@ -1785,14 +1785,12 @@ async function startScanner(){
   const wrap=document.getElementById('scanner-wrap');
   const btn=document.getElementById('scan-btn');
   const status=document.getElementById('barcode-status');
-  // Reset product card
   document.getElementById('off-product-card').className='off-product-card';
   status.innerHTML='<span class="spin"></span> Avvio fotocamera...';
   wrap.className='scanner-wrap vis';
   btn.className='scan-btn active';
   barcodeActive=true;
   try{
-    // Check ZXing available
     if(typeof ZXing==='undefined'){status.textContent='⚠ Libreria scanner non caricata. Connessione internet necessaria.';stopScanner();return;}
     const hints=new Map();
     hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[
@@ -1802,30 +1800,37 @@ async function startScanner(){
     ]);
     barcodeReader=new ZXing.BrowserMultiFormatReader(hints);
     const video=document.getElementById('scanner-video');
-    // Get back camera preferably
-    const devices=await ZXing.BrowserCodeReader.listVideoInputDevices();
-    const backCam=devices.find(d=>/(back|rear|environment)/i.test(d.label))||devices[devices.length-1]||null;
-    const deviceId=backCam?backCam.deviceId:undefined;
+    // Usa constraints diretti per preferire fotocamera posteriore (no listVideoInputDevices)
+    const constraints={video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}};
+    barcodeStream=await navigator.mediaDevices.getUserMedia(constraints);
+    video.srcObject=barcodeStream;
+    await video.play();
     status.textContent='';
-    await barcodeReader.decodeFromVideoDevice(deviceId,video,function(result,err){
+    // Decode loop
+    barcodeReader.decodeFromStream(barcodeStream,video,function(result,err){
       if(result){
         const code=result.getText();
         stopScanner();
         lookupBarcode(code);
       }
+      // err = no barcode yet, normale durante la scansione, ignora
     });
   }catch(err){
-    status.textContent='⚠ '+( err.name==='NotAllowedError'?'Permesso fotocamera negato — abilita nelle impostazioni':err.message);
+    status.textContent='⚠ '+(err.name==='NotAllowedError'?'Permesso fotocamera negato — abilita nelle impostazioni Safari':err.message);
     stopScanner();
   }
 }
 
 function stopScanner(){
   if(barcodeReader){try{barcodeReader.reset();}catch(e){}}
+  if(barcodeStream){barcodeStream.getTracks().forEach(t=>t.stop());barcodeStream=null;}
+  const video=document.getElementById('scanner-video');
+  if(video){video.srcObject=null;}
   barcodeReader=null;
   barcodeActive=false;
   document.getElementById('scanner-wrap').className='scanner-wrap';
   document.getElementById('scan-btn').className='scan-btn';
+  document.getElementById('barcode-status').textContent='';
 }
 
 async function lookupBarcode(code){
