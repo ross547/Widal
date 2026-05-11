@@ -83,6 +83,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;fo
 .tname{font-size:11px;font-weight:600;}
 .tdesc{font-size:10px;opacity:.8;margin-top:1px;}
 .rbanner{padding:8px 12px;border-radius:var(--r);margin-top:6px;font-size:12px;font-weight:600;}
+/* Glycemic impact banner */
+.gbanner{padding:8px 12px;border-radius:var(--r);margin-top:5px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.gbanner-icon{font-size:15px;flex-shrink:0;}
+.gbanner-text{flex:1;}
+.gbanner-bar{height:5px;border-radius:3px;overflow:hidden;background:var(--bd);margin-top:5px;}
+.gbanner-fill{height:100%;border-radius:3px;transition:width .3s;}
+.gbanner.ig-low{background:#E8F5EE;color:#2E6644;border:0.5px solid #A8D5B5;}
+.gbanner.ig-med{background:#FFF8E7;color:#7A5A00;border:0.5px solid #F0CC6A;}
+.gbanner.ig-high{background:#FCEAEA;color:#A32D2D;border:0.5px solid #F0A0A0;}
+@media(prefers-color-scheme:dark){
+  .gbanner.ig-low{background:#1a3528;color:#80d4a0;border-color:#2E6644;}
+  .gbanner.ig-med{background:#2e2610;color:#e0c060;border-color:#705c10;}
+  .gbanner.ig-high{background:#2e1010;color:#f07070;border-color:#702020;}
+}
 .notrig{font-size:12px;color:var(--tx3);padding:3px 0;}
 .chips{display:flex;flex-wrap:wrap;gap:5px;}
 .schip,.sevchip{padding:5px 10px;border-radius:20px;font-size:12px;cursor:pointer;border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);display:inline-block;user-select:none;}
@@ -457,6 +471,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       <label class="lbl">Trigger (automatici)</label>
       <div id="trig-display"><div class="notrig">Seleziona alimenti per vedere i trigger</div></div>
       <div id="rbanner" class="rbanner" style="display:none"></div>
+      <div id="gbanner" class="gbanner" style="display:none"></div>
     </div>
     <div class="field">
       <label class="lbl">Sintomi osservati</label>
@@ -725,133 +740,133 @@ Per piatti composti analizza ogni ingrediente + profilo combinato.`;
 // ── CATEGORIES — lista unificata (singoli + piatti, ordine A-Z per categoria) ──
 const CATEGORIES=[
   {id:"pasta", label:"🍝 Pasta & Cereali", items:[
-    {n:"Farinata di ceci",              t:["Istamina-lib."],r:1},
-    {n:"Gnocchi al burro",              t:["Istamina"],r:1},
-    {n:"Lasagne in bianco di verdure",  t:["Istamina","Salicilati","Ammine biogene","Tiramina"],r:4},
-    {n:"Pasta e fagioli",               t:["Istamina","Salicilati","Ammine biogene"],r:3},
-    {n:"Pasta in bianco",               t:[],r:0},
-    {n:"Penne in bianco senza formaggio",t:["Istamina"],r:1},
-    {n:"Risotto bianco",                t:[],r:1},
-    {n:"Spaghetti in bianco",           t:["Istamina"],r:1},
-    {n:"Tagliatelle al burro",          t:["Istamina","Ammine biogene"],r:2},
-    {n:"Tagliolini alla crema di zucchine",t:["Istamina","Salicilati"],r:2},
-    {n:"Zuppa di orzo",                 t:["Istamina","Salicilati"],r:2},
+    {n:"Farinata di ceci",              t:["Istamina-lib."],r:1,g:35},
+    {n:"Gnocchi al burro",              t:["Istamina"],r:1,g:70},
+    {n:"Lasagne in bianco di verdure",  t:["Istamina","Salicilati","Ammine biogene","Tiramina"],r:4,g:55},
+    {n:"Pasta e fagioli",               t:["Istamina","Salicilati","Ammine biogene"],r:3,g:45},
+    {n:"Pasta in bianco",               t:[],r:0,g:65},
+    {n:"Penne in bianco senza formaggio",t:["Istamina"],r:1,g:65},
+    {n:"Risotto bianco",                t:[],r:1,g:70},
+    {n:"Spaghetti in bianco",           t:["Istamina"],r:1,g:60},
+    {n:"Tagliatelle al burro",          t:["Istamina","Ammine biogene"],r:2,g:55},
+    {n:"Tagliolini alla crema di zucchine",t:["Istamina","Salicilati"],r:2,g:50},
+    {n:"Zuppa di orzo",                 t:["Istamina","Salicilati"],r:2,g:35},
   ]},
   {id:"zuppe", label:"🍲 Zuppe & Minestre", items:[
-    {n:"Minestra ceci/bietole",         t:["Istamina","Salicilati","Ammine biogene"],r:3},
-    {n:"Minestrone misto",              t:["Istamina","Salicilati","Ammine biogene"],r:3},
-    {n:"Passata di zucca",              t:["Salicilati"],r:1},
-    {n:"Passata di zucchine con ceci",  t:["Salicilati"],r:1},
-    {n:"Passata verdure verdi",         t:["Salicilati","Istamina"],r:2},
+    {n:"Minestra ceci/bietole",         t:["Istamina","Salicilati","Ammine biogene"],r:3,g:35},
+    {n:"Minestrone misto",              t:["Istamina","Salicilati","Ammine biogene"],r:3,g:40},
+    {n:"Passata di zucca",              t:["Salicilati"],r:1,g:55},
+    {n:"Passata di zucchine con ceci",  t:["Salicilati"],r:1,g:35},
+    {n:"Passata verdure verdi",         t:["Salicilati","Istamina"],r:2,g:35},
   ]},
   {id:"pesce", label:"🐟 Pesce", items:[
-    {n:"Acciughe sotto sale",           t:["Istamina","Tiramina","Ammine biogene"],r:5},
-    {n:"Branzino in padella con zucchine",t:["Istamina"],r:1},
-    {n:"Branzino in padella nature",    t:["Istamina","Ammine biogene"],r:2},
-    {n:"Filetto di limanda fritto",     t:["Istamina","Ammine biogene","Istamina-lib."],r:3},
-    {n:"Merluzzo al vapore",            t:[],r:1},
-    {n:"Merluzzo al vapore con patate", t:["Istamina"],r:1},
-    {n:"Merluzzo fresco",               t:[],r:1},
-    {n:"Pesce persico",                 t:["Ammine biogene"],r:1},
-    {n:"Persico impanato fritto",       t:["Ammine biogene"],r:1},
-    {n:"Rombo in umido nature",         t:["Istamina","Ammine biogene"],r:2},
-    {n:"Rombo liscio in padella",       t:["Istamina"],r:1},
-    {n:"Salmone affumicato",            t:["Istamina","Tiramina","Ammine biogene"],r:5},
-    {n:"Salmone alla griglia",          t:["Istamina"],r:2},
-    {n:"Trancio di salmone al forno",   t:["Istamina","Ammine biogene"],r:3},
+    {n:"Acciughe sotto sale",           t:["Istamina","Tiramina","Ammine biogene"],r:5,g:0},
+    {n:"Branzino in padella con zucchine",t:["Istamina"],r:1,g:5},
+    {n:"Branzino in padella nature",    t:["Istamina","Ammine biogene"],r:2,g:0},
+    {n:"Filetto di limanda fritto",     t:["Istamina","Ammine biogene","Istamina-lib."],r:3,g:25},
+    {n:"Merluzzo al vapore",            t:[],r:1,g:0},
+    {n:"Merluzzo al vapore con patate", t:["Istamina"],r:1,g:35},
+    {n:"Merluzzo fresco",               t:[],r:1,g:0},
+    {n:"Pesce persico",                 t:["Ammine biogene"],r:1,g:0},
+    {n:"Persico impanato fritto",       t:["Ammine biogene"],r:1,g:30},
+    {n:"Rombo in umido nature",         t:["Istamina","Ammine biogene"],r:2,g:0},
+    {n:"Rombo liscio in padella",       t:["Istamina"],r:1,g:0},
+    {n:"Salmone affumicato",            t:["Istamina","Tiramina","Ammine biogene"],r:5,g:0},
+    {n:"Salmone alla griglia",          t:["Istamina"],r:2,g:0},
+    {n:"Trancio di salmone al forno",   t:["Istamina","Ammine biogene"],r:3,g:0},
   ]},
   {id:"pollo", label:"🍗 Pollo & Tacchino", items:[
-    {n:"Bresaola",                      t:["Ammine biogene","Tiramina"],r:3},
-    {n:"Fetta di tacchino ai ferri",    t:["Ammine biogene"],r:1},
-    {n:"Petto di pollo",                t:[],r:0},
-    {n:"Petto di pollo alla piastra",   t:[],r:0},
-    {n:"Piccata di tacchino nell'uovo", t:["Istamina","Ammine biogene"],r:2},
-    {n:"Pollo al curry",                t:["Salicilati"],r:3},
-    {n:"Pollo alla cacciatore",         t:["Istamina","Salicilati"],r:3},
-    {n:"Pollo allo spiedo con patate",  t:[],r:1},
-    {n:"Pollo impanato fritto",         t:["Ammine biogene"],r:1},
-    {n:"Tacchino impanato",             t:["Istamina","Ammine biogene","Istamina-lib."],r:3},
-    {n:"Uova sode",                     t:["Ammine biogene"],r:1},
+    {n:"Bresaola",                      t:["Ammine biogene","Tiramina"],r:3,g:0},
+    {n:"Fetta di tacchino ai ferri",    t:["Ammine biogene"],r:1,g:0},
+    {n:"Petto di pollo",                t:[],r:0,g:0},
+    {n:"Petto di pollo alla piastra",   t:[],r:0,g:0},
+    {n:"Piccata di tacchino nell'uovo", t:["Istamina","Ammine biogene"],r:2,g:10},
+    {n:"Pollo al curry",                t:["Salicilati"],r:3,g:5},
+    {n:"Pollo alla cacciatore",         t:["Istamina","Salicilati"],r:3,g:10},
+    {n:"Pollo allo spiedo con patate",  t:[],r:1,g:45},
+    {n:"Pollo impanato fritto",         t:["Ammine biogene"],r:1,g:30},
+    {n:"Tacchino impanato",             t:["Istamina","Ammine biogene","Istamina-lib."],r:3,g:30},
+    {n:"Uova sode",                     t:["Ammine biogene"],r:1,g:0},
   ]},
   {id:"verdure", label:"🥦 Verdure & Uova", items:[
-    {n:"Aglio crudo",                   t:["TRPA1"],r:3},
-    {n:"Broccoli",                      t:["Salicilati"],r:1},
-    {n:"Carote",                        t:[],r:0},
-    {n:"Carote e patate fritte",        t:["Salicilati","Istamina-lib."],r:2},
-    {n:"Carote, patate e fagiolini al forno",t:["Salicilati"],r:1},
-    {n:"Carote, zucchine e fagiolini al vapore",t:["Salicilati"],r:1},
-    {n:"Cavolfiore",                    t:[],r:0},
-    {n:"Cavolfiore al vapore",          t:[],r:0},
-    {n:"Cipolla",                       t:["Salicilati"],r:2},
-    {n:"Crocchette di patate",          t:["Istamina-lib.","Ammine biogene"],r:2},
-    {n:"Fagioli stufati nature",        t:["Istamina","Istamina-lib."],r:2},
-    {n:"Fagiolini",                     t:["Salicilati"],r:1},
-    {n:"Fette di zucca al forno",       t:["Salicilati"],r:1},
-    {n:"Fiori di zucchine in tempura",  t:["Istamina-lib.","TRPA1"],r:2},
-    {n:"Melanzane",                     t:["Istamina","Ammine biogene"],r:4},
-    {n:"Melanzane alla parmigiana",     t:["Istamina","Ammine biogene","Salicilati"],r:4},
-    {n:"Omelette alle zucchine",        t:["Istamina","Ammine biogene"],r:2},
-    {n:"Omelette nature",               t:["Ammine biogene","Istamina-lib."],r:2},
-    {n:"Patate",                        t:[],r:0},
-    {n:"Patate al forno",               t:[],r:0},
-    {n:"Patate al vapore",              t:[],r:1},
-    {n:"Peperoni",                      t:["Salicilati","TRPA1"],r:3},
-    {n:"Pomodoro",                      t:["Istamina","Salicilati"],r:3},
-    {n:"Spinaci",                       t:["Istamina","Salicilati"],r:3},
-    {n:"Spinaci aglio/peperoncino",     t:["Istamina","Salicilati","TRPA1","Ammine biogene"],r:4},
-    {n:"Zucchine",                      t:["Salicilati"],r:1},
-    {n:"Zucchine carote cavolfiore al vapore",t:["Salicilati"],r:1},
+    {n:"Aglio crudo",                   t:["TRPA1"],r:3,g:5},
+    {n:"Broccoli",                      t:["Salicilati"],r:1,g:15},
+    {n:"Carote",                        t:[],r:0,g:35},
+    {n:"Carote e patate fritte",        t:["Salicilati","Istamina-lib."],r:2,g:70},
+    {n:"Carote, patate e fagiolini al forno",t:["Salicilati"],r:1,g:55},
+    {n:"Carote, zucchine e fagiolini al vapore",t:["Salicilati"],r:1,g:20},
+    {n:"Cavolfiore",                    t:[],r:0,g:15},
+    {n:"Cavolfiore al vapore",          t:[],r:0,g:15},
+    {n:"Cipolla",                       t:["Salicilati"],r:2,g:10},
+    {n:"Crocchette di patate",          t:["Istamina-lib.","Ammine biogene"],r:2,g:70},
+    {n:"Fagioli stufati nature",        t:["Istamina","Istamina-lib."],r:2,g:30},
+    {n:"Fagiolini",                     t:["Salicilati"],r:1,g:15},
+    {n:"Fette di zucca al forno",       t:["Salicilati"],r:1,g:55},
+    {n:"Fiori di zucchine in tempura",  t:["Istamina-lib.","TRPA1"],r:2,g:45},
+    {n:"Melanzane",                     t:["Istamina","Ammine biogene"],r:4,g:15},
+    {n:"Melanzane alla parmigiana",     t:["Istamina","Ammine biogene","Salicilati"],r:4,g:25},
+    {n:"Omelette alle zucchine",        t:["Istamina","Ammine biogene"],r:2,g:5},
+    {n:"Omelette nature",               t:["Ammine biogene","Istamina-lib."],r:2,g:0},
+    {n:"Patate",                        t:[],r:0,g:65},
+    {n:"Patate al forno",               t:[],r:0,g:75},
+    {n:"Patate al vapore",              t:[],r:1,g:65},
+    {n:"Peperoni",                      t:["Salicilati","TRPA1"],r:3,g:15},
+    {n:"Pomodoro",                      t:["Istamina","Salicilati"],r:3,g:15},
+    {n:"Spinaci",                       t:["Istamina","Salicilati"],r:3,g:15},
+    {n:"Spinaci aglio/peperoncino",     t:["Istamina","Salicilati","TRPA1","Ammine biogene"],r:4,g:15},
+    {n:"Zucchine",                      t:["Salicilati"],r:1,g:15},
+    {n:"Zucchine carote cavolfiore al vapore",t:["Salicilati"],r:1,g:15},
   ]},
   {id:"formaggi", label:"🧀 Formaggi", items:[
-    {n:"Emmental",                      t:["Istamina","Ammine biogene"],r:3},
-    {n:"Feta",                          t:["Istamina","Ammine biogene"],r:3},
-    {n:"Focaccia al formaggio di Recco",t:["Istamina","Ammine biogene","Tiramina","Istamina-lib."],r:4},
-    {n:"Formaggio Gottardo",            t:["Istamina","Ammine biogene","Tiramina"],r:5},
-    {n:"Grana padano",                  t:["Istamina","Ammine biogene","Tiramina"],r:4},
-    {n:"Mozzarella di bufala",          t:["Istamina"],r:2},
-    {n:"Parmigiano",                    t:["Istamina","Tiramina"],r:4},
-    {n:"Pecorino stagionato",           t:["Istamina","Tiramina","Ammine biogene"],r:4},
+    {n:"Emmental",                      t:["Istamina","Ammine biogene"],r:3,g:0},
+    {n:"Feta",                          t:["Istamina","Ammine biogene"],r:3,g:0},
+    {n:"Focaccia al formaggio di Recco",t:["Istamina","Ammine biogene","Tiramina","Istamina-lib."],r:4,g:55},
+    {n:"Formaggio Gottardo",            t:["Istamina","Ammine biogene","Tiramina"],r:5,g:0},
+    {n:"Grana padano",                  t:["Istamina","Ammine biogene","Tiramina"],r:4,g:0},
+    {n:"Mozzarella di bufala",          t:["Istamina"],r:2,g:0},
+    {n:"Parmigiano",                    t:["Istamina","Tiramina"],r:4,g:0},
+    {n:"Pecorino stagionato",           t:["Istamina","Tiramina","Ammine biogene"],r:4,g:0},
   ]},
   {id:"insalate", label:"🥗 Insalate", items:[
-    {n:"Cuore di lattuga",              t:[],r:1},
-    {n:"Iceberg con olio di oliva",     t:["Salicilati"],r:1},
-    {n:"Insalata di pollo con emmental",t:["Tiramina","Ammine biogene","Istamina"],r:3},
-    {n:"Insalata mista condita (aceto)",t:["Istamina","Salicilati","Ammine biogene","TRPA1"],r:5},
-    {n:"Insalata mista/pomodori",       t:["Istamina","Salicilati"],r:3},
-    {n:"Insalata verde scarola",        t:["Salicilati"],r:1},
-    {n:"Insalata, carote, cetriolo",    t:["Salicilati"],r:1},
+    {n:"Cuore di lattuga",              t:[],r:1,g:10},
+    {n:"Iceberg con olio di oliva",     t:["Salicilati"],r:1,g:10},
+    {n:"Insalata di pollo con emmental",t:["Tiramina","Ammine biogene","Istamina"],r:3,g:10},
+    {n:"Insalata mista condita (aceto)",t:["Istamina","Salicilati","Ammine biogene","TRPA1"],r:5,g:10},
+    {n:"Insalata mista/pomodori",       t:["Istamina","Salicilati"],r:3,g:10},
+    {n:"Insalata verde scarola",        t:["Salicilati"],r:1,g:10},
+    {n:"Insalata, carote, cetriolo",    t:["Salicilati"],r:1,g:10},
   ]},
   {id:"frutta", label:"🍎 Frutta", items:[
-    {n:"Banana",                        t:["Ammine biogene"],r:2},
-    {n:"Mela sbucciata cotta",          t:["Salicilati"],r:2},
-    {n:"Mela sbucciata cruda",          t:["Salicilati"],r:3},
-    {n:"Pera",                          t:[],r:1},
-    {n:"Sorbetto di mango",             t:["Salicilati"],r:2},
-    {n:"Sorbetto di pera",              t:[],r:1},
+    {n:"Banana",                        t:["Ammine biogene"],r:2,g:55},
+    {n:"Mela sbucciata cotta",          t:["Salicilati"],r:2,g:40},
+    {n:"Mela sbucciata cruda",          t:["Salicilati"],r:3,g:35},
+    {n:"Pera",                          t:[],r:1,g:30},
+    {n:"Sorbetto di mango",             t:["Salicilati"],r:2,g:60},
+    {n:"Sorbetto di pera",              t:[],r:1,g:50},
   ]},
   {id:"dolci", label:"🍰 Dolci & Snack", items:[
-    {n:"Affogato di vaniglia all'orzo", t:["Istamina","Ammine biogene","Istamina-lib."],r:3},
-    {n:"Biscotti Macine",               t:["Istamina","Salicilati","Ammine biogene","Istamina-lib."],r:3},
-    {n:"Biscotti petit beurre",         t:["Istamina-lib.","Ammine biogene"],r:2},
-    {n:"Canestrelli semplici",          t:[],r:1},
-    {n:"Crostata marmellata pera",      t:["Salicilati"],r:2},
-    {n:"Dolcetto pastafrolla cioccolato",t:["Istamina","Salicilati","Ammine biogene","Tiramina"],r:4},
-    {n:"Gelato alla crema",             t:["Istamina","Ammine biogene","Istamina-lib."],r:4},
-    {n:"Gelato fiordilatte",            t:["Istamina","Ammine biogene","Istamina-lib."],r:3},
-    {n:"Mandorle pelate",               t:["Salicilati","Ammine biogene"],r:2},
-    {n:"Pastafrolla",                   t:["Istamina-lib.","Ammine biogene"],r:2},
-    {n:"Patatine chips",                t:["Istamina","Ammine biogene","Istamina-lib."],r:3},
+    {n:"Affogato di vaniglia all'orzo", t:["Istamina","Ammine biogene","Istamina-lib."],r:3,g:60},
+    {n:"Biscotti Macine",               t:["Istamina","Salicilati","Ammine biogene","Istamina-lib."],r:3,g:65},
+    {n:"Biscotti petit beurre",         t:["Istamina-lib.","Ammine biogene"],r:2,g:55},
+    {n:"Canestrelli semplici",          t:[],r:1,g:55},
+    {n:"Crostata marmellata pera",      t:["Salicilati"],r:2,g:60},
+    {n:"Dolcetto pastafrolla cioccolato",t:["Istamina","Salicilati","Ammine biogene","Tiramina"],r:4,g:65},
+    {n:"Gelato alla crema",             t:["Istamina","Ammine biogene","Istamina-lib."],r:4,g:65},
+    {n:"Gelato fiordilatte",            t:["Istamina","Ammine biogene","Istamina-lib."],r:3,g:60},
+    {n:"Mandorle pelate",               t:["Salicilati","Ammine biogene"],r:2,g:15},
+    {n:"Pastafrolla",                   t:["Istamina-lib.","Ammine biogene"],r:2,g:55},
+    {n:"Patatine chips",                t:["Istamina","Ammine biogene","Istamina-lib."],r:3,g:60},
   ]},
   {id:"bevande", label:"☕ Bevande", items:[
-    {n:"Acqua",                         t:[],r:0},
-    {n:"Caffè d'orzo",                  t:[],r:1},
-    {n:"Caffè decaffeinato",            t:["Salicilati"],r:2},
-    {n:"Camomilla",                     t:["Salicilati","Istamina-lib."],r:4},
-    {n:"Cappuccino d'orzo",             t:[],r:1},
-    {n:"Cappuccino decaffeinato",       t:["Istamina","Ammine biogene","Istamina-lib."],r:3},
-    {n:"Cappuccino di caffè intero",    t:["Istamina","Salicilati","Ammine biogene","Istamina-lib."],r:4},
-    {n:"Tisana istantanea di finocchio",t:["Salicilati","Istamina-lib."],r:2},
-    {n:"Tisana zafferano",              t:[],r:1},
+    {n:"Acqua",                         t:[],r:0,g:0},
+    {n:"Caffè d'orzo",                  t:[],r:1,g:0},
+    {n:"Caffè decaffeinato",            t:["Salicilati"],r:2,g:0},
+    {n:"Camomilla",                     t:["Salicilati","Istamina-lib."],r:4,g:0},
+    {n:"Cappuccino d'orzo",             t:[],r:1,g:5},
+    {n:"Cappuccino decaffeinato",       t:["Istamina","Ammine biogene","Istamina-lib."],r:3,g:10},
+    {n:"Cappuccino di caffè intero",    t:["Istamina","Salicilati","Ammine biogene","Istamina-lib."],r:4,g:10},
+    {n:"Tisana istantanea di finocchio",t:["Salicilati","Istamina-lib."],r:2,g:0},
+    {n:"Tisana zafferano",              t:[],r:1,g:0},
   ]},
   {id:"altro", label:"🧂 Altro", items:[]},
 ];
@@ -917,20 +932,36 @@ function capFirst(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 
 function getItemData(key){
   const parts=key.split(':');const type=parts[0],ref=parts.slice(1).join(':');
-  if(type==='custom'){const cf=customFoods.find(x=>x.id===ref);return cf?{n:cf.name,t:cf.triggers,r:cf.risk}:{n:ref,t:[],r:0};}
+  if(type==='custom'){const cf=customFoods.find(x=>x.id===ref);return cf?{n:cf.name,t:cf.triggers,r:cf.risk,g:cf.glycemicIndex||null}:{n:ref,t:[],r:0,g:null};}
   // legacy 'dish:' keys — look up in DISHES flat array
-  if(type==='dish'){const d=DISHES.find(x=>x.n===ref);return d?{n:d.n,t:d.t,r:d.r}:{n:ref,t:[],r:0};}
+  if(type==='dish'){const d=DISHES.find(x=>x.n===ref);return d?{n:d.n,t:d.t,r:d.r,g:d.g}:{n:ref,t:[],r:0,g:null};}
   // normal catId:name key
   const cat=CATEGORIES.find(c=>c.id===type);
-  if(cat){const s=cat.items.find(x=>x.n===ref);if(s)return{n:s.n,t:s.t,r:s.r};}
+  if(cat){const s=cat.items.find(x=>x.n===ref);if(s)return{n:s.n,t:s.t,r:s.r,g:s.g};}
   // fallback: search all categories by name
-  for(const c of CATEGORIES){const s=c.items.find(x=>x.n===ref);if(s)return{n:s.n,t:s.t,r:s.r};}
+  for(const c of CATEGORIES){const s=c.items.find(x=>x.n===ref);if(s)return{n:s.n,t:s.t,r:s.r,g:s.g};}
   const cf=customFoods.find(x=>x.name===ref);
-  return cf?{n:cf.name,t:cf.triggers,r:cf.risk}:{n:ref,t:[],r:0};
+  return cf?{n:cf.name,t:cf.triggers,r:cf.risk,g:cf.glycemicIndex||null}:{n:ref,t:[],r:0,g:null};
 }
 function computeAllTriggers(){const ts=new Set();Object.keys(selItems).forEach(k=>{const d=getItemData(k);d.t.forEach(t=>ts.add(t));});return[...ts];}
 function computeMaxRisk(){let m=0;Object.keys(selItems).forEach(k=>{const d=getItemData(k);m=Math.max(m,d.r);});return m;}
 function getAllSelectedNames(){return Object.keys(selItems).map(k=>getItemData(k).n);}
+
+// ── IMPATTO GLICEMICO PASTO ──
+function computeGlycemicImpact(){
+  const keys=Object.keys(selItems);if(!keys.length)return{avg:0,max:0,level:'none',count:0};
+  let vals=[],maxG=0;
+  keys.forEach(k=>{const d=getItemData(k);if(d.g!=null&&d.g>0){vals.push(d.g);maxG=Math.max(maxG,d.g);}});
+  if(!vals.length)return{avg:0,max:0,level:'low',count:keys.length};
+  const avg=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+  // Weighted: if many high-IG items, impact is higher
+  const highCount=vals.filter(v=>v>=55).length;
+  const score=avg+(highCount>1?highCount*5:0);
+  let level='low';
+  if(score>=55||maxG>=65)level='high';
+  else if(score>=35||maxG>=55)level='med';
+  return{avg,max:maxG,level,count:vals.length,highCount};
+}
 
 function getSearchPool(){
   const pool=[];
@@ -1061,11 +1092,26 @@ function updateCtgBar(){
 
 function updateTriggers(){
   const trigs=computeAllTriggers(),mr=computeMaxRisk();
-  const el=document.getElementById('trig-display'),rb=document.getElementById('rbanner');
-  if(!trigs.length){el.innerHTML='<div class="notrig">Seleziona alimenti per vedere i trigger</div>';rb.style.display='none';return;}
+  const el=document.getElementById('trig-display'),rb=document.getElementById('rbanner'),gb=document.getElementById('gbanner');
+  if(!trigs.length){el.innerHTML='<div class="notrig">Seleziona alimenti per vedere i trigger</div>';rb.style.display='none';if(gb)gb.style.display='none';return;}
   el.innerHTML=`<div class="tblock">${trigs.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A',d:''};return`<div class="tchip" style="background:${s.bg};color:${s.c}"><span class="tname">${t}</span><span class="tdesc">${s.d}</span></div>`;}).join('')}</div>`;
   rb.style.display='block';rb.style.background=RBG[mr];rb.style.color=RTC[mr];
-  rb.textContent='Profilo di rischio pasto: '+RL[mr];updateCtgBar();
+  rb.textContent='Profilo di rischio pasto: '+RL[mr];
+  // Glycemic impact
+  if(gb){
+    const gi=computeGlycemicImpact();
+    if(gi.level==='none'){gb.style.display='none';}
+    else{
+      gb.style.display='flex';
+      const icons={low:'🟢',med:'🟡',high:'🔴'};
+      const labels={low:'Basso',med:'Medio',high:'Alto'};
+      const tips={low:'Buon mix — impatto glicemico contenuto.',med:'Attenzione — abbina una proteina per ridurre il picco.',high:'Pasto ad alto carico glicemico — troppi carboidrati rapidi.'};
+      gb.className='gbanner ig-'+gi.level;
+      let detail=gi.highCount>1?` (${gi.highCount} alimenti con IG ≥55)`:'';
+      gb.innerHTML=`<span class="gbanner-icon">${icons[gi.level]}</span><div class="gbanner-text"><div>Impatto glicemico: <strong>${labels[gi.level]}</strong> (IG medio ${gi.avg}${detail})</div><div style="font-size:10px;opacity:.8;margin-top:2px">${tips[gi.level]}</div></div>`;
+    }
+  }
+  updateCtgBar();
 }
 
 function setMeal(m){
@@ -1085,7 +1131,7 @@ function saveEntry(){
   if(!names.length){const el=document.getElementById('sel-tags');el.style.outline='2px solid #E24B4A';el.style.borderRadius='8px';setTimeout(()=>{el.style.outline='';},1500);return;}
   const dateVal=document.getElementById('pasto-date').value;
   const ts=dateVal?new Date(dateVal+'T'+new Date().toTimeString().slice(0,8)).toISOString():new Date().toISOString();
-  entries.unshift({id:Date.now(),foods:names,triggers:computeAllTriggers(),maxRisk:computeMaxRisk(),symptoms:Object.keys(selSym),severity:selSev,meal:selMeal,reactionTime:document.getElementById('react-time').value,note:document.getElementById('note-inp').value.trim(),reactingFood:reactingFood,ts});
+  entries.unshift({id:Date.now(),foods:names,triggers:computeAllTriggers(),maxRisk:computeMaxRisk(),glycemic:computeGlycemicImpact(),symptoms:Object.keys(selSym),severity:selSev,meal:selMeal,reactionTime:document.getElementById('react-time').value,note:document.getElementById('note-inp').value.trim(),reactingFood:reactingFood,ts});
   saveData();resetPasto();toast('Pasto salvato ✓');
 }
 function resetPasto(){
@@ -1170,12 +1216,14 @@ function renderHist(){
           const mealColor=e.meal&&MEAL_COLORS[e.meal]?MEAL_COLORS[e.meal]:'#9a9a9a';
           const hasReaction=e.symptoms&&e.symptoms.length>0;
           const riskBadge=e.maxRisk>0?`<span class="entry-risk-badge" style="background:${RBG[e.maxRisk]};color:${RTC[e.maxRisk]}">${e.maxRisk}</span>`:'';
+          const giLevel=e.glycemic?e.glycemic.level:null;
+          const giBadge=giLevel==='high'?'<span class="entry-risk-badge" style="background:#FFF3C4;color:#7A5A00">IG&#8593;</span>':giLevel==='med'?'<span class="entry-risk-badge" style="background:#FFF8E7;color:#9A7A00;font-size:8px">IG</span>':'';
           const symIcon=hasReaction?'<span class="entry-sym-icon">&#128276;</span>':'';
           return`<div class="entry${hasReaction?' has-reaction':''}" id="entry-${e.id}">
             <div class="entry-summary" onclick="togEntry(${e.id})">
               <span class="entry-meal-dot" style="background:${mealColor}" title="${e.meal||''}"></span>
               <span class="entry-foods-short" title="${e.foods.join(', ')}">${e.foods.join(', ')}</span>
-              <span class="entry-badges">${riskBadge}${symIcon}</span>
+              <span class="entry-badges">${riskBadge}${giBadge}${symIcon}</span>
               <span class="entry-time">${fmtT(e.ts).split(' ').pop()}</span>
             </div>
             <div class="entry-detail" id="detail-${e.id}">
@@ -1188,6 +1236,7 @@ function renderHist(){
                 ${e.maxRisk>0?`<span class="etag" style="background:${RBG[e.maxRisk]};color:${RTC[e.maxRisk]}">Rischio ${RL[e.maxRisk]}</span>`:''}
               </div>
               ${e.reactingFood?`<div class="ereact" style="color:#A32D2D;font-weight:600">&#128276; Alimento responsabile: ${e.reactingFood}</div>`:''}
+              ${e.glycemic&&e.glycemic.level!=='none'&&e.glycemic.level!=='low'?`<div class="ereact" style="color:#7A5A00;font-weight:600">${e.glycemic.level==='high'?'🔴':'🟡'} IG medio: ${e.glycemic.avg} — impatto ${e.glycemic.level==='high'?'alto':'medio'}</div>`:''}
               ${e.note?`<div class="enote">${e.note}</div>`:''}
               <div id="annota-panel-${e.id}"></div>
               <div class="eactions">
