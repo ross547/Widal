@@ -1093,7 +1093,27 @@ function updateCtgBar(){
 function updateTriggers(){
   const trigs=computeAllTriggers(),mr=computeMaxRisk();
   const el=document.getElementById('trig-display'),rb=document.getElementById('rbanner'),gb=document.getElementById('gbanner');
-  if(!trigs.length){el.innerHTML='<div class="notrig">Seleziona alimenti per vedere i trigger</div>';rb.style.display='none';if(gb)gb.style.display='none';return;}
+  const hasItems=Object.keys(selItems).length>0;
+  if(!trigs.length){
+    el.innerHTML='<div class="notrig">Seleziona alimenti per vedere i trigger</div>';
+    rb.style.display='none';
+    // Even with no triggers, show glycemic banner if items selected
+    if(gb){
+      if(hasItems){
+        const gi=computeGlycemicImpact();
+        if(gi.level!=='none'){
+          gb.style.display='flex';
+          const icons={low:'🟢',med:'🟡',high:'🔴'};
+          const labels={low:'Basso',med:'Medio',high:'Alto'};
+          const tips={low:'Buon mix — impatto glicemico contenuto.',med:'Attenzione — abbina una proteina per ridurre il picco.',high:'Pasto ad alto carico glicemico — troppi carboidrati rapidi.'};
+          gb.className='gbanner ig-'+gi.level;
+          let detail=gi.highCount>1?` (${gi.highCount} alimenti con IG ≥55)`:'';
+          gb.innerHTML=`<span class="gbanner-icon">${icons[gi.level]}</span><div class="gbanner-text"><div>Impatto glicemico: <strong>${labels[gi.level]}</strong> (IG medio ${gi.avg}${detail})</div><div style="font-size:10px;opacity:.8;margin-top:2px">${tips[gi.level]}</div></div>`;
+        }else{gb.style.display='none';}
+      }else{gb.style.display='none';}
+    }
+    updateCtgBar();return;
+  }
   el.innerHTML=`<div class="tblock">${trigs.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A',d:''};return`<div class="tchip" style="background:${s.bg};color:${s.c}"><span class="tname">${t}</span><span class="tdesc">${s.d}</span></div>`;}).join('')}</div>`;
   rb.style.display='block';rb.style.background=RBG[mr];rb.style.color=RTC[mr];
   rb.textContent='Profilo di rischio pasto: '+RL[mr];
