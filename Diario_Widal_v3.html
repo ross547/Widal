@@ -737,8 +737,8 @@ SCALA RISCHIO 0-5: 0=sicuro, 1=minimo, 2=monitorare, 3=cautela, 4=evitare quasi 
 TRIGGER: Istamina, Salicilati, Ammine biogene, Tiramina, TRPA1, Istamina-lib.
 Per piatti composti analizza ogni ingrediente + profilo combinato.`;
 
-// ── CATEGORIES — lista unificata (singoli + piatti, ordine A-Z per categoria) ──
-const CATEGORIES=[
+// ── CATEGORIES — DB unificato alimenti (persistito in localStorage) ──
+const CATEGORIES_DEFAULT=[
   {id:"pasta", label:"🍝 Pasta & Cereali", items:[
     {n:"Farinata di ceci",              t:["Istamina-lib."],r:1,g:35},
     {n:"Gnocchi al burro",              t:["Istamina"],r:1,g:70},
@@ -870,8 +870,10 @@ const CATEGORIES=[
   ]},
   {id:"altro", label:"🧂 Altro", items:[]},
 ];
+let CATEGORIES=JSON.parse(JSON.stringify(CATEGORIES_DEFAULT)); // mutable working copy
 // ── Compatibilità con il codice legacy che usa SINGLES/DISHES come lookup ──
-const DISHES=CATEGORIES.flatMap(c=>c.items.map(f=>({...f,cat:c.label})));
+function rebuildDISHES(){return CATEGORIES.flatMap(c=>c.items.map(f=>({...f,cat:c.label})));}
+let DISHES=rebuildDISHES();
 const SINGLES=Object.fromEntries(CATEGORIES.map(c=>[c.id,c.items]));
 const TS={"Istamina":{bg:"#FCEBEB",c:"#A32D2D",d:"istamina preformata → degranulazione diretta"},"Salicilati":{bg:"#FAEEDA",c:"#854F0B",d:"COX-1 → leucotrieni"},"Ammine biogene":{bg:"#FAECE7",c:"#993C1D",d:"attivazione mastociti"},"Tiramina":{bg:"#FCEBEB",c:"#791F1F",d:"vasoattiva → degranulazione"},"TRPA1":{bg:"#EEEDFE",c:"#3C3489",d:"neurogeno su mucose"},"Istamina-lib.":{bg:"#FBEAF0",c:"#993556",d:"induce rilascio"}};
 const RC=["","#5DCAA5","#5DCAA5","#EF9F27","#E24B4A","#E24B4A"];
@@ -901,25 +903,86 @@ const RISK_SECTIONS=[
 ];
 
 let selItems={},selSym={},selSev=null,selMeal=null;
-// statoSel legacy (kept for import compat)
-let entries=[],statoEntries=[],customFoods=[],apiKey='',currentAiResult=null;
+let entries=[],statoEntries=[],apiKey='',currentAiResult=null;
+// Legacy — kept only for import compatibility, always empty in normal operation
+let customFoods=[];
 // Stato filtri storico
 let histFilter='all',histSearchQuery='';
 // Stato filtri alimenti
 let alimSearchQuery='',alimTrigFilter=null;
 
+// ── PERSISTENCE: unified DB ──
+function saveCategories(){try{localStorage.setItem('widal-foods-v1',JSON.stringify(CATEGORIES));}catch(e){}}
+
 function loadData(){
   try{const r=localStorage.getItem('widal-diary-v3');if(r)entries=JSON.parse(r);}catch(e){entries=[];}
   try{const r=localStorage.getItem('widal-stato-v1');if(r)statoEntries=JSON.parse(r);}catch(e){statoEntries=[];}
-  try{const r=localStorage.getItem('widal-custom-v1');if(r)customFoods=JSON.parse(r);}catch(e){customFoods=[];}
   try{const r=localStorage.getItem('widal-apikey-v1');if(r)apiKey=r;}catch(e){}
   loadBiometrics();
-  // Auto-assign categories to existing custom foods
-  customFoods.forEach(function(f){if(!f.category)f.category=getCatForFood(f.name)||'altro';});
+  // Load unified DB from localStorage (if exists)
+  try{
+    const saved=localStorage.getItem('widal-foods-v1');
+    if(saved){CATEGORIES=JSON.parse(saved);DISHES=rebuildDISHES();}
+  }catch(e){}
+  // One-time migration: merge old customFoods into CATEGORIES
+  migrateCustomFoods();
 }
+
+function migrateCustomFoods(){
+  if(localStorage.getItem('widal-migration-v3'))return;
+  // Load old customFoods
+  let oldCustom=[];
+  try{const r=localStorage.getItem('widal-custom-v1');if(r)oldCustom=JSON.parse(r);}catch(e){}
+  if(!oldCustom.length){localStorage.setItem('widal-migration-v3','1');saveCategories();return;}
+
+  const defaultIG={pasta:55,zuppe:35,pesce:0,pollo:5,verdure:20,formaggi:0,insalate:10,frutta:40,dolci:60,bevande:0,altro:30};
+  let merged=0,added=0;
+
+  oldCustom.forEach(cf=>{
+    const catId=cf.category||'altro';
+    let targetCat=CATEGORIES.find(c=>c.id===catId);
+    if(!targetCat)targetCat=CATEGORIES.find(c=>c.id==='altro');
+    if(!targetCat)return;
+    // Check if already exists (case-insensitive)
+    const existing=targetCat.items.find(f=>f.n.toLowerCase().trim()===cf.name.toLowerCase().trim());
+    if(existing){
+      // Merge: update trigger/risk from AI if available, add IG if missing
+      if(cf.triggers&&cf.triggers.length)existing.t=cf.triggers;
+      if(cf.risk!=null)existing.r=cf.risk;
+      if(existing.g==null)existing.g=cf.glycemicIndex!=null?cf.glycemicIndex:(defaultIG[catId]||30);
+      if(cf.rationale&&!existing.rationale)existing.rationale=cf.rationale;
+      merged++;
+    }else{
+      // Also check ALL categories for fuzzy match
+      let found=false;
+      for(const cat of CATEGORIES){
+        const match=cat.items.find(f=>f.n.toLowerCase().trim()===cf.name.toLowerCase().trim());
+        if(match){found=true;if(match.g==null)match.g=cf.glycemicIndex!=null?cf.glycemicIndex:(defaultIG[cat.id]||30);merged++;break;}
+      }
+      if(!found){
+        targetCat.items.push({
+          n:cf.name,t:cf.triggers||[],r:cf.risk||0,
+          g:cf.glycemicIndex!=null?cf.glycemicIndex:(defaultIG[catId]||30),
+          rationale:cf.rationale||null
+        });
+        added++;
+      }
+    }
+  });
+  // Sort each category
+  CATEGORIES.forEach(cat=>cat.items.sort((a,b)=>a.n.localeCompare(b.n,'it')));
+  DISHES=rebuildDISHES();
+  saveCategories();
+  // Clear old customFoods
+  customFoods=[];
+  try{localStorage.removeItem('widal-custom-v1');}catch(e){}
+  localStorage.setItem('widal-migration-v3','1');
+  console.log('[Migration] merged:'+merged+' added:'+added+' total items:'+DISHES.length);
+}
+
 function saveData(){try{localStorage.setItem('widal-diary-v3',JSON.stringify(entries));}catch(e){}}
 function saveStatoData(){try{localStorage.setItem('widal-stato-v1',JSON.stringify(statoEntries));}catch(e){}}
-function saveCustomData(){try{localStorage.setItem('widal-custom-v1',JSON.stringify(customFoods));}catch(e){}}
+function saveCustomData(){/* legacy no-op — everything in CATEGORIES now */}
 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 function rdot(r){return r>0?`<span class="rdot" style="background:${RC[r]}"></span>`:'';}
@@ -932,16 +995,12 @@ function capFirst(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 
 function getItemData(key){
   const parts=key.split(':');const type=parts[0],ref=parts.slice(1).join(':');
-  if(type==='custom'){const cf=customFoods.find(x=>x.id===ref);return cf?{n:cf.name,t:cf.triggers,r:cf.risk,g:cf.glycemicIndex||null}:{n:ref,t:[],r:0,g:null};}
-  // legacy 'dish:' keys — look up in DISHES flat array
-  if(type==='dish'){const d=DISHES.find(x=>x.n===ref);return d?{n:d.n,t:d.t,r:d.r,g:d.g}:{n:ref,t:[],r:0,g:null};}
-  // normal catId:name key
+  // Normal catId:name key
   const cat=CATEGORIES.find(c=>c.id===type);
   if(cat){const s=cat.items.find(x=>x.n===ref);if(s)return{n:s.n,t:s.t,r:s.r,g:s.g};}
-  // fallback: search all categories by name
-  for(const c of CATEGORIES){const s=c.items.find(x=>x.n===ref);if(s)return{n:s.n,t:s.t,r:s.r,g:s.g};}
-  const cf=customFoods.find(x=>x.name===ref);
-  return cf?{n:cf.name,t:cf.triggers,r:cf.risk,g:cf.glycemicIndex||null}:{n:ref,t:[],r:0,g:null};
+  // Fallback: search all categories by name (handles legacy keys, dish:, custom:, etc.)
+  for(const c of CATEGORIES){const s=c.items.find(x=>x.n===ref||x.n.toLowerCase()===ref.toLowerCase());if(s)return{n:s.n,t:s.t,r:s.r,g:s.g};}
+  return{n:ref,t:[],r:0,g:null};
 }
 function computeAllTriggers(){const ts=new Set();Object.keys(selItems).forEach(k=>{const d=getItemData(k);d.t.forEach(t=>ts.add(t));});return[...ts];}
 function computeMaxRisk(){let m=0;Object.keys(selItems).forEach(k=>{const d=getItemData(k);m=Math.max(m,d.r);});return m;}
@@ -966,9 +1025,8 @@ function computeGlycemicImpact(){
 function getSearchPool(){
   const pool=[];
   CATEGORIES.forEach(cat=>cat.items.forEach(f=>{
-    pool.push({key:cat.id+':'+f.n,n:f.n,r:f.r,t:f.t,cat:cat.label.replace(/^\S+\s/,'')});
+    pool.push({key:cat.id+':'+f.n,n:f.n,r:f.r,t:f.t,g:f.g,cat:cat.label.replace(/^\S+\s/,'')});
   }));
-  customFoods.forEach(f=>pool.push({key:'custom:'+f.id,n:f.name,r:f.risk,t:f.triggers,cat:'Personale'}));
   return pool;
 }
 
@@ -1007,11 +1065,9 @@ function clearFoodSearch(){const inp=document.getElementById('food-search');if(i
 function removeItem(key){delete selItems[key];renderSelTags();updateTriggers();syncChipState(key,false);}
 function syncChipState(key,on){
   const parts=key.split(':');const type=parts[0],ref=parts.slice(1).join(':');
-  let chipId;
-  if(type==='custom'){const cf=customFoods.find(f=>f.id===ref);if(cf)chipId='cf-chip-'+ref;}
-  else chipId='sg-'+type+'-'+escId(ref);
+  const chipId='sg-'+type+'-'+escId(ref);
   const el=document.getElementById(chipId);
-  if(el){const isCustom=el.className.includes('custom');el.className='fchip'+(isCustom?' custom':'')+(on?' on':'');}
+  if(el)el.className='fchip'+(on?' on':'');
 }
 document.addEventListener('click',function(e){
   const ac=document.getElementById('food-ac');
@@ -1769,8 +1825,9 @@ function setTrigFilter(trig){
   renderCustomFoods();
 }
 function buildTrigFilterBar(){
-  // Raccoglie trigger presenti nei custom foods
-  const trigSet=new Set();customFoods.forEach(f=>f.triggers.forEach(t=>trigSet.add(t)));
+  // Raccoglie trigger da TUTTE le CATEGORIES
+  const trigSet=new Set();
+  CATEGORIES.forEach(cat=>cat.items.forEach(f=>f.t.forEach(t=>trigSet.add(t))));
   const bar=document.getElementById('trig-filter-bar');if(!bar)return;
   let html=`<button class="tfbtn on" id="tf-all" data-trig="" onclick="setTrigFilter(null)">Tutti</button>`;
   [...trigSet].sort().forEach(t=>{
@@ -1783,17 +1840,20 @@ function buildTrigFilterBar(){
 function renderCustomFoods(){
   const el=document.getElementById('custom-foods-list');
   const cnt=document.getElementById('cf-count');
-  if(cnt)cnt.textContent=customFoods.length;
+  // Flatten all items from CATEGORIES
+  const allItems=[];
+  CATEGORIES.forEach(cat=>cat.items.forEach(f=>allItems.push({...f,catId:cat.id,catLabel:cat.label})));
+  if(cnt)cnt.textContent=allItems.length;
 
-  if(!customFoods.length){
-    el.innerHTML='<div class="notrig" style="padding:12px 0">Nessun alimento codificato ancora.<br>Usa "Analisi smart" qui sopra per aggiungerne.</div>';
+  if(!allItems.length){
+    el.innerHTML='<div class="notrig" style="padding:12px 0">Nessun alimento nel database.</div>';
     return;
   }
 
   // Applica filtri
-  let filtered=[...customFoods];
-  if(alimSearchQuery)filtered=filtered.filter(f=>f.name.toLowerCase().includes(alimSearchQuery));
-  if(alimTrigFilter)filtered=filtered.filter(f=>f.triggers.includes(alimTrigFilter));
+  let filtered=allItems;
+  if(alimSearchQuery)filtered=filtered.filter(f=>f.n.toLowerCase().includes(alimSearchQuery));
+  if(alimTrigFilter)filtered=filtered.filter(f=>f.t.includes(alimTrigFilter));
 
   if(!filtered.length){
     el.innerHTML='<div class="empty" style="padding:20px 0">Nessun alimento corrisponde al filtro.</div>';
@@ -1802,7 +1862,7 @@ function renderCustomFoods(){
 
   let html='';
   RISK_SECTIONS.forEach(sec=>{
-    const items=filtered.filter(f=>f.risk>=sec.minR&&f.risk<=sec.maxR).sort((a,b)=>b.risk-a.risk||a.name.localeCompare(b.name,'it'));
+    const items=filtered.filter(f=>f.r>=sec.minR&&f.r<=sec.maxR).sort((a,b)=>b.r-a.r||a.n.localeCompare(b.n,'it'));
     if(!items.length)return;
     const secId='rsec-'+sec.id;
     html+=`<div class="risk-section">
@@ -1813,16 +1873,16 @@ function renderCustomFoods(){
       </div>
       <div class="risk-section-body" id="${secId}">
         ${items.map(f=>{
-          const tH=f.triggers.length?f.triggers.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A'};return`<span class="etag" style="background:${s.bg};color:${s.c};font-size:10px">${t}</span>`;}).join(''):'<span style="font-size:10px;color:var(--tx3)">nessun trigger</span>';
-          return`<div class="cf-item" onclick="togCfMeta('cf-meta-${f.id}')">
+          const tH=f.t.length?f.t.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A'};return`<span class="etag" style="background:${s.bg};color:${s.c};font-size:10px">${t}</span>`;}).join(''):'<span style="font-size:10px;color:var(--tx3)">nessun trigger</span>';
+          const igStr=f.g!=null?'<span style="font-size:10px;background:#FAEEDA;color:#854F0B;padding:1px 6px;border-radius:10px;margin-left:4px">IG '+f.g+'</span>':'';
+          return`<div class="cf-item" onclick="togCfMeta('cfm-${escId(f.n)}')">
             <div class="cf-info">
-              <div class="cf-row1">${rdot(f.risk)}<span class="cf-name">${f.name}</span>${f.promoted?'<span class="promo-badge">chip</span>':''}</div>
+              <div class="cf-row1">${rdot(f.r)}<span class="cf-name">${f.n}</span>${igStr}<span style="font-size:9px;color:var(--tx3);margin-left:4px">${f.catLabel}</span></div>
               <div class="cf-tags-row">${tH}</div>
-              <div class="cf-meta" id="cf-meta-${f.id}">${f.rationale||''}${f.note?('<br><em>'+f.note+'</em>'):''}</div>
+              <div class="cf-meta" id="cfm-${escId(f.n)}">${f.rationale||''}</div>
             </div>
             <div class="cf-actions" onclick="event.stopPropagation()">
-      html+='<button class="cf-promo-btn" data-cfid="'+f.id+'" onclick="togglePromotionById(this)">'+(f.promoted?'&#9733;':'&#9734;')+'</button>';
-      html+='<button class="cf-del-btn" data-cfid="'+f.id+'" onclick="deleteCfById(this)">&#10005;</button>';
+              <button class="cf-del-btn" onclick="deleteFoodFromDb('${f.catId}','${escQ(f.n)}')">&#10005;</button>
             </div>
           </div>`;
         }).join('')}
@@ -1838,8 +1898,17 @@ function togRiskSection(id){
   el.style.display=open?'none':'block';
   if(arr)arr.className='risk-section-arrow'+(open?'':' open');
 }
-function togglePromotion(id){const cf=customFoods.find(f=>f.id===id);if(!cf)return;cf.promoted=!cf.promoted;saveCustomData();buildCatChips();renderCustomFoods();toast(cf.promoted?'Aggiunto ai chip ✓':'Rimosso dai chip');}
-function deleteCustomFood(id){customFoods=customFoods.filter(f=>f.id!==id);delete selItems['custom:'+id];saveCustomData();buildCatChips();buildTrigFilterBar();renderCustomFoods();toast('Alimento rimosso');}
+function togglePromotion(id){/* no-op — promotion concept removed, everything is in CATEGORIES */}
+function deleteCustomFood(id){/* legacy no-op */}
+function deleteFoodFromDb(catId,name){
+  const cat=CATEGORIES.find(c=>c.id===catId);
+  if(!cat)return;
+  cat.items=cat.items.filter(f=>f.n!==name);
+  DISHES=rebuildDISHES();
+  saveCategories();
+  buildGenreChips();buildTrigFilterBar();renderCustomFoods();
+  toast('Alimento rimosso');
+}
 
 /* ── AI ANALYSIS ── */
 /* ── BARCODE SCANNER ────────────────────────────────────── */
@@ -1972,38 +2041,50 @@ function renderAiResult(r){
   resEl.innerHTML='<div class="ai-result-header"><div class="ai-food-name">'+r.name+portBadge+igBadge+catBadge+'</div><div class="ai-risk-badge" style="background:'+riskBg+';color:'+riskColor+'">'+r.risk+'/5 -- '+riskLabel+'</div></div><div class="ai-triggers-row">'+tH+'</div><div class="ai-rationale">'+r.rationale+(r.note?'<br><em>'+r.note+'</em>':'')+'</div><div class="ai-action-row"><button class="ai-btn ai-btn-promo" onclick="saveAndPromote(&quot;'+nm+'&quot;)">&#9733; Salva + chip</button><button class="ai-btn ai-btn-save" onclick="saveCustomOnly(&quot;'+nm+'&quot;)">Salva DB</button><button class="ai-btn ai-btn-disc" onclick="discardAi()">&#215;</button></div>';
 }
 function discardAi(){document.getElementById('ai-result').style.display='none';document.getElementById('smart-inp').value='';currentAiResult=null;}
-function makeCustomEntry(r,promoted){return{id:'cf'+Date.now(),name:r.name,risk:r.risk,triggers:r.triggers,rationale:r.rationale,note:r.note||'',promoted:promoted,ts:new Date().toISOString(),glycemicIndex:r.glycemicIndex||null,glycemicCat:r.glycemicCat||null,category:r.category||getCatForFood(r.name)||'altro'};}
-function saveCustomOnly(name){if(!currentAiResult)return;var r=currentAiResult;if(customFoods.find(function(f){return f.name.toLowerCase()===r.name.toLowerCase();})){toast('Già presente');return;}customFoods.push(makeCustomEntry(r,false));saveCustomData();buildCatChips();buildTrigFilterBar();renderCustomFoods();discardAi();toast('Salvato nel DB ✓');}
+
+// ── Save AI result directly into CATEGORIES ──
+function addToCategories(r){
+  const defaultIG={pasta:55,zuppe:35,pesce:0,pollo:5,verdure:20,formaggi:0,insalate:10,frutta:40,dolci:60,bevande:0,altro:30};
+  var catId=r.category||getCatForFood(r.name)||'altro';
+  var cat=CATEGORIES.find(c=>c.id===catId)||CATEGORIES.find(c=>c.id==='altro');
+  if(!cat)return null;
+  var existing=cat.items.find(f=>f.n.toLowerCase()===r.name.toLowerCase());
+  if(existing){
+    // Update existing
+    if(r.triggers&&r.triggers.length)existing.t=r.triggers;
+    if(r.risk!=null)existing.r=r.risk;
+    if(r.glycemicIndex!=null)existing.g=r.glycemicIndex;
+    else if(existing.g==null)existing.g=defaultIG[catId]||30;
+    if(r.rationale)existing.rationale=r.rationale;
+  }else{
+    // Add new
+    var newItem={n:r.name,t:r.triggers||[],r:r.risk||0,
+      g:r.glycemicIndex!=null?r.glycemicIndex:(defaultIG[catId]||30),
+      rationale:r.rationale||null};
+    var idx=cat.items.findIndex(f=>f.n.localeCompare(newItem.n,'it')>0);
+    if(idx<0)cat.items.push(newItem);else cat.items.splice(idx,0,newItem);
+  }
+  DISHES=rebuildDISHES();
+  saveCategories();
+  return cat;
+}
+
+function saveCustomOnly(name){
+  if(!currentAiResult)return;
+  var r=currentAiResult;
+  // Check duplicate
+  for(var c of CATEGORIES){if(c.items.find(f=>f.n.toLowerCase()===r.name.toLowerCase())){toast('Già presente — aggiornato');addToCategories(r);buildGenreChips();buildTrigFilterBar();renderCustomFoods();discardAi();return;}}
+  addToCategories(r);
+  buildGenreChips();buildTrigFilterBar();renderCustomFoods();discardAi();
+  toast('Salvato nel DB ✓');
+}
+
 function saveAndPromote(name){
   if(!currentAiResult)return;
   var r=currentAiResult;
-  // 1. Salva/aggiorna in customFoods (per backup JSON e tab Alimenti)
-  var existing=customFoods.find(function(f){return f.name.toLowerCase()===r.name.toLowerCase();});
-  if(existing){
-    existing.promoted=true;
-    if(r.glycemicIndex)existing.glycemicIndex=r.glycemicIndex;
-    if(r.glycemicCat)existing.glycemicCat=r.glycemicCat;
-    if(r.category&&!existing.category)existing.category=r.category;
-  }else{
-    customFoods.push(makeCustomEntry(r,true));
-  }
-  saveCustomData();
-  // 2. Inietta direttamente in CATEGORIES per il tab Pasto (ordine A-Z)
-  var catId=r.category||getCatForFood(r.name)||'altro';
-  var cat=CATEGORIES.find(function(c){return c.id===catId;})||CATEGORIES.find(function(c){return c.id==='altro';});
-  if(cat){
-    // Evita duplicati
-    if(!cat.items.find(function(f){return f.n.toLowerCase()===r.name.toLowerCase();})){
-      var newItem={n:r.name,t:r.triggers||[],r:r.risk||0};
-      // Inserimento in ordine alfabetico
-      var insertIdx=cat.items.findIndex(function(f){return f.n.localeCompare(newItem.n,'it')>0;});
-      if(insertIdx<0)cat.items.push(newItem);else cat.items.splice(insertIdx,0,newItem);
-    }
-  }
-  // 3. Ricostruisce i chip nel tab Pasto
-  buildGenreChips();
-  buildTrigFilterBar();renderCustomFoods();discardAi();
-  toast('✓ Aggiunto in '+( cat?cat.label:'Altro')+' e chip creato');
+  var cat=addToCategories(r);
+  buildGenreChips();buildTrigFilterBar();renderCustomFoods();discardAi();
+  toast('✓ Aggiunto in '+(cat?cat.label:'Altro'));
 }
 
 /* ── API KEY ── */
@@ -2065,13 +2146,13 @@ function renderStats(){
 }
 
 /* ── EXPORT/IMPORT ── */
-function exportData(){const data={version:1,exported:new Date().toISOString(),entries,statoEntries,customFoods,biometrics};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='widal-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);showSyncStatus('Esportato! Salvalo in iCloud Drive.','ok');}
-function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){try{const data=JSON.parse(e.target.result);if(!data.entries&&!data.statoEntries){showSyncStatus('File non valido.','err');return;}if(data.entries)entries=data.entries;if(data.statoEntries)statoEntries=data.statoEntries;if(data.customFoods)customFoods=data.customFoods;if(data.biometrics)biometrics=data.biometrics;saveBiometrics();saveData();saveStatoData();saveCustomData();buildCatChips();buildTrigFilterBar();renderCustomFoods();
+function exportData(){const data={version:2,exported:new Date().toISOString(),entries,statoEntries,foods:CATEGORIES,biometrics};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='widal-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);showSyncStatus('Esportato! Salvalo in iCloud Drive.','ok');}
+function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){try{const data=JSON.parse(e.target.result);if(!data.entries&&!data.statoEntries){showSyncStatus('File non valido.','err');return;}if(data.entries)entries=data.entries;if(data.statoEntries)statoEntries=data.statoEntries;if(data.foods){CATEGORIES=data.foods;DISHES=rebuildDISHES();saveCategories();}else if(data.customFoods){customFoods=data.customFoods;localStorage.removeItem('widal-migration-v3');migrateCustomFoods();}if(data.biometrics)biometrics=data.biometrics;saveBiometrics();saveData();saveStatoData();buildGenreChips();buildTrigFilterBar();renderCustomFoods();
 var dateStr='';
 if(data.exported){var d=new Date(data.exported);dateStr=' — backup del '+d.toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'});}
-showSyncStatus('Importati: '+entries.length+' pasti, '+statoEntries.length+' valutazioni, '+customFoods.length+' alimenti'+dateStr+'.','ok');toast('Dati importati ✓');}catch(err){showSyncStatus('Errore JSON: '+err.message,'err');}};reader.readAsText(file);input.value='';}
+showSyncStatus('Importati: '+entries.length+' pasti, '+statoEntries.length+' valutazioni, '+DISHES.length+' alimenti'+dateStr+'.','ok');toast('Dati importati ✓');}catch(err){showSyncStatus('Errore JSON: '+err.message,'err');}};reader.readAsText(file);input.value='';}
 function showSyncStatus(msg,type){const el=document.getElementById('sync-status');el.textContent=msg;el.className='sync-status '+(type||'ok');el.style.display='block';}
-function copyForClaude(){const txt='DATI DIARIO WIDAL\n\nPasti recenti:\n'+JSON.stringify(entries.slice(0,12),null,2)+'\n\nStato infiammatorio:\n'+JSON.stringify(statoEntries.slice(-15),null,2)+'\n\nAlimenti personalizzati:\n'+JSON.stringify(customFoods,null,2)+'\n\nChiedo: analizza i pattern, i trigger dominanti e le eventuali correlazioni tra pasti e stato infiammatorio.';navigator.clipboard.writeText(txt).then(()=>toast('Dati copiati ✓')).catch(()=>toast('Errore copia'));}
+function copyForClaude(){const allFoods=CATEGORIES.flatMap(c=>c.items.map(f=>({name:f.n,risk:f.r,triggers:f.t,ig:f.g,cat:c.id})));const txt='DATI DIARIO WIDAL\n\nPasti recenti:\n'+JSON.stringify(entries.slice(0,12),null,2)+'\n\nStato infiammatorio:\n'+JSON.stringify(statoEntries.slice(-15),null,2)+'\n\nDB Alimenti ('+allFoods.length+'):\n'+JSON.stringify(allFoods,null,2)+'\n\nChiedo: analizza i pattern, i trigger dominanti e le eventuali correlazioni tra pasti e stato infiammatorio.';navigator.clipboard.writeText(txt).then(()=>toast('Dati copiati ✓')).catch(()=>toast('Errore copia'));}
 
 /* ── TABS ── */
 function showTab(t){
@@ -2109,79 +2190,24 @@ function getOrAssignCat(f){
   return cat;
 }
 
-// buildCatChips: "Miei alimenti" rimosso — i custom foods promossi sono
-// ora inclusi nella ricerca, non come sezione separata nel tab Pasto
-function buildCatChips(){ /* no-op: sezione Miei alimenti eliminata */ }
+// buildCatChips: no-op — chip building handled by buildGenreChips
+function buildCatChips(){}
 
-// Render custom foods by category in Alimenti tab
-var catFilterActive=null;
-function renderCustomFoodsByCat(){
-  var el=document.getElementById('custom-foods-list');
-  var cnt=document.getElementById('cf-count');
-  if(cnt)cnt.textContent=customFoods.length;
-  if(!customFoods.length){el.innerHTML='<div class="notrig" style="padding:12px 0">Nessun alimento. Usa Analisi smart per aggiungerne.</div>';return;}
-  var filtered=customFoods.slice();
-  if(alimSearchQuery)filtered=filtered.filter(function(f){return f.name.toLowerCase().includes(alimSearchQuery);});
-  if(alimTrigFilter)filtered=filtered.filter(function(f){return f.triggers.includes(alimTrigFilter);});
-  if(!filtered.length){el.innerHTML='<div class="empty" style="padding:20px 0">Nessun alimento corrisponde.</div>';return;}
-  var groups={};
-  FOOD_CATS.forEach(function(cat){groups[cat.id]=[];});
-  filtered.forEach(function(f){var cat=getOrAssignCat(f);if(!groups[cat])groups[cat]=[];groups[cat].push(f);});
-  Object.keys(groups).forEach(function(k){groups[k].sort(function(a,b){return a.name.localeCompare(b.name,'it');});});
-  var html='';
-  FOOD_CATS.forEach(function(cat){
-    var items=groups[cat.id]||[];if(!items.length)return;
-    var secId='catsec-'+cat.id;
-    html+='<div class="cat-section">';
-    html+='<div class="cat-section-hdr" id="hdr-'+secId+'" onclick="togCatSection(this)">';
-    html+='<span class="cat-section-icon">'+cat.icon+'</span>';
-    html+='<span class="cat-section-name">'+cat.label+'</span>';
-    html+='<span class="cat-section-cnt">'+items.length+'</span>';
-    html+='<span class="cat-section-arr open" id="arr-'+secId+'">&#9658;</span>';
-    html+='</div>';
-    html+='<div class="cat-section-body open" id="'+secId+'">';
-    items.forEach(function(f){
-      var tH=f.triggers.length?f.triggers.map(function(t){var s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A'};return'<span class="etag" style="background:'+s.bg+';color:'+s.c+';font-size:10px">'+t+'</span>';}).join(''):'';
-      var catOpts=FOOD_CATS.map(function(c){return'<option value="'+c.id+'"'+(getOrAssignCat(f)===c.id?' selected':'')+'>'+c.icon+' '+c.label+'</option>';}).join('');
-      var igStr=f.glycemicIndex?('<br><span style="color:#854F0B;font-size:10px">IG: '+f.glycemicIndex+(f.glycemicCat?' ('+f.glycemicCat+')':'')+'</span>'):'';
-      html+='<div class="cf-item" data-cfid="'+f.id+'" onclick="togCfMetaById(this)">';
-      html+='<div class="cf-info">';
-      html+='<div class="cf-row1">'+rdot(f.risk)+'<span class="cf-name">'+f.name+'</span>'+(f.promoted?'<span class="promo-badge">chip</span>':'')+'</div>';
-      html+='<div class="cf-tags-row">'+tH+'</div>';
-      html+='<div class="cf-meta" id="cf-meta-'+f.id+'">';
-      html+=(f.rationale||'');
-      html+=(f.note?'<br><em>'+f.note+'</em>':'');
-      html+=igStr;
-      html+='<div style="margin-top:6px;display:flex;align-items:center;gap:6px"><label style="font-size:10px;color:var(--tx3)">Cat.:</label>';
-      html+='<select class="inp" style="flex:1;font-size:11px;padding:3px 8px" onchange="changeFoodCat(this)" data-cfid="'+f.id+'" onclick="event.stopPropagation()">'+catOpts+'</select>';
-      html+='</div></div></div>';
-      html+='<div class="cf-actions" onclick="event.stopPropagation()">';
-      html+='<button class="cf-promo-btn" data-cfid="'+f.id+'" onclick="togglePromotionById(this)">'+(f.promoted?'&#9733;':'&#9734;')+'</button>';
-      html+='<button class="cf-del-btn" data-cfid="'+f.id+'" onclick="deleteCfById(this)">&#10005;</button>';
-      html+='</div></div>';
-    });
-    html+='</div></div>';
-  });
-  el.innerHTML=html;
-}
-function togCfMetaById(el){var id=el.dataset.cfid;if(id)togCfMeta('cf-meta-'+id);}
-function togCatSection(hdr){
-  var secId=hdr.id.replace('hdr-','');
-  var el=document.getElementById(secId),arr=document.getElementById('arr-'+secId);if(!el)return;
-  var open=el.className.includes('open');
-  el.className='cat-section-body'+(open?'':' open');
-  if(arr)arr.className='cat-section-arr'+(open?'':' open');
-}
-function changeFoodCat(sel){
-  var id=sel.dataset.cfid,cat=sel.value;
-  var f=customFoods.find(function(x){return x.id===id;});if(!f)return;
-  f.category=cat;saveCustomData();toast('Categoria aggiornata');
+// Legacy compat stubs
+function togglePromotionById(btn){}
+function deleteCfById(btn){
+  // Legacy: extract food name and remove
+  var id=btn.dataset.cfid;if(!id)return;
+  for(var c of CATEGORIES){
+    var idx=c.items.findIndex(function(f){return escId(f.n)===id||f.n===id;});
+    if(idx>=0){c.items.splice(idx,1);break;}
+  }
+  DISHES=rebuildDISHES();saveCategories();buildGenreChips();buildTrigFilterBar();renderCustomFoods();toast('Rimosso');
 }
 
 
 
-// Override renderCustomFoods to use category view
-function renderCustomFoods(){renderCustomFoodsByCat();}
+// renderCustomFoods is now defined directly above (unified DB view)
 
 // Reacting food selector
 var reactingFood=null;
