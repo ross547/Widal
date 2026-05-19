@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Widal"/>
+<title>Diario Widal v7.5</title>
+<style>
+:root{
+  --bg:#ffffff;--bg2:#f5f5f4;--bg3:#ececea;
+  --tx:#1a1a1a;--tx2:#606060;--tx3:#9a9a9a;
+  --bd:rgba(0,0,0,0.11);--bd2:rgba(0,0,0,0.2);
+  --blue:#378ADD;--bluedark:#185FA5;--bluelight:#E6F1FB;
+  --green:#2E8B57;--greenlight:#E1F5EE;
+  --r:8px;--rl:12px;--safe-b:env(safe-area-inset-bottom,0px);
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;
+  --tx:#f2f2f7;--tx2:#aeaeb2;--tx3:#636366;
+  --bd:rgba(255,255,255,0.1);--bd2:rgba(255,255,255,0.2);
+  --bluelight:#1a3652;--greenlight:#1a3528;
+}}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);color:var(--tx);}
+body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;font-size:16px;}
+.app{max-width:430px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;}
+.hdr{padding:14px 16px 8px;padding-top:calc(14px + env(safe-area-inset-top,0px));border-bottom:0.5px solid var(--bd);background:var(--bg);position:sticky;top:0;z-index:10;}
+.hdr h1{font-size:17px;font-weight:600;}
+.hdr p{font-size:11px;color:var(--tx3);margin-top:1px;}
+.tabs{display:flex;border-bottom:0.5px solid var(--bd);background:var(--bg);position:sticky;top:calc(50px + env(safe-area-inset-top,0px));z-index:10;}
+.tab{flex:1;padding:9px 0;font-size:11px;font-weight:600;text-align:center;cursor:pointer;color:var(--tx2);border-bottom:2px solid transparent;}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue);}
+.view{padding:14px 16px;flex:1;padding-bottom:calc(20px + var(--safe-b));}
+.field{margin-bottom:12px;}
+.lbl{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;display:block;}
+
+/* ── PASTO ── */
+.pasto-topbar{display:flex;gap:6px;margin-bottom:12px;align-items:center;}
+.date-inp{flex:1;padding:8px 10px;border:0.5px solid var(--bd2);border-radius:var(--r);font-size:13px;background:var(--bg);color:var(--tx);outline:none;-webkit-appearance:none;}
+.date-inp:focus{border-color:var(--blue);}
+.meal-btns{display:flex;gap:3px;}
+.mbtn{padding:6px 8px;border-radius:var(--r);border:0.5px solid var(--bd2);background:var(--bg2);font-size:12px;cursor:pointer;color:var(--tx2);}
+.mbtn.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);}
+.food-search-wrap{position:relative;margin-bottom:10px;}
+.food-search-inp{width:100%;padding:10px 36px 10px 12px;border:0.5px solid var(--blue);border-radius:var(--r);font-size:14px;background:var(--bg);color:var(--tx);outline:none;-webkit-appearance:none;box-shadow:0 0 0 3px rgba(55,138,221,.08);}
+.food-search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--tx3);cursor:pointer;background:none;border:none;padding:2px 4px;display:none;}
+.food-search-clear.vis{display:block;}
+.food-ac{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg);border:0.5px solid var(--bd2);border-radius:var(--r);z-index:100;max-height:240px;overflow-y:auto;margin-top:3px;box-shadow:0 4px 16px rgba(0,0,0,0.12);}
+.food-ac.vis{display:block;}
+.ac-item{padding:9px 12px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid var(--bd);}
+.ac-item:last-child{border-bottom:none;}
+.ac-item.hl,.ac-item:hover{background:var(--bluelight);}
+.ac-item-name{flex:1;}
+.ac-item-cat{font-size:10px;color:var(--tx3);}
+.ac-item-risk{font-size:10px;font-weight:600;}
+.sel-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;min-height:0;}
+.sel-tag{display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border-radius:20px;font-size:12px;background:var(--bluelight);color:var(--blue);border:0.5px solid var(--blue);}
+.sel-tag-del{cursor:pointer;font-size:13px;line-height:1;opacity:.7;}
+.genre-block{margin-bottom:6px;border:0.5px solid var(--bd);border-radius:var(--r);overflow:hidden;}
+.genre-hdr{display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 11px;background:var(--bg2);user-select:none;}
+.genre-hdr-name{font-size:12px;font-weight:600;color:var(--tx2);flex:1;}
+.genre-count{font-size:11px;color:var(--blue);font-weight:600;}
+.genre-arrow{font-size:10px;color:var(--tx3);transition:transform .15s;}
+.genre-arrow.open{transform:rotate(90deg);}
+.genre-chips{display:flex;flex-wrap:wrap;gap:5px;padding:9px 11px;}
+.fchip{display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border-radius:20px;font-size:12px;cursor:pointer;border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx2);user-select:none;}
+.fchip.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);font-weight:600;}
+.fchip.custom{border-style:dashed;}
+.rdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.tblock{display:flex;flex-wrap:wrap;gap:4px;}
+.tchip{display:inline-flex;flex-direction:column;padding:5px 9px;border-radius:var(--r);}
+.tname{font-size:11px;font-weight:600;}
+.tdesc{font-size:10px;opacity:.8;margin-top:1px;}
+.rbanner{padding:8px 12px;border-radius:var(--r);margin-top:6px;font-size:12px;font-weight:600;}
+.notrig{font-size:12px;color:var(--tx3);padding:3px 0;}
+.chips{display:flex;flex-wrap:wrap;gap:5px;}
+.schip,.sevchip{padding:5px 10px;border-radius:20px;font-size:12px;cursor:pointer;border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);display:inline-block;user-select:none;}
+.schip.on{background:#FCEBEB;color:#A32D2D;border-color:#F7C1C1;}
+.inp{width:100%;padding:10px 12px;border:0.5px solid var(--bd2);border-radius:var(--r);font-size:15px;background:var(--bg);color:var(--tx);outline:none;-webkit-appearance:none;}
+.inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(55,138,221,.12);}
+select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:28px;}
+.savebtn{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;margin-top:10px;}
+.savebtn:active{background:var(--bluedark);transform:scale(.98);}
+.copy-btn{width:100%;padding:11px;border:0.5px solid var(--bd2);border-radius:var(--r);font-size:13px;cursor:pointer;background:var(--bg2);color:var(--tx);margin-top:12px;font-weight:500;}
+
+/* ══════════════════════════════
+   STORICO v4 — FILTRI + COMPATTO
+   ══════════════════════════════ */
+.hist-sparkline{margin-bottom:10px;background:var(--bg2);border-radius:var(--r);padding:9px 12px;}
+.hist-sparkline-title{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
+
+/* Barra filtri */
+.hist-filters{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.hfbtn{padding:5px 10px;border-radius:20px;font-size:11px;font-weight:600;border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);cursor:pointer;user-select:none;white-space:nowrap;}
+.hfbtn.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);}
+.hfbtn.red.on{background:#FCEBEB;color:#A32D2D;border-color:#F7C1C1;}
+
+/* Ricerca storico */
+.hist-search-wrap{position:relative;margin-bottom:10px;}
+.hist-search-inp{width:100%;padding:8px 32px 8px 11px;border:0.5px solid var(--bd2);border-radius:var(--r);font-size:13px;background:var(--bg);color:var(--tx);outline:none;}
+.hist-search-inp:focus{border-color:var(--blue);}
+.hist-search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--tx3);cursor:pointer;background:none;border:none;display:none;}
+.hist-search-clear.vis{display:block;}
+.hist-result-count{font-size:11px;color:var(--tx3);margin-bottom:8px;}
+
+/* Intestazione giorno collassabile */
+.dayhdr{display:flex;align-items:center;gap:7px;padding:7px 0 8px;border-bottom:0.5px solid var(--bd);margin-bottom:7px;cursor:pointer;}
+.dayhdr-date{font-size:12px;font-weight:600;color:var(--tx2);flex:1;}
+.dayhdr-risk{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;}
+.dayhdr-sym{font-size:10px;color:var(--tx3);}
+.dayhdr-arrow{font-size:10px;color:var(--tx3);transition:transform .2s;}
+.dayhdr-arrow.open{transform:rotate(90deg);}
+.day-entries{margin-bottom:10px;}
+
+/* Entry compatta a riga singola → espandibile */
+.entry{border:0.5px solid var(--bd);border-radius:var(--rl);padding:9px 11px;margin-bottom:5px;background:var(--bg);}
+.entry.has-reaction{border-left:3px solid #E24B4A;}
+.entry.editing{border-color:var(--blue);box-shadow:0 0 0 2px rgba(55,138,221,.12);}
+.entry-summary{display:flex;align-items:center;gap:7px;cursor:pointer;}
+.entry-meal-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.entry-foods-short{font-size:13px;font-weight:600;color:var(--tx);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.entry-badges{display:flex;gap:4px;align-items:center;flex-shrink:0;}
+.entry-risk-badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:20px;}
+.entry-sym-icon{font-size:12px;}
+.entry-time{font-size:10px;color:var(--tx3);white-space:nowrap;}
+.entry-detail{display:none;margin-top:8px;padding-top:8px;border-top:0.5px solid var(--bd);}
+.entry-detail.vis{display:block;}
+.etags{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;}
+.etag{font-size:10px;padding:2px 8px;border-radius:20px;}
+.enote{font-size:11px;color:var(--tx2);margin-top:5px;font-style:italic;}
+.ereact{font-size:10px;color:var(--tx3);margin-top:2px;}
+.eactions{display:flex;gap:12px;margin-top:6px;}
+.delbtn{font-size:11px;color:var(--tx3);cursor:pointer;border:none;background:none;padding:0;}
+.delbtn:active{color:#E24B4A;}
+.annotabtn{font-size:11px;color:var(--blue);cursor:pointer;border:none;background:none;padding:0;}
+.annota-panel{background:var(--bg2);border-radius:var(--r);padding:10px 11px;margin-top:7px;}
+.annota-save{padding:7px 14px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;}
+.annota-cancel{padding:7px 10px;background:none;border:none;font-size:13px;color:var(--tx3);cursor:pointer;}
+.empty{text-align:center;padding:36px 20px;color:var(--tx2);font-size:14px;line-height:1.8;}
+
+/* ══════════════════════════════
+   ALIMENTI v4 — SEZIONI PER RISCHIO + FILTRO TRIGGER
+   ══════════════════════════════ */
+.alim-search-wrap{margin-bottom:10px;position:relative;}
+.alim-search-inp{width:100%;padding:8px 32px 8px 11px;border:0.5px solid var(--bd2);border-radius:var(--r);font-size:13px;background:var(--bg);color:var(--tx);outline:none;}
+.alim-search-inp:focus{border-color:var(--blue);}
+.alim-search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--tx3);cursor:pointer;background:none;border:none;display:none;}
+.alim-search-clear.vis{display:block;}
+
+/* Filtro trigger */
+.trig-filter-bar{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px;}
+.tfbtn{padding:4px 9px;border-radius:20px;font-size:10px;font-weight:600;border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);cursor:pointer;user-select:none;}
+.tfbtn.on{border-color:currentColor;}
+
+/* Sezioni rischio */
+.risk-section{margin-bottom:14px;}
+.risk-section-hdr{display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 11px;border-radius:var(--r);user-select:none;}
+.risk-section-hdr:active{opacity:.8;}
+.risk-section-label{font-size:11px;font-weight:700;flex:1;}
+.risk-section-cnt{font-size:11px;font-weight:600;}
+.risk-section-arrow{font-size:10px;color:var(--tx3);transition:transform .15s;}
+.risk-section-arrow.open{transform:rotate(90deg);}
+.risk-section-body{padding:0 4px;}
+
+/* Card alimento custom (più compatta) */
+.cf-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--bd);cursor:pointer;}
+.cf-item:last-child{border-bottom:none;}
+.cf-info{flex:1;min-width:0;}
+.cf-row1{display:flex;align-items:center;gap:6px;}
+.cf-name{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cf-tags-row{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px;}
+.cf-meta{font-size:11px;color:var(--tx2);margin-top:5px;line-height:1.4;display:none;}
+.cf-meta.vis{display:block;}
+.cf-actions{display:flex;gap:5px;align-items:center;padding-top:2px;flex-shrink:0;}
+.cf-promo-btn{font-size:10px;padding:3px 7px;border-radius:20px;border:0.5px solid var(--green);color:var(--green);background:var(--greenlight);cursor:pointer;white-space:nowrap;}
+.cf-del-btn{font-size:11px;color:var(--tx3);cursor:pointer;border:none;background:none;padding:0;}
+.promo-badge{font-size:9px;padding:1px 5px;border-radius:20px;background:var(--greenlight);color:var(--green);margin-left:4px;font-weight:600;flex-shrink:0;}
+
+/* Smart box alimenti */
+.smart-box{border:0.5px solid var(--bd2);border-radius:var(--rl);padding:14px;background:var(--bg);margin-bottom:14px;}
+.smart-box h3{font-size:13px;font-weight:600;margin-bottom:6px;}
+.smart-input-row{display:flex;gap:8px;}
+.smart-input-row .inp{flex:1;}
+.analyze-btn{padding:10px 14px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.analyze-btn:active{background:var(--bluedark);}
+.analyze-btn:disabled{background:var(--bg2);color:var(--tx2);cursor:default;}
+.ai-result{border:0.5px solid var(--bd);border-radius:var(--rl);padding:12px 14px;margin-top:12px;background:var(--bg2);display:none;}
+.ai-result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.ai-food-name{font-size:15px;font-weight:600;}
+.ai-risk-badge{font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;}
+.ai-rationale{font-size:12px;color:var(--tx2);margin-bottom:10px;line-height:1.5;}
+.ai-triggers-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;}
+.ai-action-row{display:flex;gap:8px;}
+/* Glycemic section */
+.ai-glycemic{border-top:0.5px solid var(--bd);margin-top:10px;padding-top:10px;}
+.ai-glycemic-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx2);margin-bottom:7px;}
+.ai-glycemic-badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px;}
+.gbadge{display:inline-flex;flex-direction:column;align-items:center;padding:5px 10px;border-radius:var(--r);font-size:10px;min-width:54px;}
+.gbadge-val{font-size:15px;font-weight:700;line-height:1;}
+.gbadge-lbl{font-size:9px;margin-top:2px;opacity:.8;}
+.gbadge-low{background:#E8F5EE;color:#2E6644;}
+.gbadge-med{background:#FDF5E0;color:#7A5A00;}
+.gbadge-high{background:#FCEAEA;color:#A32D2D;}
+.gbadge-neutral{background:var(--bg2);color:var(--tx2);}
+.ai-glycemic-note{font-size:11px;color:var(--tx2);line-height:1.5;}
+
+.ai-btn{flex:1;padding:9px;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;border:0.5px solid var(--bd2);}
+.ai-btn-save{background:var(--blue);color:#fff;border-color:var(--blue);}
+.ai-btn-promo{background:var(--greenlight);color:var(--green);border-color:var(--green);}
+.ai-btn-disc{background:var(--bg2);color:var(--tx2);}
+.ai-loading{text-align:center;padding:20px;color:var(--tx3);font-size:13px;}
+.ai-spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--bd2);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin-right:8px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* API key */
+.apikey-box{border:0.5px solid var(--bd2);border-radius:var(--rl);padding:14px;background:var(--bg);margin-bottom:14px;}
+.apikey-box h3{font-size:13px;font-weight:600;margin-bottom:4px;}
+.apikey-desc{font-size:12px;color:var(--tx2);margin-bottom:10px;line-height:1.5;}
+.apikey-row{display:flex;gap:8px;align-items:center;}
+.apikey-inp{flex:1;font-family:monospace;font-size:13px;}
+.apikey-save-btn{padding:10px 14px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.apikey-status{font-size:11px;margin-top:8px;padding:6px 10px;border-radius:var(--r);}
+.apikey-status.ok{background:var(--greenlight);color:var(--green);}
+.apikey-status.err{background:#FCEBEB;color:#A32D2D;}
+.apikey-toggle{font-size:11px;color:var(--tx3);cursor:pointer;border:none;background:none;padding:2px 0;margin-top:4px;display:block;}
+
+/* ══════════════════════════════
+   STATO v4 — con marker reazioni
+   ══════════════════════════════ */
+.momento-btn{flex:1;padding:8px 6px;border-radius:var(--r);border:0.5px solid var(--bd2);background:var(--bg2);font-size:13px;font-weight:600;cursor:pointer;color:var(--tx2);}
+.momento-btn.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);}
+.stato-cond{margin-bottom:14px;border:0.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;}
+.stato-cond-hdr{display:flex;align-items:center;gap:7px;padding:9px 12px;background:var(--bg2);}
+.stato-cond-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.stato-cond-title{font-size:13px;font-weight:600;}
+.stato-cond-sub{font-size:11px;color:var(--tx3);}
+.stato-cond-body{padding:10px 12px;}
+.stato-side-lbl{font-size:10px;font-weight:600;color:var(--tx2);text-align:center;margin-bottom:5px;}
+.stato-avg{font-size:10px;color:var(--tx3);text-align:center;margin-top:6px;min-height:14px;}
+.scpbtn{flex:1;padding:5px 0;border-radius:20px;font-size:11px;font-weight:600;border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);cursor:pointer;}
+.scpbtn.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);}
+.svgpbtn{flex:1;padding:4px 0;border-radius:20px;font-size:11px;font-weight:600;border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);cursor:pointer;}
+.svgpbtn.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);}
+.poli-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.poli-row:last-of-type{margin-bottom:0;}
+.poli-side-lbl{font-size:10px;font-weight:600;color:var(--tx2);width:52px;flex-shrink:0;}
+.rating-btns{display:flex;gap:7px;}
+.rbtn{width:42px;height:42px;border-radius:50%;border:0.5px solid var(--bd2);background:var(--bg2);font-size:15px;font-weight:600;cursor:pointer;color:var(--tx2);flex-shrink:0;}
+.rbtn:active{transform:scale(.93);}
+.sentry{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--bd);}
+.sentry-time{font-size:11px;color:var(--tx3);min-width:72px;padding-top:2px;}
+.sentry-note{font-size:11px;color:var(--tx2);font-style:italic;margin-top:3px;}
+
+/* ── ANALISI ── */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.sc{background:var(--bg2);border-radius:var(--r);padding:11px 13px;}
+.sv{font-size:24px;font-weight:600;color:var(--tx);}
+.sl{font-size:11px;color:var(--tx2);margin-top:1px;}
+.brow{display:flex;align-items:center;gap:6px;margin-bottom:7px;}
+.bn{font-size:11px;color:var(--tx2);width:110px;flex-shrink:0;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bt{flex:1;height:14px;background:var(--bg2);border-radius:3px;overflow:hidden;position:relative;}
+.bf{height:100%;border-radius:3px;display:flex;align-items:center;}
+.bf-pct{font-size:9px;color:rgba(255,255,255,.9);padding-left:5px;white-space:nowrap;}
+.bc{font-size:11px;color:var(--tx2);min-width:20px;text-align:right;}
+.stit{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 8px;}
+.chart-box{border:0.5px solid var(--bd2);border-radius:var(--rl);padding:14px;background:var(--bg);margin-bottom:14px;}
+.chart-box h3{font-size:13px;font-weight:600;margin-bottom:8px;}
+.chart-legend{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:8px;}
+.chart-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx2);}
+.chart-legend-line{width:16px;height:2px;border-radius:1px;display:inline-block;}
+.chart-wrap{background:var(--bg2);border-radius:var(--r);padding:10px;overflow:hidden;margin-bottom:10px;}
+.export-btn{width:100%;padding:11px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;}
+.sync-box{border:0.5px solid var(--bd2);border-radius:var(--rl);padding:14px;background:var(--bg);margin-bottom:14px;}
+.sync-box h3{font-size:13px;font-weight:600;margin-bottom:4px;}
+.sync-desc{font-size:12px;color:var(--tx2);margin-bottom:10px;line-height:1.5;}
+.sync-btns{display:flex;gap:8px;}
+.sync-btn{flex:1;padding:10px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx);}
+.sync-btn.primary{background:var(--blue);color:#fff;border-color:var(--blue);}
+.sync-btn:active{opacity:.8;}
+.sync-status{font-size:11px;margin-top:8px;padding:6px 10px;border-radius:var(--r);display:none;}
+.sync-status.ok{background:var(--greenlight);color:var(--green);}
+.sync-status.err{background:#FCEBEB;color:#A32D2D;}
+.toast{position:fixed;bottom:calc(30px + var(--safe-b));left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:9px 20px;border-radius:20px;font-size:13px;z-index:999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+
+/* CTG -- Carico Trigger Giornaliero */
+.ctg-bar{border-radius:var(--r);padding:11px 13px;margin-bottom:14px;border:0.5px solid var(--bd);background:var(--bg2);transition:background .3s,border-color .3s;}
+.ctg-bar.ctg-green{background:#E8F5EE;border-color:#A8D5B5;}
+.ctg-bar.ctg-yellow{background:#FDF5E0;border-color:#F0CC6A;}
+.ctg-bar.ctg-red{background:#FCEAEA;border-color:#F0A0A0;}
+@media(prefers-color-scheme:dark){
+  .ctg-bar.ctg-green{background:#1a3528;border-color:#2E6644;}
+  .ctg-bar.ctg-yellow{background:#2e2610;border-color:#705c10;}
+  .ctg-bar.ctg-red{background:#2e1010;border-color:#702020;}
+}
+.ctg-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.ctg-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx2);}
+.ctg-value{font-size:13px;font-weight:700;}
+.ctg-track{height:6px;background:var(--bd);border-radius:3px;overflow:hidden;margin-bottom:6px;}
+.ctg-fill{height:100%;border-radius:3px;transition:width .35s ease,background .35s;}
+.ctg-meals{display:flex;gap:6px;flex-wrap:wrap;}
+.ctg-meal-dot{font-size:10px;color:var(--tx2);display:flex;align-items:center;gap:3px;}
+.ctg-meal-r{font-size:10px;font-weight:700;}
+.ctg-warning{margin-top:8px;padding:7px 10px;border-radius:6px;font-size:11px;font-weight:600;display:none;}
+.ctg-warning.show{display:block;}
+.ctg-warning.warn-yellow{background:#FFF3C4;color:#7A5A00;}
+.ctg-warning.warn-red{background:#FCEAEA;color:#A32D2D;}
+@media(prefers-color-scheme:dark){
+  .ctg-warning.warn-yellow{background:#3a2e00;color:#e0c060;}
+  .ctg-warning.warn-red{background:#3a1010;color:#f07070;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr"><h1>Diario Widal</h1><p>Pasti &middot; trigger &middot; stato infiammatorio</p></div>
+  <div class="tabs">
+    <div class="tab on" id="tab-pasto" onclick="showTab('pasto')">Pasto</div>
+    <div class="tab" id="tab-hist" onclick="showTab('hist')">Storico</div>
+    <div class="tab" id="tab-stato" onclick="showTab('stato')">Stato</div>
+    <div class="tab" id="tab-alim" onclick="showTab('alim')">Alimenti</div>
+    <div class="tab" id="tab-stats" onclick="showTab('stats')">Analisi</div>
+  </div>
+
+  <!-- TAB PASTO (invariato) -->
+    <div id="vpasto" class="view">
+    <!-- CTG -->
+    <div class="ctg-bar ctg-green" id="ctg-bar">
+      <div class="ctg-top">
+        <span class="ctg-label">&#9889; Carico trigger oggi (CTG)</span>
+        <span class="ctg-value" id="ctg-value">0 / 9</span>
+      </div>
+      <div class="ctg-track"><div class="ctg-fill" id="ctg-fill" style="width:0%;background:#5DCAA5"></div></div>
+      <div class="ctg-meals" id="ctg-meals"><span style="font-size:10px;color:var(--tx3)">Nessun pasto registrato oggi</span></div>
+      <div class="ctg-warning" id="ctg-warning"></div>
+    </div>
+        <div class="pasto-topbar">
+      <input type="date" class="date-inp" id="pasto-date"/>
+      <div class="meal-btns">
+        <button class="mbtn" id="mb-col" onclick="setMeal('Colazione')" title="Colazione">&#9749;</button>
+        <button class="mbtn" id="mb-pra" onclick="setMeal('Pranzo')" title="Pranzo">&#127869;</button>
+        <button class="mbtn" id="mb-cen" onclick="setMeal('Cena')" title="Cena">&#127769;</button>
+        <button class="mbtn" id="mb-spu" onclick="setMeal('Spuntino')" title="Spuntino">&#127822;</button>
+        <button class="mbtn" id="mb-snk" onclick="setMeal('Snack')" title="Snack">&#127863;</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="lbl">Cerca alimento o piatto</label>
+      <div class="food-search-wrap">
+        <input class="food-search-inp" id="food-search" placeholder="es. branzino, cappuccino, gnocchi..." autocomplete="off" oninput="onFoodSearch(this.value)" onkeydown="onFoodSearchKey(event)" onfocus="onFoodSearch(this.value)"/>
+        <button class="food-search-clear" id="food-search-clear" onclick="clearFoodSearch()">&#215;</button>
+        <div class="food-ac" id="food-ac"></div>
+      </div>
+      <div class="sel-tags" id="sel-tags"></div>
+    </div>
+    <div class="field">
+      <label class="lbl">Alimenti per categoria</label>
+      <div id="genre-vegetali" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('vegetali')"><span class="genre-arrow" id="ga-vegetali">&#9658;</span><span class="genre-hdr-name">&#129382; Vegetali</span><span class="genre-count" id="gc-cnt-vegetali"></span></div>
+        <div class="genre-chips" id="gc-vegetali" style="display:none"></div>
+      </div>
+      <div id="genre-frutta" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('frutta')"><span class="genre-arrow" id="ga-frutta">&#9658;</span><span class="genre-hdr-name">&#127822; Frutta</span><span class="genre-count" id="gc-cnt-frutta"></span></div>
+        <div class="genre-chips" id="gc-frutta" style="display:none"></div>
+      </div>
+      <div id="genre-pesce" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('pesce')"><span class="genre-arrow" id="ga-pesce">&#9658;</span><span class="genre-hdr-name">&#127997; Pesce &amp; Carne &amp; Uova</span><span class="genre-count" id="gc-cnt-pesce"></span></div>
+        <div class="genre-chips" id="gc-pesce" style="display:none"></div>
+      </div>
+      <div id="genre-formaggi" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('formaggi')"><span class="genre-arrow" id="ga-formaggi">&#9658;</span><span class="genre-hdr-name">&#129472; Formaggi</span><span class="genre-count" id="gc-cnt-formaggi"></span></div>
+        <div class="genre-chips" id="gc-formaggi" style="display:none"></div>
+      </div>
+      <div id="genre-bevande" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('bevande')"><span class="genre-arrow" id="ga-bevande">&#9658;</span><span class="genre-hdr-name">&#9749; Bevande</span><span class="genre-count" id="gc-cnt-bevande"></span></div>
+        <div class="genre-chips" id="gc-bevande" style="display:none"></div>
+      </div>
+      <div id="genre-piatti" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('piatti')"><span class="genre-arrow" id="ga-piatti">&#9658;</span><span class="genre-hdr-name">&#127869; Piatti composti</span><span class="genre-count" id="gc-cnt-piatti"></span></div>
+        <div class="genre-chips" id="gc-piatti" style="display:none"></div>
+      </div>
+      <div id="genre-miei" class="genre-block" style="display:none">
+        <div class="genre-hdr" onclick="togGenre('miei')"><span class="genre-arrow" id="ga-miei">&#9658;</span><span class="genre-hdr-name">&#11088; Miei alimenti</span><span class="genre-count" id="gc-cnt-miei"></span></div>
+        <div class="genre-chips" id="gc-miei" style="display:none"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="lbl">Trigger (automatici)</label>
+      <div id="trig-display"><div class="notrig">Seleziona alimenti per vedere i trigger</div></div>
+      <div id="rbanner" class="rbanner" style="display:none"></div>
+    </div>
+    <div class="field">
+      <label class="lbl">Sintomi osservati</label>
+      <div class="chips" id="sym-chips"></div>
+    </div>
+    <div class="field">
+      <label class="lbl">Gravit&agrave;</label>
+      <div class="chips" id="sev-chips"></div>
+    </div>
+    <div class="field">
+      <label class="lbl">Tempo comparsa sintomi</label>
+      <select class="inp" id="react-time">
+        <option value="">-- seleziona --</option>
+        <option>Istantanea (&lt;2 min)</option>
+        <option>Rapida (2&ndash;15 min)</option>
+        <option>Moderata (15&ndash;60 min)</option>
+        <option>Ritardata (&gt;1h)</option>
+        <option>Assente</option>
+      </select>
+    </div>
+    <div class="field">
+      <label class="lbl">Note</label>
+      <input class="inp" id="note-inp" placeholder="quantit&agrave;, contesto, come mi sono sentito&hellip;"/>
+    </div>
+    <button class="savebtn" onclick="saveEntry()">Aggiungi al diario</button>
+  </div>
+
+  <!-- TAB STORICO v4 -->
+  <div id="vhist" class="view" style="display:none">
+    <div class="hist-sparkline" id="hist-sparkline" style="display:none">
+      <div class="hist-sparkline-title">Rischio pasto &mdash; ultimi 14 giorni</div>
+      <canvas id="sparkline-canvas" style="width:100%;display:block;height:44px;"></canvas>
+    </div>
+
+    <!-- Filtri rapidi -->
+    <div class="hist-filters">
+      <button class="hfbtn on" id="hf-all" onclick="setHistFilter('all')">Tutti</button>
+      <button class="hfbtn red" id="hf-reaction" onclick="setHistFilter('reaction')">&#128276; Con reazione</button>
+      <button class="hfbtn" id="hf-high" onclick="setHistFilter('high')">&#128308; Rischio alto</button>
+      <button class="hfbtn" id="hf-instant" onclick="setHistFilter('instant')">&#9889; Istantanee</button>
+    </div>
+
+    <!-- Ricerca testuale -->
+    <div class="hist-search-wrap">
+      <input class="hist-search-inp" id="hist-search" placeholder="Cerca alimento nello storico..." oninput="onHistSearch(this.value)" autocomplete="off"/>
+      <button class="hist-search-clear" id="hist-search-clear" onclick="clearHistSearch()">&#215;</button>
+    </div>
+    <div class="hist-result-count" id="hist-result-count" style="display:none"></div>
+
+    <div id="hist-list"></div>
+  </div>
+
+  <!-- TAB STATO v6: giorno/notte + poliposi dx/sx -->
+  <div id="vstato" class="view" style="display:none">
+
+    <!-- Selettore momento -->
+    <div class="field">
+      <label class="lbl">Momento della valutazione</label>
+      <div style="display:flex;gap:6px;">
+        <button class="momento-btn on" id="smb-giorno" onclick="setMomento(0)">&#9728; Giorno</button>
+        <button class="momento-btn" id="smb-notte" onclick="setMomento(1)">&#9790; Notte / Mattino</button>
+      </div>
+      <div id="momento-hint" style="font-size:10px;color:var(--tx3);margin-top:5px;">Valutazione diurna corrente</div>
+    </div>
+
+    <!-- Poliposi: dx e sx separati -->
+    <div class="stato-cond">
+      <div class="stato-cond-hdr">
+        <span class="stato-cond-dot" style="background:#378ADD"></span>
+        <span class="stato-cond-title" style="color:#378ADD">Poliposi nasale</span>
+        <span class="stato-cond-sub">ostruzione, congestione</span>
+      </div>
+      <div class="stato-cond-body">
+        <div class="poli-row">
+          <span class="poli-side-lbl">&#8592; Sinistro</span>
+          <div class="rating-btns" id="rbtn-poli-sx"></div>
+        </div>
+        <div class="poli-row">
+          <span class="poli-side-lbl">Destro &#8594;</span>
+          <div class="rating-btns" id="rbtn-poli-dx"></div>
+        </div>
+        <div class="stato-avg" id="poli-avg"></div>
+      </div>
+    </div>
+
+    <!-- Asma -->
+    <div class="stato-cond">
+      <div class="stato-cond-hdr">
+        <span class="stato-cond-dot" style="background:#EF9F27"></span>
+        <span class="stato-cond-title" style="color:#EF9F27">Asma / respiro</span>
+        <span class="stato-cond-sub">dispnea, sibilo, oppressione</span>
+      </div>
+      <div class="stato-cond-body">
+        <div class="rating-btns" id="rbtn-asma"></div>
+      </div>
+    </div>
+
+    <!-- Dermatosi -->
+    <div class="stato-cond">
+      <div class="stato-cond-hdr">
+        <span class="stato-cond-dot" style="background:#9B30FF"></span>
+        <span class="stato-cond-title" style="color:#9B30FF">Dermatosi</span>
+        <span class="stato-cond-sub">prurito, eritema, eruzioni</span>
+      </div>
+      <div class="stato-cond-body">
+        <div class="rating-btns" id="rbtn-dermatosi"></div>
+      </div>
+    </div>
+
+    <div style="font-size:10px;color:var(--tx3);text-align:right;margin-bottom:10px;">1 = assente &nbsp;&middot;&nbsp; 5 = severo / invalidante</div>
+
+    <div class="field">
+      <label class="lbl">Note (farmaci, stagione, stress&hellip;)</label>
+      <input class="inp" id="stato-note" placeholder="es. montelukast, fioritura, forte stress&hellip;"/>
+    </div>
+    <button class="savebtn" onclick="saveStato()">Salva valutazione</button>
+    <div style="display:flex;gap:4px;margin-top:14px;margin-bottom:4px;">
+      <button class="svgpbtn on" id="svgpb-7" onclick="setSvgPeriod(7)">7g</button>
+      <button class="svgpbtn" id="svgpb-14" onclick="setSvgPeriod(14)">14g</button>
+      <button class="svgpbtn" id="svgpb-30" onclick="setSvgPeriod(30)">30g</button>
+      <button class="svgpbtn" id="svgpb-all" onclick="setSvgPeriod(0)">Tutto</button>
+    </div>
+    <div id="stato-results" style="margin-top:6px"></div>
+
+    <!-- Grafico combinato stato + rischio pasto -->
+    <div id="stato-chart-box" style="display:none;margin-top:16px;border:0.5px solid var(--bd2);border-radius:var(--rl);padding:12px 12px 10px;background:var(--bg);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:12px;font-weight:600;color:var(--tx2);">Stato + rischio pasto</span>
+        <button onclick="exportChartStato()" style="font-size:11px;padding:4px 10px;border-radius:var(--r);border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);cursor:pointer;">&#8681; PNG</button>
+      </div>
+      <div style="display:flex;gap:4px;margin-bottom:8px;">
+        <button class="scpbtn on" id="scpb-7" onclick="setStatoPeriod(7)">7g</button>
+        <button class="scpbtn" id="scpb-14" onclick="setStatoPeriod(14)">14g</button>
+        <button class="scpbtn" id="scpb-30" onclick="setStatoPeriod(30)">30g</button>
+        <button class="scpbtn" id="scpb-all" onclick="setStatoPeriod(0)">Tutto</button>
+      </div>
+      <div style="background:var(--bg2);border-radius:var(--r);padding:6px;overflow:hidden;margin-bottom:6px;">
+        <canvas id="stato-combined-chart" style="width:100%;display:block;"></canvas>
+      </div>
+      <div id="stato-chart-legend" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;font-size:10px;color:var(--tx2);"></div>
+    </div>
+  </div>
+
+  <!-- TAB ALIMENTI v4 -->
+  <div id="valim" class="view" style="display:none">
+    <div class="apikey-box" id="apikey-box">
+      <h3>&#128273; Chiave API Anthropic</h3>
+      <p class="apikey-desc">Necessaria per l'analisi smart. Ottienila su <strong>console.anthropic.com</strong> &rarr; API Keys. Salvata solo sul dispositivo.</p>
+      <div class="apikey-row">
+        <input class="inp apikey-inp" id="apikey-inp" type="password" placeholder="sk-ant-&hellip;" autocomplete="off" autocorrect="off" spellcheck="false"/>
+        <button class="apikey-save-btn" onclick="saveApiKey()">Salva</button>
+      </div>
+      <button class="apikey-toggle" onclick="toggleKeyVisibility()">Mostra / nascondi</button>
+      <div id="apikey-status" class="apikey-status" style="display:none"></div>
+    </div>
+    <div class="smart-box">
+      <h3>&#10022; Analisi smart alimento</h3>
+      <div class="smart-input-row">
+        <input class="inp" id="smart-inp" placeholder="es. focaccia di Recco, avocado..." onkeydown="if(event.key==='Enter')analyzeFood()" style="flex:1"/>
+        <button class="analyze-btn" id="analyze-btn" onclick="analyzeFood()">Analizza</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+        <label style="font-size:12px;color:var(--tx2);white-space:nowrap;">Ricetta per</label>
+        <input type="number" class="inp" id="smart-portions" value="1" min="1" max="50" style="width:60px;text-align:center;font-size:14px;padding:7px 8px;"/>
+        <label style="font-size:12px;color:var(--tx2);">porzioni</label>
+      </div>
+      <div id="ai-result" class="ai-result"></div>
+    </div>
+
+    <!-- Intestazione con contatore e filtri -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div class="stit" style="margin:0">Miei alimenti (<span id="cf-count">0</span>)</div>
+      <div style="font-size:11px;color:var(--tx3);">Tocca per descrizione</div>
+    </div>
+
+    <!-- Ricerca -->
+    <div class="alim-search-wrap">
+      <input class="alim-search-inp" id="alim-search" placeholder="Cerca nei miei alimenti..." oninput="onAlimSearch(this.value)" autocomplete="off"/>
+      <button class="alim-search-clear" id="alim-search-clear" onclick="clearAlimSearch()">&#215;</button>
+    </div>
+
+    <!-- Filtro trigger -->
+    <div class="trig-filter-bar" id="trig-filter-bar">
+      <button class="tfbtn on" id="tf-all" onclick="setTrigFilter(null)">Tutti</button>
+    </div>
+
+    <!-- Lista strutturata per sezioni di rischio -->
+    <div id="custom-foods-list"></div>
+  </div>
+
+  <!-- TAB ANALISI (invariato) -->
+  <div id="vstats" class="view" style="display:none">
+    <div id="stats-cnt"></div>
+    <div class="chart-box" id="chart-box" style="display:none">
+      <h3>&#128202; Andamento combinato</h3>
+      <div class="chart-legend" id="chart-legend"></div>
+      <div class="chart-wrap">
+        <canvas id="combined-chart" style="width:100%;display:block;"></canvas>
+      </div>
+      <button class="export-btn" onclick="exportChart()">&#8681; Salva grafico per il medico (PNG)</button>
+    </div>
+    <div class="sync-box">
+      <h3>&#9729; Backup &mdash; iCloud / iPad</h3>
+      <p class="sync-desc">Esporta tutti i dati in un file JSON da salvare in iCloud Drive.</p>
+      <div class="sync-btns">
+        <button class="sync-btn primary" onclick="exportData()">&#8681; Esporta JSON</button>
+        <button class="sync-btn" onclick="document.getElementById('import-file').click()">&#8679; Importa JSON</button>
+      </div>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)"/>
+      <div id="sync-status" class="sync-status"></div>
+    </div>
+    <div style="border-top:0.5px solid var(--bd);padding-top:16px;margin-top:4px;">
+      <div class="stit">Porta i dati in Claude per l'analisi</div>
+      <p style="font-size:12px;color:var(--tx2);margin-bottom:8px;line-height:1.5">Copia i dati e incollali in Claude.ai per un'analisi approfondita dei pattern.</p>
+      <button class="copy-btn" onclick="copyForClaude()">Copia dati per Claude.ai</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const CLINICAL_PROFILE=`
+PROFILO PAZIENTE — CONTESTO CLINICO OBBLIGATORIO:
+
+MCAS / SINDROME DI WIDAL:
+- Triade di Samter: asma + poliposi nasale + intolleranza aspirina/FANS
+- Iperreattività mastocitaria con probabile MCAS secondaria
+- Reazioni pseudoallergiche non-IgE mediate, probabile deficit DAO
+- Reazioni istantanee <2 min tipiche
+- Trigger verificati empiricamente: aceto (istamina diretta), cacao, mirtilli, avocado, pepe
+- In terapia: Aerius (antistaminico permanente) + Mometasone spray nasale mattina e sera
+- Scala rischio MCAS 0-5: 0=sicuro, 1=minimo, 2=monitorare, 3=cautela, 4=evitare, 5=EVITARE
+- Trigger: Istamina, Salicilati, Ammine biogene, Tiramina, TRPA1, Istamina-lib.
+
+PROFILO GLICEMICO:
+- Prediabete borderline: HbA1c oscillante 5.5% (dieta ottimale) - 6.8% (dieta libera)
+- Glicemia a digiuno alterata (IFG): 5.4-6.1 mmol/L al mattino
+- Resistenza insulinica epatica probabile (dawn phenomenon documentato)
+- Monitoraggio CGM continuo FreeStyle Libre 3; dati personali maggio 2026:
+  * Media glicemica: 5.43 mmol/L, TIR (3.9-7.8) 97%, CV 12.4% (eccellente stabilità)
+  * Spike reali misurati: orzo/minestra +3.25, tacchino impanato +2.86, orata+verdure +2.0, branzino/rombo +0.0-1.0, pera sbucciata +0.17-2.0
+- Obiettivo: IG target <55, carico glicemico giornaliero contenuto, preferire fibra solubile
+- CONFLITTO DIETETICO: alcuni alimenti ottimi per glicemia (legumi, frutti rossi, fermentati) sono trigger MCAS — in caso di conflitto priorita MCAS
+
+Per piatti composti analizza ogni ingrediente + profilo combinato MCAS e glicemico.`;
+
+const DISHES=[
+  {n:"Minestrone misto",t:["Istamina","Salicilati","Ammine biogene"],r:3},
+  {n:"Minestra ceci/bietole",t:["Istamina","Salicilati","Ammine biogene"],r:3},
+  {n:"Pasta e fagioli",t:["Istamina","Salicilati","Ammine biogene"],r:3},
+  {n:"Passata verdure verdi",t:["Salicilati","Istamina"],r:2},
+  {n:"Pasta al pomodoro",t:["Istamina","Salicilati"],r:3},
+  {n:"Risotto bianco",t:[],r:1},
+  {n:"Pasta in bianco",t:[],r:0},
+  {n:"Branzino con pomodoro",t:["Istamina","Salicilati"],r:3},
+  {n:"Persico impanato fritto",t:["Ammine biogene"],r:1},
+  {n:"Salmone alla griglia",t:["Istamina"],r:2},
+  {n:"Salmone affumicato",t:["Istamina","Tiramina","Ammine biogene"],r:5},
+  {n:"Acciughe sotto sale",t:["Istamina","Tiramina","Ammine biogene"],r:5},
+  {n:"Merluzzo al vapore",t:[],r:1},
+  {n:"Pollo impanato fritto",t:["Ammine biogene"],r:1},
+  {n:"Pollo al curry",t:["Salicilati"],r:3},
+  {n:"Pollo alla cacciatore",t:["Istamina","Salicilati"],r:3},
+  {n:"Petto di pollo alla piastra",t:[],r:0},
+  {n:"Melanzane alla parmigiana",t:["Istamina","Ammine biogene","Salicilati"],r:4},
+  {n:"Insalata mista/pomodori",t:["Istamina","Salicilati"],r:3},
+  {n:"Spinaci aglio/peperoncino",t:["Istamina","Salicilati","TRPA1","Ammine biogene"],r:4},
+  {n:"Cavolfiore al vapore",t:[],r:0},
+  {n:"Patate al forno",t:[],r:0},
+  {n:"Sorbetto di pera",t:[],r:1},
+  {n:"Sorbetto di mango",t:["Salicilati"],r:2},
+  {n:"Crostata marmellata pera",t:["Salicilati"],r:2},
+];
+const SINGLES={
+  vegetali:[
+    {n:"Cavolfiore",t:[],r:0},{n:"Zucchine",t:["Salicilati"],r:1},
+    {n:"Carote",t:[],r:0},{n:"Patate",t:[],r:0},
+    {n:"Spinaci",t:["Istamina","Salicilati"],r:3},{n:"Pomodoro",t:["Istamina","Salicilati"],r:3},
+    {n:"Melanzane",t:["Istamina","Ammine biogene"],r:4},{n:"Peperoni",t:["Salicilati","TRPA1"],r:3},
+    {n:"Aglio crudo",t:["TRPA1"],r:3},{n:"Cipolla",t:["Salicilati"],r:2},
+    {n:"Fagiolini",t:["Salicilati"],r:1},{n:"Broccoli",t:["Salicilati"],r:1},
+  ],
+  frutta:[
+    {n:"Mela sbucciata cotta",t:["Salicilati"],r:2},{n:"Mela sbucciata cruda",t:["Salicilati"],r:3},
+    {n:"Pera",t:[],r:1},{n:"Banana",t:["Ammine biogene"],r:2},
+    {n:"Sorbetto di pera",t:[],r:1},{n:"Sorbetto di mango",t:["Salicilati"],r:2},
+  ],
+  pesce:[
+    {n:"Uova sode",t:[],r:0},{n:"Petto di pollo",t:[],r:0},
+    {n:"Pesce persico",t:["Ammine biogene"],r:1},{n:"Merluzzo fresco",t:[],r:1},
+    {n:"Bresaola",t:["Ammine biogene","Tiramina"],r:3},
+  ],
+  formaggi:[
+    {n:"Mozzarella di bufala",t:["Istamina"],r:2},{n:"Feta",t:["Istamina","Ammine biogene"],r:3},
+    {n:"Emmental",t:["Istamina","Ammine biogene"],r:3},{n:"Parmigiano",t:["Istamina","Tiramina"],r:4},
+    {n:"Pecorino stagionato",t:["Istamina","Tiramina","Ammine biogene"],r:4},
+  ],
+  bevande:[
+    {n:"Acqua",t:[],r:0},{n:"Caffe",t:["Istamina-lib.","Salicilati"],r:3},
+    {n:"Caffe decaffeinato",t:["Salicilati"],r:2},{n:"Cappuccino",t:["Istamina-lib.","Salicilati"],r:3},
+    {n:"Tisana zafferano",t:[],r:1},{n:"Tisana menta",t:["Salicilati","TRPA1"],r:3},
+  ],
+};
+const TS={"Istamina":{bg:"#FCEBEB",c:"#A32D2D",d:"istamina preformata → degranulazione diretta"},"Salicilati":{bg:"#FAEEDA",c:"#854F0B",d:"COX-1 → leucotrieni"},"Ammine biogene":{bg:"#FAECE7",c:"#993C1D",d:"attivazione mastociti"},"Tiramina":{bg:"#FCEBEB",c:"#791F1F",d:"vasoattiva → degranulazione"},"TRPA1":{bg:"#EEEDFE",c:"#3C3489",d:"neurogeno su mucose"},"Istamina-lib.":{bg:"#FBEAF0",c:"#993556",d:"induce rilascio"}};
+const RC=["","#5DCAA5","#5DCAA5","#EF9F27","#E24B4A","#E24B4A"];
+const RBG=["transparent","#E1F5EE","#E1F5EE","#FAEEDA","#FCEBEB","#FCEBEB"];
+const RTC=["#606060","#3B6D11","#3B6D11","#854F0B","#A32D2D","#791F1F"];
+const RL=["--","Basso","Lieve","Medio","Alto","Molto alto"];
+const SS=[{bg:"#EAF3DE",c:"#3B6D11"},{bg:"#FAEEDA",c:"#633806"},{bg:"#FAECE7",c:"#993C1D"},{bg:"#FCEBEB",c:"#791F1F"},{bg:"#F7C1C1",c:"#501313"}];
+const SYMS=["Rinite","Lacrimazione","Starnuti","Prurito nasale","Tosse","Dispnea","Orticaria","Cefalea","Gonfiore addominale"];
+const SEVS=["1 -- Lieve","2 -- Moderata","3 -- Notevole","4 -- Intensa","5 -- Severa"];
+const CONDS=[{key:"poliposi",label:"Poliposi nasale",sub:"ostruzione, congestione",color:"#378ADD"},{key:"asma",label:"Asma / respiro",sub:"dispnea, sibilo",color:"#EF9F27"},{key:"dermatosi",label:"Dermatosi",sub:"prurito, eritema",color:"#9B30FF"}];
+// v6 stato: 0=giorno 1=notte; chiavi: poli_sx, poli_dx, asma, dermatosi
+var statoMomento=0;
+var statoPeriodDays=14;
+var svgPeriodDays=7;
+var statoG={poli_sx:null,poli_dx:null,asma:null,dermatosi:null};
+var statoN={poli_sx:null,poli_dx:null,asma:null,dermatosi:null};
+function getStoSel(){return statoMomento===0?statoG:statoN;}
+const MEAL_COLORS={Colazione:"#EF9F27",Pranzo:"#378ADD",Cena:"#3C3489",Spuntino:"#5DCAA5",Snack:"#E24B4A"};
+
+// Sezioni rischio per la lista Alimenti
+const RISK_SECTIONS=[
+  {id:"rs5",label:"🔴 Evitare (5/5)",minR:5,maxR:5,bg:"#FCEBEB",c:"#A32D2D",bdg:"#F7C1C1"},
+  {id:"rs4",label:"🟠 Quasi sempre evitare (4/5)",minR:4,maxR:4,bg:"#FAECE7",c:"#993C1D",bdg:"#F5CBBD"},
+  {id:"rs3",label:"🟡 Cautela (3/5)",minR:3,maxR:3,bg:"#FAEEDA",c:"#854F0B",bdg:"#F5E1B5"},
+  {id:"rs2",label:"🟢 Monitorare (2/5)",minR:2,maxR:2,bg:"#E8F5E4",c:"#3B6D11",bdg:"#C7E5BE"},
+  {id:"rs01",label:"✅ Sicuri (0-1/5)",minR:0,maxR:1,bg:"#E1F5EE",c:"#2E8B57",bdg:"#B0DEC9"},
+];
+
+let selItems={},selSym={},selSev=null,selMeal=null;
+// statoSel legacy (kept for import compat)
+let entries=[],statoEntries=[],customFoods=[],apiKey='',currentAiResult=null;
+// Stato filtri storico
+let histFilter='all',histSearchQuery='';
+// Stato filtri alimenti
+let alimSearchQuery='',alimTrigFilter=null;
+
+function loadData(){
+  try{const r=localStorage.getItem('widal-diary-v3');if(r)entries=JSON.parse(r);}catch(e){entries=[];}
+  try{const r=localStorage.getItem('widal-stato-v1');if(r)statoEntries=JSON.parse(r);}catch(e){statoEntries=[];}
+  try{const r=localStorage.getItem('widal-custom-v1');if(r)customFoods=JSON.parse(r);}catch(e){customFoods=[];}
+  try{const r=localStorage.getItem('widal-apikey-v1');if(r)apiKey=r;}catch(e){}
+}
+function saveData(){try{localStorage.setItem('widal-diary-v3',JSON.stringify(entries));}catch(e){}}
+function saveStatoData(){try{localStorage.setItem('widal-stato-v1',JSON.stringify(statoEntries));}catch(e){}}
+function saveCustomData(){try{localStorage.setItem('widal-custom-v1',JSON.stringify(customFoods));}catch(e){}}
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function rdot(r){return r>0?`<span class="rdot" style="background:${RC[r]}"></span>`:'';}
+function escQ(s){return s.replace(/'/g,"\\'");}
+function escId(s){return s.replace(/[^a-zA-Z0-9]/g,'_');}
+function fmtT(ts){const d=new Date(ts);return d.toLocaleDateString('it-IT',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});}
+function fmtD(ts){return new Date(ts).toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});}
+function fmtDateShort(ts){return new Date(ts).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'});}
+function capFirst(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+
+function getItemData(key){
+  const parts=key.split(':');const type=parts[0],ref=parts.slice(1).join(':');
+  if(type==='dish'){const d=DISHES.find(x=>x.n===ref);return d?{n:d.n,t:d.t,r:d.r}:{n:ref,t:[],r:0};}
+  if(type==='custom'){const cf=customFoods.find(x=>x.id===ref);return cf?{n:cf.name,t:cf.triggers,r:cf.risk}:{n:ref,t:[],r:0};}
+  const arr=SINGLES[type]||[];const s=arr.find(x=>x.n===ref);
+  if(s)return{n:s.n,t:s.t,r:s.r};
+  const cf=customFoods.find(x=>x.name===ref);
+  return cf?{n:cf.name,t:cf.triggers,r:cf.risk}:{n:ref,t:[],r:0};
+}
+function computeAllTriggers(){const ts=new Set();Object.keys(selItems).forEach(k=>{const d=getItemData(k);d.t.forEach(t=>ts.add(t));});return[...ts];}
+function computeMaxRisk(){let m=0;Object.keys(selItems).forEach(k=>{const d=getItemData(k);m=Math.max(m,d.r);});return m;}
+function getAllSelectedNames(){return Object.keys(selItems).map(k=>getItemData(k).n);}
+
+function getSearchPool(){
+  const pool=[];
+  DISHES.forEach(d=>pool.push({key:'dish:'+d.n,n:d.n,r:d.r,t:d.t,cat:'Piatto'}));
+  Object.entries(SINGLES).forEach(([genre,items])=>items.forEach(f=>pool.push({key:genre+':'+f.n,n:f.n,r:f.r,t:f.t,cat:capFirst(genre)})));
+  customFoods.forEach(f=>pool.push({key:'custom:'+f.id,n:f.name,r:f.risk,t:f.triggers,cat:'Personale'}));
+  return pool;
+}
+
+// RICERCA PASTO
+let acIdx=-1;
+function onFoodSearch(val){
+  acIdx=-1;
+  const ac=document.getElementById('food-ac');
+  const clr=document.getElementById('food-search-clear');
+  if(clr)clr.className='food-search-clear'+(val?' vis':'');
+  const q=val.trim().toLowerCase();
+  if(!q){ac.className='food-ac';return;}
+  const pool=getSearchPool();
+  const matches=pool.filter(d=>d.n.toLowerCase().includes(q)&&!selItems[d.key]).slice(0,10);
+  if(!matches.length){ac.className='food-ac';return;}
+  ac.innerHTML=matches.map((d,i)=>{
+    const riskLabel=d.r>0?`<span class="ac-item-risk" style="color:${RTC[d.r]}">${RL[d.r]}</span>`:'';
+    return`<div class="ac-item" data-key="${d.key}" data-idx="${i}" onmousedown="selectFoodAc('${escQ(d.key)}')">${rdot(d.r)}<span class="ac-item-name">${d.n}</span><span class="ac-item-cat">${d.cat}</span>${riskLabel}</div>`;
+  }).join('');
+  ac.className='food-ac vis';
+}
+function onFoodSearchKey(e){
+  const ac=document.getElementById('food-ac');const items=ac.querySelectorAll('.ac-item');
+  if(e.key==='ArrowDown'){e.preventDefault();acIdx=Math.min(acIdx+1,items.length-1);highlightAc(items);}
+  else if(e.key==='ArrowUp'){e.preventDefault();acIdx=Math.max(acIdx-1,0);highlightAc(items);}
+  else if(e.key==='Enter'&&acIdx>=0){e.preventDefault();selectFoodAc(items[acIdx].dataset.key);}
+  else if(e.key==='Escape'){ac.className='food-ac';}
+}
+function highlightAc(items){items.forEach((el,i)=>el.className='ac-item'+(i===acIdx?' hl':''));}
+function selectFoodAc(key){
+  selItems[key]=true;renderSelTags();updateTriggers();
+  const inp=document.getElementById('food-search');if(inp){inp.value='';onFoodSearch('');}
+  syncChipState(key,true);
+}
+function clearFoodSearch(){const inp=document.getElementById('food-search');if(inp)inp.value='';onFoodSearch('');}
+function removeItem(key){delete selItems[key];renderSelTags();updateTriggers();syncChipState(key,false);}
+function syncChipState(key,on){
+  const parts=key.split(':');const type=parts[0],ref=parts.slice(1).join(':');
+  let chipId;
+  if(type==='dish')chipId='gc-piatti-'+escId(ref);
+  else if(type==='custom'){const cf=customFoods.find(f=>f.id===ref);if(cf)chipId='cf-chip-'+ref;}
+  else chipId='sg-'+type+'-'+escId(ref);
+  const el=document.getElementById(chipId);
+  if(el){const isCustom=el.className.includes('custom');el.className='fchip'+(isCustom?' custom':'')+(on?' on':'');}
+}
+document.addEventListener('click',function(e){
+  const ac=document.getElementById('food-ac');
+  if(ac&&!ac.contains(e.target)&&e.target.id!=='food-search')ac.className='food-ac';
+});
+function renderSelTags(){
+  const el=document.getElementById('sel-tags');
+  const keys=Object.keys(selItems);
+  el.innerHTML=keys.map(k=>{const d=getItemData(k);return`<span class="sel-tag">${rdot(d.r)}<span>${d.n}</span><span class="sel-tag-del" onclick="removeItem('${escQ(k)}')">&#215;</span></span>`;}).join('');
+}
+
+// CHIPS CATEGORIE
+function togGenre(g){
+  const el=document.getElementById('gc-'+g),ar=document.getElementById('ga-'+g);if(!el)return;
+  const open=el.style.display!=='none';
+  el.style.display=open?'none':'flex';
+  if(ar)ar.className='genre-arrow'+(open?'':' open');
+}
+function buildGenreChips(){
+  Object.entries(SINGLES).forEach(([genre,items])=>{
+    const el=document.getElementById('gc-'+genre);if(!el)return;
+    el.innerHTML=items.map(f=>`<div class="fchip" id="sg-${genre}-${escId(f.n)}" onclick="togSingle('${genre}','${escQ(f.n)}')">${rdot(f.r)}${f.n}</div>`).join('');
+  });
+  const elP=document.getElementById('gc-piatti');if(elP){
+    elP.innerHTML=DISHES.map(d=>`<div class="fchip" id="gc-piatti-${escId(d.n)}" onclick="togDish('${escQ(d.n)}')">${rdot(d.r)}${d.n}</div>`).join('');
+  }
+}
+function togSingle(genre,name){
+  const key=genre+':'+name;
+  if(selItems[key]){delete selItems[key];}else{selItems[key]=true;}
+  const el=document.getElementById('sg-'+genre+'-'+escId(name));
+  if(el)el.className='fchip'+(selItems[key]?' on':'');
+  updateGenreCount(genre);renderSelTags();updateTriggers();
+}
+function togDish(name){
+  const key='dish:'+name;
+  if(selItems[key]){delete selItems[key];}else{selItems[key]=true;}
+  const el=document.getElementById('gc-piatti-'+escId(name));
+  if(el)el.className='fchip'+(selItems[key]?' on':'');
+  updateGenreCount('piatti');renderSelTags();updateTriggers();
+}
+function updateGenreCount(genre){
+  let cnt=0;
+  if(genre==='piatti')cnt=Object.keys(selItems).filter(k=>k.startsWith('dish:')).length;
+  else cnt=Object.keys(selItems).filter(k=>k.startsWith(genre+':')).length;
+  const el=document.getElementById('gc-cnt-'+genre);if(el)el.textContent=cnt>0?String(cnt):'';
+}
+function buildCustomGenreChips(){
+  const promoted=customFoods.filter(f=>f.promoted);
+  const el=document.getElementById('gc-miei'),wrap=document.getElementById('genre-miei');
+  if(!promoted.length){if(wrap)wrap.style.display='none';return;}
+  if(wrap)wrap.style.display='block';
+  el.innerHTML=promoted.map(f=>`<div class="fchip custom" id="cf-chip-${f.id}" onclick="togCustom('${f.id}')">${rdot(f.risk)}${f.name}</div>`).join('');
+}
+function togCustom(id){
+  const key='custom:'+id;
+  if(selItems[key]){delete selItems[key];}else{selItems[key]=true;}
+  const el=document.getElementById('cf-chip-'+id);
+  if(el)el.className='fchip custom'+(selItems[key]?' on':'');
+  renderSelTags();updateTriggers();
+}
+
+// CTG -- Carico Trigger Giornaliero
+const CTG_SOGLIA_VERDE=6,CTG_SOGLIA_GIALLA=9;
+function getSelectedDateStr(){var v=document.getElementById('pasto-date');return v&&v.value?v.value:new Date().toISOString().slice(0,10);}
+function calcCtgSaved(){var d=getSelectedDateStr();return entries.filter(function(e){return e.ts.slice(0,10)===d;}).reduce(function(s,e){return s+(e.maxRisk||0);},0);}
+function updateCtgBar(){
+  var saved=calcCtgSaved(),cur=computeMaxRisk(),total=saved+cur;
+  var bar=document.getElementById('ctg-bar'),valEl=document.getElementById('ctg-value'),fillEl=document.getElementById('ctg-fill'),mealsEl=document.getElementById('ctg-meals'),warnEl=document.getElementById('ctg-warning');
+  if(!bar)return;
+  var pct=Math.min(total/12*100,100);
+  var fillColor,barClass,warnClass='',warnMsg='';
+  if(cur>=4){fillColor='#E24B4A';barClass='ctg-red';warnClass='warn-red';warnMsg='Alimento ad alto rischio (>=4) -- reazione possibile anche con CTG basso.';}
+  else if(total<=CTG_SOGLIA_VERDE){fillColor='#5DCAA5';barClass='ctg-green';}
+  else if(total<=CTG_SOGLIA_GIALLA){fillColor='#EF9F27';barClass='ctg-yellow';warnClass='warn-yellow';warnMsg='CTG in zona gialla -- considera se questo pasto e necessario o riduci il rischio.';}
+  else{fillColor='#E24B4A';barClass='ctg-red';warnClass='warn-red';warnMsg='CTG superato -- rischio reazione elevato. Scegli alimenti 0-1 o rimanda il pasto.';}
+  bar.className='ctg-bar '+barClass;
+  valEl.textContent=total+' / '+CTG_SOGLIA_GIALLA;valEl.style.color=fillColor;
+  fillEl.style.width=pct+'%';fillEl.style.background=fillColor;
+  var d=getSelectedDateStr(),todayE=entries.filter(function(e){return e.ts.slice(0,10)===d;});
+  if(!todayE.length&&cur===0){
+    mealsEl.innerHTML='<span style="font-size:10px;color:var(--tx3)">Nessun pasto registrato oggi</span>';
+  } else {
+    var dots=todayE.map(function(e){
+      var ml=e.meal?e.meal.slice(0,3):e.ts.slice(11,16);
+      var rc=RC[e.maxRisk]||'#ccc';
+      return '<span class="ctg-meal-dot"><span style="width:6px;height:6px;border-radius:50%;background:'+rc+';display:inline-block"></span>'+ml+'<span class="ctg-meal-r" style="color:'+rc+'">+'+e.maxRisk+'</span></span>';
+    });
+    if(cur>0){var rc=RC[cur]||'#ccc';dots.push('<span class="ctg-meal-dot" style="opacity:.7"><span style="width:6px;height:6px;border-radius:50%;background:'+rc+';display:inline-block;border:1px dashed '+rc+'"></span>ora<span class="ctg-meal-r" style="color:'+rc+'">+'+cur+'</span></span>');}
+    mealsEl.innerHTML=dots.join('')||'<span style="font-size:10px;color:var(--tx3)">Nessun pasto</span>';
+  }
+  if(warnClass){warnEl.className='ctg-warning show '+warnClass;warnEl.textContent=warnMsg;}
+  else{warnEl.className='ctg-warning';}
+}
+
+function updateTriggers(){
+  const trigs=computeAllTriggers(),mr=computeMaxRisk();
+  const el=document.getElementById('trig-display'),rb=document.getElementById('rbanner');
+  if(!trigs.length){el.innerHTML='<div class="notrig">Seleziona alimenti per vedere i trigger</div>';rb.style.display='none';return;}
+  el.innerHTML=`<div class="tblock">${trigs.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A',d:''};return`<div class="tchip" style="background:${s.bg};color:${s.c}"><span class="tname">${t}</span><span class="tdesc">${s.d}</span></div>`;}).join('')}</div>`;
+  rb.style.display='block';rb.style.background=RBG[mr];rb.style.color=RTC[mr];
+  rb.textContent='Profilo di rischio pasto: '+RL[mr];updateCtgBar();
+}
+
+function setMeal(m){
+  selMeal=selMeal===m?null:m;
+  const map={col:'Colazione',pra:'Pranzo',cen:'Cena',spu:'Spuntino',snk:'Snack'};
+  Object.entries(map).forEach(([k,v])=>{const el=document.getElementById('mb-'+k);if(el)el.className='mbtn'+(selMeal===v?' on':'');});
+}
+function initDatePicker(){const inp=document.getElementById('pasto-date');if(inp)inp.value=new Date().toISOString().slice(0,10);}
+function buildSyms(){document.getElementById('sym-chips').innerHTML=SYMS.map(s=>`<div class="schip" id="sc-${s.replace(/ /g,'_')}" onclick="togSym('${s}')">${s}</div>`).join('');}
+function togSym(s){const k=s.replace(/ /g,'_');selSym[s]?delete selSym[s]:(selSym[s]=true);document.getElementById('sc-'+k).className='schip'+(selSym[s]?' on':'');}
+function buildSevs(){document.getElementById('sev-chips').innerHTML=SEVS.map((s,i)=>`<div class="sevchip" id="sv${i}" onclick="togSev('${s}',${i})">${s}</div>`).join('');}
+function togSev(s,i){SEVS.forEach((_,j)=>{const e=document.getElementById('sv'+j);if(e){e.className='sevchip';e.style.cssText='';}});if(selSev===s){selSev=null;return;}selSev=s;const e=document.getElementById('sv'+i),ss=SS[i];e.style.background=ss.bg;e.style.color=ss.c;e.style.borderColor=ss.c;}
+
+function saveEntry(){
+  const names=getAllSelectedNames();
+  if(!names.length){const el=document.getElementById('sel-tags');el.style.outline='2px solid #E24B4A';el.style.borderRadius='8px';setTimeout(()=>{el.style.outline='';},1500);return;}
+  const dateVal=document.getElementById('pasto-date').value;
+  const ts=dateVal?new Date(dateVal+'T'+new Date().toTimeString().slice(0,8)).toISOString():new Date().toISOString();
+  entries.unshift({id:Date.now(),foods:names,triggers:computeAllTriggers(),maxRisk:computeMaxRisk(),symptoms:Object.keys(selSym),severity:selSev,meal:selMeal,reactionTime:document.getElementById('react-time').value,note:document.getElementById('note-inp').value.trim(),ts});
+  saveData();resetPasto();toast('Pasto salvato ✓');
+}
+function resetPasto(){
+  selItems={};selSym={};selSev=null;
+  renderSelTags();
+  document.querySelectorAll('.fchip.on').forEach(el=>el.classList.remove('on'));
+  Object.keys(SINGLES).forEach(g=>updateGenreCount(g));
+  updateGenreCount('piatti');
+  updateTriggers();buildSyms();buildSevs();
+  document.getElementById('react-time').value='';document.getElementById('note-inp').value='';
+  clearFoodSearch();initDatePicker();updateCtgBar();
+}
+
+/* ══════════════════════════════
+   STORICO v4
+   ══════════════════════════════ */
+function setHistFilter(f){
+  histFilter=f;
+  ['all','reaction','high','instant'].forEach(x=>{
+    const el=document.getElementById('hf-'+x);if(!el)return;
+    el.className='hfbtn'+(x==='reaction'?' red':'')+(f===x?' on':'');
+  });
+  renderHist();
+}
+function onHistSearch(val){
+  histSearchQuery=val.trim().toLowerCase();
+  const clr=document.getElementById('hist-search-clear');
+  if(clr)clr.className='hist-search-clear'+(val?' vis':'');
+  renderHist();
+}
+function clearHistSearch(){
+  const inp=document.getElementById('hist-search');if(inp)inp.value='';
+  histSearchQuery='';
+  const clr=document.getElementById('hist-search-clear');if(clr)clr.className='hist-search-clear';
+  renderHist();
+}
+
+function entryMatchesFilter(e){
+  if(histFilter==='reaction'&&(!e.symptoms||e.symptoms.length===0))return false;
+  if(histFilter==='high'&&(e.maxRisk||0)<4)return false;
+  if(histFilter==='instant'&&(!e.reactionTime||!e.reactionTime.includes('Istantanea')))return false;
+  if(histSearchQuery){
+    const hay=e.foods.join(' ').toLowerCase()+' '+(e.note||'').toLowerCase();
+    if(!hay.includes(histSearchQuery))return false;
+  }
+  return true;
+}
+
+function renderHist(){
+  const el=document.getElementById('hist-list');
+  if(!entries.length){el.innerHTML='<div class="empty">Nessuna voce ancora.<br>Registra il primo pasto.</div>';drawSparkline();return;}
+  drawSparkline();
+
+  const filtered=entries.filter(entryMatchesFilter);
+  const rcEl=document.getElementById('hist-result-count');
+  if(histFilter!=='all'||histSearchQuery){
+    rcEl.style.display='block';
+    rcEl.textContent=filtered.length+' risultati su '+entries.length+' pasti';
+  }else{
+    rcEl.style.display='none';
+  }
+
+  if(!filtered.length){el.innerHTML='<div class="empty">Nessun pasto corrisponde<br>al filtro selezionato.</div>';return;}
+
+  const G={};filtered.forEach(e=>{const d=new Date(e.ts).toDateString();(G[d]=G[d]||[]).push(e);});
+  el.innerHTML=Object.entries(G).map(([dayStr,items])=>{
+    const maxR=Math.max(...items.map(e=>e.maxRisk||0));
+    const hasSym=items.some(e=>e.symptoms&&e.symptoms.length>0);
+    const symCount=items.reduce((a,e)=>(e.symptoms?a+e.symptoms.length:a),0);
+    const riskStyle=maxR>0?`background:${RBG[maxR]};color:${RTC[maxR]}`:'background:var(--bg2);color:var(--tx3)';
+    const dayId='day-'+escId(dayStr);
+    return`<div>
+      <div class="dayhdr" onclick="togDay('${dayId}')">
+        <span class="dayhdr-date">${fmtD(items[0].ts)}</span>
+        ${maxR>0?`<span class="dayhdr-risk" style="${riskStyle}">${RL[maxR]}</span>`:''}
+        ${hasSym?`<span class="dayhdr-sym">&#128276; ${symCount}</span>`:''}
+        <span class="dayhdr-arrow" id="arr-${dayId}">&#9658;</span>
+      </div>
+      <div class="day-entries" id="${dayId}" style="display:none">
+        ${items.map(e=>{
+          const si=e.severity?parseInt(e.severity[0])-1:-1,ss=si>=0?SS[si]:null;
+          const mealColor=e.meal&&MEAL_COLORS[e.meal]?MEAL_COLORS[e.meal]:'#9a9a9a';
+          const hasReaction=e.symptoms&&e.symptoms.length>0;
+          const riskBadge=e.maxRisk>0?`<span class="entry-risk-badge" style="background:${RBG[e.maxRisk]};color:${RTC[e.maxRisk]}">${e.maxRisk}</span>`:'';
+          const symIcon=hasReaction?'<span class="entry-sym-icon">&#128276;</span>':'';
+          return`<div class="entry${hasReaction?' has-reaction':''}" id="entry-${e.id}">
+            <div class="entry-summary" onclick="togEntry(${e.id})">
+              <span class="entry-meal-dot" style="background:${mealColor}" title="${e.meal||''}"></span>
+              <span class="entry-foods-short" title="${e.foods.join(', ')}">${e.foods.join(', ')}</span>
+              <span class="entry-badges">${riskBadge}${symIcon}</span>
+              <span class="entry-time">${fmtT(e.ts).split(' ').pop()}</span>
+            </div>
+            <div class="entry-detail" id="detail-${e.id}">
+              ${e.meal?`<div style="font-size:10px;color:var(--blue);font-weight:600;margin-bottom:3px">${e.meal}</div>`:''}
+              ${e.reactionTime?`<div class="ereact">Reazione: ${e.reactionTime}</div>`:''}
+              <div class="etags">
+                ${(e.triggers||[]).map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A'};return`<span class="etag" style="background:${s.bg};color:${s.c}">${t}</span>`;}).join('')}
+                ${(e.symptoms||[]).map(s=>`<span class="etag" style="background:#FCEBEB;color:#A32D2D">${s}</span>`).join('')}
+                ${ss?`<span class="etag" style="background:${ss.bg};color:${ss.c}">${e.severity}</span>`:''}
+                ${e.maxRisk>0?`<span class="etag" style="background:${RBG[e.maxRisk]};color:${RTC[e.maxRisk]}">Rischio ${RL[e.maxRisk]}</span>`:''}
+              </div>
+              ${e.note?`<div class="enote">${e.note}</div>`:''}
+              <div id="annota-panel-${e.id}"></div>
+              <div class="eactions">
+                <button class="annotabtn" onclick="event.stopPropagation();openAnnota(${e.id})">+ annota</button>
+                <button class="delbtn" onclick="event.stopPropagation();delE(${e.id})">rimuovi</button>
+              </div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function togDay(dayId){
+  const el=document.getElementById(dayId),arr=document.getElementById('arr-'+dayId);if(!el)return;
+  const open=el.style.display!=='none';
+  el.style.display=open?'none':'block';
+  if(arr)arr.className='dayhdr-arrow'+(open?'':' open');
+}
+function togEntry(id){
+  const det=document.getElementById('detail-'+id);if(!det)return;
+  det.className='entry-detail'+(det.className.includes('vis')?'':' vis');
+}
+function openAnnota(id){
+  const el=document.getElementById('annota-panel-'+id);if(!el)return;
+  if(el.innerHTML){el.innerHTML='';const _el865=document.getElementById('entry-'+id);if(_el865)_el865.classList.remove('editing');return;}
+  const e=entries.find(x=>x.id===id);if(!e)return;
+  const symHtml=SYMS.map(s=>{const on=(e.symptoms||[]).includes(s);return`<div class="schip${on?' on':''}" id="ann-sc-${id}-${s.replace(/ /g,'_')}" onclick="annTogSym(${id},'${s}')">${s}</div>`;}).join('');
+  const sevHtml=SEVS.map((s,i)=>{const on=e.severity===s;const style=on?`style="background:${SS[i].bg};color:${SS[i].c};border-color:${SS[i].c}"`:'';return`<div class="sevchip" id="ann-sv-${id}-${i}" onclick="annTogSev(${id},'${s}',${i})" ${style}>${s}</div>`;}).join('');
+  el.innerHTML=`<div class="annota-panel"><div class="lbl" style="margin-bottom:6px">Sintomi</div><div class="chips" style="margin-bottom:8px">${symHtml}</div><div class="lbl" style="margin-bottom:6px">Gravità</div><div class="chips" style="margin-bottom:8px">${sevHtml}</div><div class="lbl" style="margin-bottom:4px">Note</div><input class="inp" id="ann-note-${id}" value="${(e.note||'').replace(/"/g,'&quot;')}" placeholder="annotazione..." style="margin-bottom:8px"/><div style="display:flex;gap:8px"><button class="annota-save" onclick="saveAnnota(${id})">Salva</button><button class="annota-cancel" onclick="openAnnota(${id})">Annulla</button></div></div>`;
+  const _el870=document.getElementById('entry-'+id);if(_el870)_el870.classList.add('editing');
+}
+function annTogSym(id,s){const e=entries.find(x=>x.id===id);if(!e)return;if(!e.symptoms)e.symptoms=[];const idx=e.symptoms.indexOf(s);if(idx>=0)e.symptoms.splice(idx,1);else e.symptoms.push(s);const el=document.getElementById('ann-sc-'+id+'-'+s.replace(/ /g,'_'));if(el)el.className='schip'+(e.symptoms.includes(s)?' on':'');}
+function annTogSev(id,s,i){const e=entries.find(x=>x.id===id);if(!e)return;e.severity=e.severity===s?null:s;SEVS.forEach((_,j)=>{const el=document.getElementById('ann-sv-'+id+'-'+j);if(el){el.style.cssText='';if(j===i&&e.severity===s){el.style.background=SS[i].bg;el.style.color=SS[i].c;el.style.borderColor=SS[i].c;}}});}
+function saveAnnota(id){const e=entries.find(x=>x.id===id);if(!e)return;const noteEl=document.getElementById('ann-note-'+id);if(noteEl)e.note=noteEl.value.trim();saveData();openAnnota(id);renderHist();toast('Annotazione salvata ✓');}
+function delE(id){entries=entries.filter(e=>e.id!==id);saveData();renderHist();}
+
+function drawSparkline(){
+  const wrap=document.getElementById('hist-sparkline');
+  const canvas=document.getElementById('sparkline-canvas');
+  if(!canvas||entries.length<2){if(wrap)wrap.style.display='none';return;}
+  wrap.style.display='block';
+  const days=14;const now=new Date();const dayData=[];
+  for(let i=days-1;i>=0;i--){
+    const d=new Date(now);d.setDate(d.getDate()-i);
+    const ds=d.toDateString();
+    const de=entries.filter(e=>new Date(e.ts).toDateString()===ds);
+    const maxR=de.length?Math.max(...de.map(e=>e.maxRisk||0)):null;
+    const hasSym=de.some(e=>e.symptoms&&e.symptoms.length>0);
+    dayData.push({date:d,maxR,hasSym});
+  }
+  const DPR=window.devicePixelRatio||1;
+  const W=canvas.parentElement.clientWidth-24||340;
+  const H=44;
+  canvas.width=W*DPR;canvas.height=H*DPR;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');ctx.scale(DPR,DPR);
+  const barW=Math.floor(W/days)-2;const maxH=H-16;
+  dayData.forEach((d,i)=>{
+    const x=i*(W/days);
+    if(d.maxR!=null&&d.maxR>0){
+      const h=Math.max(4,(d.maxR/5)*maxH);
+      ctx.fillStyle=RBG[d.maxR]||'#E1F5EE';
+      ctx.fillRect(x+1,H-h-14,barW,h);
+      ctx.fillStyle=RTC[d.maxR]||'#3B6D11';
+      ctx.font=`bold 9px -apple-system,sans-serif`;ctx.textAlign='center';
+      ctx.fillText(String(d.maxR),x+1+barW/2,H-h-16);
+      // pallino reazione
+      if(d.hasSym){ctx.fillStyle='#E24B4A';ctx.beginPath();ctx.arc(x+1+barW/2,H-h-20,2.5,0,Math.PI*2);ctx.fill();}
+    }
+    if(i%3===0||i===days-1){
+      ctx.fillStyle='#999';ctx.font=`8px -apple-system,sans-serif`;ctx.textAlign='center';
+      ctx.fillText(fmtDateShort(d.date),x+1+barW/2,H-2);
+    }
+  });
+}
+
+/* ══════════════════════════════
+   STATO v4 — con riferimenti ai pasti vicini
+   ══════════════════════════════ */
+function setMomento(m){
+  statoMomento=m;
+  document.getElementById('smb-giorno').className='momento-btn'+(m===0?' on':'');
+  document.getElementById('smb-notte').className='momento-btn'+(m===1?' on':'');
+  document.getElementById('momento-hint').textContent=m===0?'Valutazione diurna corrente':'Valutazione notturna / al risveglio';
+  buildStatoInput();
+}
+function buildStatoInput(){
+  var sel=getStoSel();
+  buildRbtns('rbtn-poli-sx','poli_sx','#378ADD');
+  buildRbtns('rbtn-poli-dx','poli_dx','#378ADD');
+  buildRbtns('rbtn-asma','asma','#EF9F27');
+  buildRbtns('rbtn-dermatosi','dermatosi','#9B30FF');
+  updatePoliAvg();
+}
+function buildRbtns(containerId,key,color){
+  var el=document.getElementById(containerId);
+  if(!el)return;
+  var sel=getStoSel();
+  var html='';
+  for(var v=1;v<=5;v++){
+    var active=sel[key]===v;
+    var style=active?'background:'+color+';color:white;border-color:'+color+';':'';
+    html+='<button class="rbtn" data-key="'+key+'" data-val="'+v+'" data-color="'+color+'" style="'+style+'" onclick="togRbtn(this)">'+v+'</button>';
+  }
+  el.innerHTML=html;
+}
+function togRbtn(btn){
+  var key=btn.dataset.key,val=parseInt(btn.dataset.val),color=btn.dataset.color;
+  var sel=getStoSel();
+  sel[key]=(sel[key]===val)?null:val;
+  // Refresh only this group
+  var containerId='rbtn-'+key.replace('_','-');
+  buildRbtns(containerId,key,color);
+  if(key==='poli_sx'||key==='poli_dx')updatePoliAvg();
+}
+function updatePoliAvg(){
+  var sel=getStoSel();
+  var hint=document.getElementById('poli-avg');if(!hint)return;
+  var sx=sel.poli_sx,dx=sel.poli_dx;
+  if(sx!=null&&dx!=null)hint.textContent='Media: '+((sx+dx)/2).toFixed(1)+'/5 \u2014 sx '+sx+' \u00b7 dx '+dx;
+  else if(sx!=null)hint.textContent='Sinistro: '+sx+'/5 (destro non ancora valutato)';
+  else if(dx!=null)hint.textContent='Destro: '+dx+'/5 (sinistro non ancora valutato)';
+  else hint.textContent='';
+}
+function saveStato(){
+  var sG=statoG,sN=statoN;
+  var hasG=sG.poli_sx!=null||sG.poli_dx!=null||sG.asma!=null||sG.dermatosi!=null;
+  var hasN=sN.poli_sx!=null||sN.poli_dx!=null||sN.asma!=null||sN.dermatosi!=null;
+  if(!hasG&&!hasN){
+    var el=document.getElementById('vstato');
+    el.style.outline='2px solid #E24B4A';el.style.borderRadius='8px';
+    setTimeout(function(){el.style.outline='';el.style.borderRadius='';},1500);return;
+  }
+  function avg2(a,b){if(a==null&&b==null)return null;if(a==null)return b;if(b==null)return a;return Math.round((a+b)*10/2)/10;}
+  var entry={
+    id:Date.now(),ts:new Date().toISOString(),
+    poli_sx_g:sG.poli_sx, poli_dx_g:sG.poli_dx,
+    asma_g:sG.asma, dermatosi_g:sG.dermatosi,
+    poli_sx_n:sN.poli_sx, poli_dx_n:sN.poli_dx,
+    asma_n:sN.asma, dermatosi_n:sN.dermatosi,
+    poliposi:avg2(sG.poli_sx,sG.poli_dx),
+    asma:sG.asma, dermatosi:sG.dermatosi,
+    note:document.getElementById('stato-note').value.trim()
+  };
+  statoEntries.push(entry);saveStatoData();
+  statoG={poli_sx:null,poli_dx:null,asma:null,dermatosi:null};
+  statoN={poli_sx:null,poli_dx:null,asma:null,dermatosi:null};
+  document.getElementById('stato-note').value='';
+  setMomento(0);
+  toast('Valutazione salvata \u2713');renderStato();
+}
+function calcTrend(vals){
+  if(!vals||vals.length<4)return null;
+  var h=Math.floor(vals.length/2);
+  var old=vals.slice(0,h),rec=vals.slice(h);
+  var aO=old.reduce(function(s,v){return s+v;},0)/old.length;
+  var aR=rec.reduce(function(s,v){return s+v;},0)/rec.length;
+  var d=aR-aO;
+  if(Math.abs(d)<0.3)return{a:'stab.',c:'#808080'};
+  return d>0?{a:'\u2191 aum.',c:'#E24B4A'}:{a:'\u2193 calo',c:'#5DCAA5'};
+}
+function getRecentReactionMeals(ts,hours){
+  var t=new Date(ts).getTime();
+  return entries.filter(function(e){
+    var et=new Date(e.ts).getTime();
+    return et<=t&&et>=(t-hours*3600000)&&e.symptoms&&e.symptoms.length>0;
+  });
+}
+function pMed(e,sfx){
+  var sx=e['poli_sx'+sfx],dx=e['poli_dx'+sfx];
+  if(sx==null&&dx==null)return null;
+  if(sx==null)return dx;if(dx==null)return sx;
+  return (sx+dx)/2;
+}
+function setSvgPeriod(days){
+  svgPeriodDays=days;
+  ['7','14','30','all'].forEach(function(k){
+    var el=document.getElementById('svgpb-'+k);
+    if(el)el.className='svgpbtn';
+  });
+  var activeId=days===7?'svgpb-7':days===14?'svgpb-14':days===30?'svgpb-30':'svgpb-all';
+  var activeEl=document.getElementById(activeId);
+  if(activeEl)activeEl.className='svgpbtn on';
+  renderStato();
+}
+function makeStatoSvg(){
+  var allSvg=statoEntries.slice();
+  if(svgPeriodDays>0&&allSvg.length>0){
+    var maxTsSvg=Math.max.apply(null,allSvg.map(function(e){return new Date(e.ts).getTime();}));
+    var cutoffSvg=new Date(maxTsSvg-svgPeriodDays*86400000);
+    allSvg=allSvg.filter(function(e){return new Date(e.ts)>=cutoffSvg;});
+  }
+  var N=allSvg.length,recent=allSvg.slice();
+  if(N<2)return '<p style="font-size:12px;color:var(--tx3);text-align:center;padding:16px 0">Registra almeno 2 valutazioni per il grafico</p>';
+  var W=370,H=172,ML=24,MT=18,MR=8,MB=24,CW=W-ML-MR,CH=H-MT-MB;
+  var xF=function(i){return ML+(N>1?i*CW/(N-1):CW/2);};
+  var yF=function(v){return MT+(5-v)/4*CH;};
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;display:block">';
+  for(var v=1;v<=5;v++){
+    var y=yF(v);
+    svg+='<line x1="'+ML+'" y1="'+y+'" x2="'+(W-MR)+'" y2="'+y+'" stroke="#ccc" stroke-width="0.5"'+(v===3?' stroke-dasharray="3,3"':'')+'/>';
+    svg+='<text x="'+(ML-4)+'" y="'+(y+3)+'" font-size="8" fill="#999" text-anchor="end">'+v+'</text>';
+  }
+  // helper: draw one series — one point per individual entry
+  function drawSeries(getV,color,dashed){
+    var hasAny=false;
+    for(var i=0;i<recent.length;i++){if(getV(recent[i])!=null){hasAny=true;break;}}
+    if(!hasAny)return;
+    var p='',open=false;
+    recent.forEach(function(d,i){
+      var v=getV(d);
+      if(v!=null){p+=open?'L'+xF(i)+','+yF(v):'M'+xF(i)+','+yF(v);open=true;}
+      // nulls don't reset open — bridge gap to next valid point
+    });
+    if(!p)return;
+    svg+='<path d="'+p+'" fill="none" stroke="'+color+'" stroke-width="'+(dashed?'1.2':'1.8')+'" stroke-linejoin="round"'+(dashed?' stroke-dasharray="4,3" opacity="0.75"':'')+'/>';
+    var r=dashed?3:2.5;
+    recent.forEach(function(d,i){
+      var v=getV(d);
+      if(v!=null){
+        svg+='<circle cx="'+xF(i)+'" cy="'+yF(v)+'" r="'+r+'" fill="'+color+'"';
+        if(dashed)svg+=' stroke="'+color+'" stroke-width="2" fill="white" opacity="1"';
+        svg+='/>';
+      }
+    });
+  }
+  // Day series (solid) — ogni entry individuale
+  drawSeries(function(d){return d.poliposi!=null?d.poliposi:pMed(d,'_g');},'#378ADD',false);
+  drawSeries(function(d){return d.asma_g!=null?d.asma_g:d.asma!=null?d.asma:null;},'#EF9F27',false);
+  drawSeries(function(d){return d.dermatosi_g!=null?d.dermatosi_g:d.dermatosi!=null?d.dermatosi:null;},'#9B30FF',false);
+  // Night series (dashed)
+  drawSeries(function(d){return pMed(d,'_n');},'#378ADD',true);
+  drawSeries(function(d){return d.asma_n!=null?d.asma_n:null;},'#EF9F27',true);
+  drawSeries(function(d){return d.dermatosi_n!=null?d.dermatosi_n:null;},'#9B30FF',true);
+  // Reaction markers
+  recent.forEach(function(d,i){
+    if(getRecentReactionMeals(d.ts,6).length>0){
+      var x=xF(i);
+      svg+='<line x1="'+x+'" y1="'+MT+'" x2="'+x+'" y2="'+(MT+CH)+'" stroke="#E24B4A" stroke-width="0.8" stroke-dasharray="2,2" opacity="0.4"/>';
+      svg+='<text x="'+x+'" y="'+(MT+8)+'" font-size="7" fill="#E24B4A" text-anchor="middle">R</text>';
+    }
+  });
+  // Date labels
+  var dateStep=Math.max(1,Math.floor(N/5));
+  recent.forEach(function(d,i){
+    if(i===0||i===N-1||i%dateStep===0){
+      var anchor=i===0?'start':i===N-1?'end':'middle';
+      svg+='<text x="'+xF(i)+'" y="'+(H-5)+'" font-size="8" fill="#999" text-anchor="'+anchor+'">'+new Date(d.ts).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'})+'</text>';
+    }
+  });
+  svg+='</svg>';
+  var leg='<div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:5px 0;font-size:10px;color:var(--tx2);padding:0 4px">';
+  var countPoliN=allSvg.filter(function(d){return pMed(d,'_n')!=null;}).length;
+  var countAsmaN=allSvg.filter(function(d){return d.asma_n!=null;}).length;
+  var countDermN=allSvg.filter(function(d){return d.dermatosi_n!=null;}).length;
+  var hasAnyNight=countPoliN>0||countAsmaN>0||countDermN>0;
+  [{c:'#378ADD',l:'Pol.',cnt:countPoliN},{c:'#EF9F27',l:'Asma',cnt:countAsmaN},{c:'#9B30FF',l:'Derm.',cnt:countDermN}].forEach(function(x){
+    leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:2px;background:'+x.c+';display:inline-block;border-radius:1px"></span>'+x.l+'</span> ';
+  });
+  if(hasAnyNight)leg+='<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:0;border-top:1.5px dashed #888;display:inline-block;opacity:.6"></span>notte</span> ';
+  leg+='<span style="display:flex;align-items:center;gap:3px"><b style="color:#E24B4A;font-size:9px">R</b>reazione 6h prima</span>';
+  leg+='</div>';
+  return svg+leg;
+}
+function setStatoPeriod(days){
+  statoPeriodDays=days;
+  ['7','14','30','all'].forEach(function(k){
+    var el=document.getElementById('scpb-'+k);
+    if(el)el.className='scpbtn';
+  });
+  var activeId=days===7?'scpb-7':days===14?'scpb-14':days===30?'scpb-30':'scpb-all';
+  var activeEl=document.getElementById(activeId);
+  if(activeEl)activeEl.className='scpbtn on';
+  drawStatoChart();
+}
+function filterStatoPeriod(arr){
+  if(!statoPeriodDays||!arr||!arr.length)return arr||[];
+  var maxTs=Math.max.apply(null,arr.map(function(e){return new Date(e.ts).getTime();}));
+  var cutoff=new Date(maxTs-statoPeriodDays*86400000);
+  return arr.filter(function(e){return new Date(e.ts)>=cutoff;});
+}
+function drawStatoChart(){
+  var box=document.getElementById('stato-chart-box');
+  var canvas=document.getElementById('stato-combined-chart');
+  var legEl=document.getElementById('stato-chart-legend');
+  if(!canvas||!box)return;
+  var filteredStato=filterStatoPeriod(statoEntries.slice());
+  var filteredEntries=filterStatoPeriod(entries.slice());
+  var allDates=new Set();
+  filteredStato.forEach(function(e){allDates.add(e.ts.slice(0,10));});
+  filteredEntries.forEach(function(e){allDates.add(e.ts.slice(0,10));});
+  var dates=[].concat(Array.from?Array.from(allDates):[]).sort();
+  if(dates.length<2){box.style.display='none';return;}
+  box.style.display='block';
+  var DPR=window.devicePixelRatio||1;
+  var W=canvas.parentElement.clientWidth-12||310;
+  var H=180;
+  canvas.width=W*DPR;canvas.height=H*DPR;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  var ctx=canvas.getContext('2d');ctx.scale(DPR,DPR);
+  var ML=26,MT=14,MR=8,MB=36,CW=W-ML-MR,CH=H-MT-MB;
+  var N=dates.length;
+  var xF=function(i){return ML+(N>1?i*CW/(N-1):CW/2);};
+  var yF=function(v){return MT+(5-v)/4*CH;};
+  ctx.fillStyle=getComputedStyle(canvas).getPropertyValue('--bg2')||'#f5f5f4';
+  ctx.fillRect(0,0,W,H);
+  for(var v=1;v<=5;v++){
+    ctx.strokeStyle='rgba(0,0,0,0.08)';ctx.lineWidth=0.5;
+    if(v===3){ctx.setLineDash([3,3]);}else{ctx.setLineDash([]);}
+    ctx.beginPath();ctx.moveTo(ML,yF(v));ctx.lineTo(W-MR,yF(v));ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#aaa';ctx.font='bold 8px -apple-system,sans-serif';ctx.textAlign='right';
+    ctx.fillText(String(v),ML-4,yF(v)+3);
+  }
+  // Stato lines (giorno)
+  CONDS.forEach(function(cond){
+    ctx.strokeStyle=cond.color;ctx.lineWidth=2.5;ctx.setLineDash([]);
+    ctx.beginPath();var started=false;
+    dates.forEach(function(date,i){
+      var es=filteredStato.filter(function(x){return x.ts.slice(0,10)===date;});
+      if(!es.length)return;
+      var d=es[es.length-1];
+      var val=d[cond.key+'_g']!=null?d[cond.key+'_g']:(d[cond.key]!=null?d[cond.key]:null);
+      if(cond.key==='poliposi') val=d.poliposi!=null?d.poliposi:null;
+      if(val==null)return;
+      if(!started){ctx.moveTo(xF(i),yF(val));started=true;}else ctx.lineTo(xF(i),yF(val));
+    });
+    ctx.stroke();
+    dates.forEach(function(date,i){
+      var es=filteredStato.filter(function(x){return x.ts.slice(0,10)===date;});
+      if(!es.length)return;
+      var d=es[es.length-1];
+      var val=d[cond.key+'_g']!=null?d[cond.key+'_g']:(d[cond.key]!=null?d[cond.key]:null);
+      if(cond.key==='poliposi') val=d.poliposi!=null?d.poliposi:null;
+      if(val==null)return;
+      ctx.fillStyle=cond.color;ctx.beginPath();ctx.arc(xF(i),yF(val),3,0,Math.PI*2);ctx.fill();
+    });
+  });
+  // Notte: poliposi (best night value per day across ALL entries)
+  function bestNightVal(es, keySx, keyDx){
+    for(var i=0;i<es.length;i++){
+      var sx=es[i][keySx],dx=es[i][keyDx];
+      if(sx!=null&&dx!=null)return(sx+dx)/2;
+      if(sx!=null)return sx;
+      if(dx!=null)return dx;
+    }
+    return null;
+  }
+  function bestNightSingle(es, key){
+    for(var i=0;i<es.length;i++){if(es[i][key]!=null)return es[i][key];}
+    return null;
+  }
+  // night series removed
+
+  // Rischio pasto — barre sottili sul fondo, colore attenuato
+  var riskColor='#8B5E00';
+  ctx.globalAlpha=0.35;
+  dates.forEach(function(date,i){
+    var de=filteredEntries.filter(function(e){return e.ts.slice(0,10)===date;});
+    if(!de.length)return;
+    var maxR=Math.max.apply(null,de.map(function(e){return e.maxRisk||0;}));
+    if(!maxR)return;
+    var x=xF(i),barW=Math.max(2,Math.floor(CW/dates.length*0.5));
+    var barH=(maxR/5)*CH;
+    ctx.fillStyle=riskColor;
+    ctx.fillRect(x-barW/2, MT+CH-barH, barW, barH);
+  });
+  ctx.globalAlpha=1;
+  // Marker reazione + barre rischio in un unico loop
+  dates.forEach(function(date,i){
+    var de=filteredEntries.filter(function(e){return e.ts.slice(0,10)===date;});
+    if(!de.length)return;
+    var hasReact=de.some(function(e){return e.symptoms&&e.symptoms.length>0;});
+    if(hasReact){
+      ctx.strokeStyle='#E24B4A';ctx.lineWidth=1;ctx.setLineDash([2,2]);ctx.globalAlpha=0.5;
+      ctx.beginPath();ctx.moveTo(xF(i),MT);ctx.lineTo(xF(i),MT+CH);ctx.stroke();
+      ctx.globalAlpha=1;ctx.setLineDash([]);
+      ctx.fillStyle='#E24B4A';ctx.font='bold 8px -apple-system,sans-serif';ctx.textAlign='center';
+      ctx.fillText('R',xF(i),MT-2);
+    }
+  });
+  // Assi date
+  var step=Math.max(1,Math.floor(N/6));
+  ctx.fillStyle='#888';ctx.font='8px -apple-system,sans-serif';
+  dates.forEach(function(date,i){
+    if(i===0||i===N-1||i%step===0){
+      ctx.textAlign='center';
+      ctx.fillText(date.slice(5).replace('-','/'),xF(i),H-MB+14);
+    }
+  });
+  // Legenda
+  var legHtml='';
+  CONDS.forEach(function(c){
+    legHtml+='<span style="display:flex;align-items:center;gap:3px"><span style="width:12px;height:2px;background:'+c.color+';display:inline-block;border-radius:1px"></span>'+c.label.split(' ')[0]+'</span>';
+  });
+  legHtml+='<span style="display:flex;align-items:center;gap:3px"><span style="width:12px;height:0;border-top:2px dashed '+riskColor+';display:inline-block"></span>Rischio pasto</span>';
+  // night series in legend - only per color if data exists
+  // notte rimossa dalla legenda canvas
+  legHtml+='<span style="display:flex;align-items:center;gap:3px"><b style="color:#E24B4A;font-size:9px">R</b>reazione</span>';
+  legEl.innerHTML=legHtml;
+}
+function exportChartStato(){
+  drawStatoChart();
+  var canvas=document.getElementById('stato-combined-chart');if(!canvas)return;
+  var link=document.createElement('a');
+  link.download='widal-grafico-'+new Date().toISOString().slice(0,10)+'.png';
+  link.href=canvas.toDataURL('image/png');
+  link.click();toast('Grafico salvato ✓');
+}
+function renderStato(){
+  var el=document.getElementById('stato-results');if(!statoEntries.length){el.innerHTML='';return;}
+  var html=makeStatoSvg();
+  if(statoEntries.length>=2){
+    html+='<div style="border:0.5px solid var(--bd);border-radius:var(--r);padding:10px 13px;margin-bottom:12px">';
+    // Poliposi
+    var pAll=statoEntries.filter(function(d){return d.poliposi!=null||d.poli_sx_g!=null||d.poli_dx_g!=null;});
+    if(pAll.length){
+      var last7=pAll.slice(-7);
+      var avgP=last7.reduce(function(s,d){var v=d.poliposi!=null?d.poliposi:((d.poli_sx_g||0)+(d.poli_dx_g||0))/2;return s+v;},0)/last7.length;
+      var tr=calcTrend(last7.map(function(d){return d.poliposi!=null?d.poliposi:((d.poli_sx_g||0)+(d.poli_dx_g||0))/2;}));
+      var withBoth=last7.filter(function(d){return d.poli_sx_g!=null&&d.poli_dx_g!=null;});
+      var asimStr='';
+      if(withBoth.length>=2){
+        var aSx=withBoth.reduce(function(s,d){return s+d.poli_sx_g;},0)/withBoth.length;
+        var aDx=withBoth.reduce(function(s,d){return s+d.poli_dx_g;},0)/withBoth.length;
+        var diff=aSx-aDx;
+        if(Math.abs(diff)>=0.5)asimStr='&nbsp;<span style="font-size:10px;color:#854F0B">\u25b2 asim. '+(diff>0?'sx':'dx')+' +'+Math.abs(diff).toFixed(1)+'</span>';
+      }
+      html+='<div style="display:flex;align-items:center;gap:8px;padding:3px 0">'
+        +'<span style="width:8px;height:8px;border-radius:50%;background:#378ADD;flex-shrink:0"></span>'
+        +'<span style="font-size:12px;font-weight:600;color:var(--tx);min-width:90px">Poliposi</span>'
+        +'<span style="font-size:12px;color:var(--tx2)">media: '+avgP.toFixed(1)+'/5'+asimStr+'</span>'
+        +(tr?'<span style="font-size:12px;color:'+tr.c+';margin-left:auto">'+tr.a+'</span>':'')+'</div>';
+    }
+    [{gk:'asma_g',fk:'asma',label:'Asma',color:'#EF9F27'},{gk:'dermatosi_g',fk:'dermatosi',label:'Dermatosi',color:'#9B30FF'}].forEach(function(c){
+      var vals=statoEntries.filter(function(d){return d[c.gk]!=null||d[c.fk]!=null;}).slice(-7).map(function(d){return d[c.gk]!=null?d[c.gk]:d[c.fk];});
+      if(!vals.length)return;
+      var avg=vals.reduce(function(s,v){return s+v;},0)/vals.length;
+      var tr=calcTrend(vals);
+      html+='<div style="display:flex;align-items:center;gap:8px;padding:3px 0">'
+        +'<span style="width:8px;height:8px;border-radius:50%;background:'+c.color+';flex-shrink:0"></span>'
+        +'<span style="font-size:12px;font-weight:600;color:var(--tx);min-width:90px">'+c.label+'</span>'
+        +'<span style="font-size:12px;color:var(--tx2)">media: '+avg.toFixed(1)+'/5</span>'
+        +(tr?'<span style="font-size:12px;color:'+tr.c+';margin-left:auto">'+tr.a+'</span>':'')+'</div>';
+    });
+    html+='</div>';
+  }
+  var rec=statoEntries.slice(-5).reverse();
+  html+='<div class="stit">Ultime valutazioni</div>';
+  html+=rec.map(function(e){
+    var rxM=getRecentReactionMeals(e.ts,6);
+    var rxH=rxM.length?'<div style="font-size:10px;color:#E24B4A;margin-top:3px">&#128276; Reazione 6h prec.: '+rxM.map(function(m){return m.foods.slice(0,2).join(', ');}).join(' / ')+'</div>':'';
+    var poliStr='';
+    var hasDayPoli=e.poli_sx_g!=null||e.poli_dx_g!=null;
+    var hasNightPoli=e.poli_sx_n!=null||e.poli_dx_n!=null;
+    if(hasDayPoli){
+      poliStr='g sx<b style="color:#378ADD"> '+(e.poli_sx_g!=null?e.poli_sx_g:'—')+'</b> dx<b style="color:#378ADD"> '+(e.poli_dx_g!=null?e.poli_dx_g:'—')+'</b>';
+    }else if(e.poliposi!=null){
+      poliStr='Pol.<b style="color:#378ADD"> '+e.poliposi+'</b>';
+    }
+    if(hasNightPoli){
+      poliStr+=(poliStr?' / ':'')+'n sx<b style="color:#7ab4e8"> '+(e.poli_sx_n!=null?e.poli_sx_n:'—')+'</b> dx<b style="color:#7ab4e8"> '+(e.poli_dx_n!=null?e.poli_dx_n:'—')+'</b>';
+    }
+    if(poliStr)poliStr='Pol. '+poliStr;
+    var asmaG=e.asma_g!=null?e.asma_g:e.asma;
+    var asmaStr='';
+    if(asmaG!=null)asmaStr='Asma g<b style="color:#EF9F27"> '+asmaG+'</b>';
+    if(e.asma_n!=null)asmaStr+=(asmaStr?' n':'Asma n')+'<b style="color:#f5c842"> '+e.asma_n+'</b>';
+    var dermG=e.dermatosi_g!=null?e.dermatosi_g:e.dermatosi;
+    var dermStr='';
+    if(dermG!=null)dermStr='Derm. g<b style="color:#9B30FF"> '+dermG+'</b>';
+    if(e.dermatosi_n!=null)dermStr+=(dermStr?' n':'Derm. n')+'<b style="color:#c060ff"> '+e.dermatosi_n+'</b>';
+    var row=[poliStr,asmaStr,dermStr].filter(Boolean).join(' \u00b7 ');
+    return '<div class="sentry"><div class="sentry-time">'+fmtT(e.ts)+'</div>'
+      +'<div style="flex:1"><div style="font-size:11px;color:var(--tx2);line-height:1.7">'+row+'</div>'
+      +(e.note?'<div class="sentry-note">'+e.note+'</div>':'')+rxH+'</div>'
+      +'<button class="delbtn" onclick="delStato('+e.id+')">&#10005;</button></div>';
+  }).join('');
+  el.innerHTML=html;
+  drawStatoChart();
+}
+function delStato(id){statoEntries=statoEntries.filter(function(e){return e.id!==id;});saveStatoData();renderStato();}
+
+/* ══════════════════════════════
+   ALIMENTI v4 — sezioni rischio + filtri
+   ══════════════════════════════ */
+function onAlimSearch(val){
+  alimSearchQuery=val.trim().toLowerCase();
+  const clr=document.getElementById('alim-search-clear');
+  if(clr)clr.className='alim-search-clear'+(val?' vis':'');
+  renderCustomFoods();
+}
+function clearAlimSearch(){
+  const inp=document.getElementById('alim-search');if(inp)inp.value='';
+  alimSearchQuery='';
+  const clr=document.getElementById('alim-search-clear');if(clr)clr.className='alim-search-clear';
+  renderCustomFoods();
+}
+function setTrigFilter(trig){
+  alimTrigFilter=trig;
+  document.querySelectorAll('.tfbtn').forEach(el=>{
+    const t=el.dataset.trig||null;
+    const color=t?(TS[t]||{c:'var(--bd2)'}).c:'var(--blue)';
+    el.className='tfbtn'+(alimTrigFilter===t?' on':'');
+    if(alimTrigFilter===t&&t)el.style.color=color;else el.style.color='';
+  });
+  renderCustomFoods();
+}
+function buildTrigFilterBar(){
+  // Raccoglie trigger presenti nei custom foods
+  const trigSet=new Set();customFoods.forEach(f=>f.triggers.forEach(t=>trigSet.add(t)));
+  const bar=document.getElementById('trig-filter-bar');if(!bar)return;
+  let html=`<button class="tfbtn on" id="tf-all" data-trig="" onclick="setTrigFilter(null)">Tutti</button>`;
+  [...trigSet].sort().forEach(t=>{
+    const s=TS[t]||{c:'#888'};
+    html+=`<button class="tfbtn" data-trig="${t}" onclick="setTrigFilter('${escQ(t)}')" style="border-color:${s.c};color:${s.c}">${t}</button>`;
+  });
+  bar.innerHTML=html;
+}
+
+function renderCustomFoods(){
+  const el=document.getElementById('custom-foods-list');
+  const cnt=document.getElementById('cf-count');
+  if(cnt)cnt.textContent=customFoods.length;
+
+  if(!customFoods.length){
+    el.innerHTML='<div class="notrig" style="padding:12px 0">Nessun alimento codificato ancora.<br>Usa "Analisi smart" qui sopra per aggiungerne.</div>';
+    return;
+  }
+
+  // Applica filtri
+  let filtered=[...customFoods];
+  if(alimSearchQuery)filtered=filtered.filter(f=>f.name.toLowerCase().includes(alimSearchQuery));
+  if(alimTrigFilter)filtered=filtered.filter(f=>f.triggers.includes(alimTrigFilter));
+
+  if(!filtered.length){
+    el.innerHTML='<div class="empty" style="padding:20px 0">Nessun alimento corrisponde al filtro.</div>';
+    return;
+  }
+
+  let html='';
+  RISK_SECTIONS.forEach(sec=>{
+    const items=filtered.filter(f=>f.risk>=sec.minR&&f.risk<=sec.maxR).sort((a,b)=>b.risk-a.risk||a.name.localeCompare(b.name,'it'));
+    if(!items.length)return;
+    const secId='rsec-'+sec.id;
+    html+=`<div class="risk-section">
+      <div class="risk-section-hdr" onclick="togRiskSection('${secId}')" style="background:${sec.bg}">
+        <span class="risk-section-arrow open" id="arr-${secId}">&#9658;</span>
+        <span class="risk-section-label" style="color:${sec.c}">${sec.label}</span>
+        <span class="risk-section-cnt" style="color:${sec.c}">${items.length}</span>
+      </div>
+      <div class="risk-section-body" id="${secId}">
+        ${items.map(f=>{
+          const tH=f.triggers.length?f.triggers.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A'};return`<span class="etag" style="background:${s.bg};color:${s.c};font-size:10px">${t}</span>`;}).join(''):'<span style="font-size:10px;color:var(--tx3)">nessun trigger</span>';
+          return`<div class="cf-item" onclick="togCfMeta('cf-meta-${f.id}')">
+            <div class="cf-info">
+              <div class="cf-row1">${rdot(f.risk)}<span class="cf-name">${f.name}</span>${f.promoted?'<span class="promo-badge">chip</span>':''}</div>
+              <div class="cf-tags-row">${tH}</div>
+              <div class="cf-meta" id="cf-meta-${f.id}">${f.rationale||''}${f.note?('<br><em>'+f.note+'</em>'):''}</div>
+            </div>
+            <div class="cf-actions" onclick="event.stopPropagation()">
+              <button class="cf-promo-btn" onclick="togglePromotion('${f.id}')" title="${f.promoted?'Rimuovi dai chip':'Aggiungi ai chip'}">${f.promoted?'&#9733;':'&#9734;'}</button>
+              <button class="cf-del-btn" onclick="deleteCustomFood('${f.id}')">&#10005;</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+function togCfMeta(id){const el=document.getElementById(id);if(el)el.className='cf-meta'+(el.className.includes('vis')?'':' vis');}
+function togRiskSection(id){
+  const el=document.getElementById(id),arr=document.getElementById('arr-'+id);if(!el)return;
+  const open=el.style.display!=='none'&&el.style.display!=='';
+  el.style.display=open?'none':'block';
+  if(arr)arr.className='risk-section-arrow'+(open?'':' open');
+}
+function togglePromotion(id){const cf=customFoods.find(f=>f.id===id);if(!cf)return;cf.promoted=!cf.promoted;saveCustomData();buildCustomGenreChips();renderCustomFoods();toast(cf.promoted?'Aggiunto ai chip ✓':'Rimosso dai chip');}
+function deleteCustomFood(id){customFoods=customFoods.filter(f=>f.id!==id);delete selItems['custom:'+id];saveCustomData();buildCustomGenreChips();buildTrigFilterBar();renderCustomFoods();toast('Alimento rimosso');}
+
+/* ── AI ANALYSIS ── */
+async function analyzeFood(){
+  const query=document.getElementById('smart-inp').value.trim();if(!query)return;
+  const portions=Math.max(1,parseInt(document.getElementById('smart-portions').value)||1);
+  const btn=document.getElementById('analyze-btn'),resEl=document.getElementById('ai-result');
+  btn.disabled=true;btn.textContent='...';resEl.style.display='block';
+  resEl.innerHTML='<div class="ai-loading"><span class="ai-spinner"></span>Analisi in corso...</div>';
+  currentAiResult=null;
+  const portNote=portions>1?'\n\nRicetta per '+portions+' porzioni: valuta rischio sulla SINGOLA porzione.':'';
+  const prompt=`${CLINICAL_PROFILE}\n\nRICHIESTA: Analizza: "${query}"${portNote}\n\nRispondi SOLO con JSON valido (niente altro, niente backtick, niente testo prima o dopo):\n{"name":"nome alimento","risk":0-5,"triggers":["Istamina"|"Salicilati"|"Ammine biogene"|"Tiramina"|"TRPA1"|"Istamina-lib."],"rationale":"2-3 frasi cliniche sul profilo MCAS","note":"avvertenze specifiche MCAS o stringa vuota","glycemic":{"ig":numero_0-100_o_null_se_non_applicabile,"cg":"basso|medio|alto","fiber":"solubile|insolubile|mista|assente","ins":"normale|elevato","note_g":"1 frase pratica: impatto glicemico, abbinamenti consigliati, effetto cottura se rilevante","conflict":"stringa non vuota SOLO se conflitto MCAS vs glicemia, altrimenti stringa vuota"}}`;
+  try{
+    if(!apiKey){resEl.innerHTML='<div style="font-size:13px;color:#A32D2D;padding:8px">&#128273; Chiave API non configurata.</div>';btn.disabled=false;btn.textContent='Analizza';return;}
+    const response=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:prompt}]})});
+    const data=await response.json();
+    if(!response.ok){resEl.innerHTML=`<div style="font-size:12px;color:#A32D2D;padding:8px">Errore API (${response.status})</div>`;btn.disabled=false;btn.textContent='Analizza';return;}
+    const raw=((data.content&&data.content.find(function(b){return b.type==='text'}))||{}).text||'';
+    let result;try{const match=raw.match(/\{[\s\S]*\}/);if(!match)throw new Error();result=JSON.parse(match[0]);}catch(e){resEl.innerHTML=`<div style="font-size:12px;color:#A32D2D;padding:8px">Parsing fallito.</div>`;btn.disabled=false;btn.textContent='Analizza';return;}
+    result.portions=portions;currentAiResult=result;renderAiResult(result);
+  }catch(err){resEl.innerHTML=`<div style="font-size:13px;color:#A32D2D;padding:8px">Errore: ${err.message}</div>`;}
+  finally{btn.disabled=false;btn.textContent='Analizza';}
+}
+function renderAiResult(r){
+  const resEl=document.getElementById('ai-result');
+  const riskColor=RTC[r.risk]||'#606060',riskBg=RBG[r.risk]||'transparent',riskLabel=RL[r.risk]||'--';
+  const tH=r.triggers.length?r.triggers.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A'};return`<span class="etag" style="background:${s.bg};color:${s.c};font-size:11px;padding:3px 9px">${t}</span>`;}).join(''):'<span style="font-size:11px;color:var(--tx3)">Nessun trigger</span>';
+  const portBadge=r.portions>1?` <span style="font-size:10px;color:var(--tx3)">(1/${r.portions} porz.)</span>`:'';
+  resEl.style.display='block';
+  var gH="";
+  if(r.glycemic){
+    var g=r.glycemic;
+    var igCls=g.ig<=55?"gbadge-low":g.ig<=69?"gbadge-med":"gbadge-high";
+    var cgCls=g.cg==="basso"?"gbadge-low":g.cg==="medio"?"gbadge-med":"gbadge-high";
+    var fibrCls=g.fiber==="solubile"?"gbadge-low":g.fiber==="mista"?"gbadge-med":"gbadge-neutral";
+    var insKey=g.ins||g.insulin_response||'';
+    var insCls=insKey==="normale"?"gbadge-low":"gbadge-high";
+    gH='<div class="ai-glycemic">'+
+      '<div class="ai-glycemic-title">&#128200; Profilo glicemico</div>'+
+      '<div class="ai-glycemic-badges">'+
+      '<div class="gbadge '+igCls+'"><span class="gbadge-val">'+g.ig+'</span><span class="gbadge-lbl">IG</span></div>'+
+      '<div class="gbadge '+cgCls+'"><span class="gbadge-val">'+g.cg+'</span><span class="gbadge-lbl">Carico Glic.</span></div>'+
+      '<div class="gbadge '+fibrCls+'"><span class="gbadge-val">'+g.fiber+'</span><span class="gbadge-lbl">Fibra</span></div>'+
+      '<div class="gbadge '+insCls+'"><span class="gbadge-val">'+g.insulin_response+'</span><span class="gbadge-lbl">Insulina</span></div>'+
+      '</div>'+
+      (g.note_g||g.note?('<div class="ai-glycemic-note">'+(g.note_g||g.note)+'</div>'):'')+ 
+      (g.conflict?('<div style="margin-top:6px;padding:6px 10px;border-radius:6px;background:#FDF5E0;font-size:11px;color:#7A5A00;font-weight:600">Conflitto MCAS/Glicemia: '+g.conflict+'</div>'):'')+ 
+      '</div>';
+  }
+  resEl.innerHTML=`<div class="ai-result-header"><div class="ai-food-name">${r.name}${portBadge}</div><div class="ai-risk-badge" style="background:${riskBg};color:${riskColor}">${r.risk}/5 -- ${riskLabel}</div></div><div class="ai-triggers-row">${tH}</div><div class="ai-rationale">${r.rationale}${r.note?'<br><em>'+r.note+'</em>':''}</div>`+gH+
+  `<div class="ai-action-row"><button class="ai-btn ai-btn-promo" onclick="saveAndPromote('${escQ(r.name)}')">&#9733; Salva + chip</button><button class="ai-btn ai-btn-save" onclick="saveCustomOnly('${escQ(r.name)}')">Salva DB</button><button class="ai-btn ai-btn-disc" onclick="discardAi()">&#215;</button></div>`;
+}
+function discardAi(){document.getElementById('ai-result').style.display='none';document.getElementById('smart-inp').value='';currentAiResult=null;}
+function saveCustomOnly(name){if(!currentAiResult)return;const r=currentAiResult;if(customFoods.find(f=>f.name.toLowerCase()===r.name.toLowerCase())){toast('Già presente');return;}customFoods.push({id:'cf'+Date.now(),name:r.name,risk:r.risk,triggers:r.triggers,rationale:r.rationale,note:r.note||'',promoted:false,ts:new Date().toISOString()});saveCustomData();buildCustomGenreChips();buildTrigFilterBar();renderCustomFoods();discardAi();toast('Salvato nel DB ✓');}
+function saveAndPromote(name){if(!currentAiResult)return;const r=currentAiResult;const existing=customFoods.find(f=>f.name.toLowerCase()===r.name.toLowerCase());if(existing){existing.promoted=true;}else{customFoods.push({id:'cf'+Date.now(),name:r.name,risk:r.risk,triggers:r.triggers,rationale:r.rationale,note:r.note||'',promoted:true,ts:new Date().toISOString()});}saveCustomData();buildCustomGenreChips();buildTrigFilterBar();renderCustomFoods();discardAi();toast('Salvato e promosso a chip ✓');}
+
+/* ── API KEY ── */
+function saveApiKey(){const inp=document.getElementById('apikey-inp');const raw=inp.value.trim();const val=(raw.includes('\u2022')||raw.includes('•'))?apiKey:raw;if(!val||!val.startsWith('sk-ant-')){showKeyStatus('Formato non valido. Deve iniziare con sk-ant-',false);return;}apiKey=val;try{localStorage.setItem('widal-apikey-v1',apiKey);}catch(e){}inp.value=maskKey(apiKey);inp.type='password';showKeyStatus('Chiave salvata ✓',true);}
+function maskKey(k){if(!k||k.length<12)return k;return k.slice(0,14)+'\u2022'.repeat(16)+k.slice(-4);}
+function toggleKeyVisibility(){const inp=document.getElementById('apikey-inp');if(inp.type==='password'){inp.type='text';if(apiKey)inp.value=apiKey;}else{inp.type='password';if(apiKey)inp.value=maskKey(apiKey);}}
+function showKeyStatus(msg,ok){const el=document.getElementById('apikey-status');el.textContent=msg;el.className='apikey-status '+(ok?'ok':'err');el.style.display='block';if(ok)setTimeout(()=>{el.style.display='none';},3000);}
+function initApiKeyUI(){const inp=document.getElementById('apikey-inp');if(!inp)return;if(apiKey){inp.value=maskKey(apiKey);inp.type='password';const box=document.getElementById('apikey-box');if(box)box.style.borderColor='var(--green)';showKeyStatus('Chiave presente ✓',true);}}
+
+/* ── ANALISI + GRAFICO ── */
+function drawCombinedChart(){
+  const box=document.getElementById('chart-box'),canvas=document.getElementById('combined-chart'),legEl=document.getElementById('chart-legend');
+  if(!canvas||!box)return;
+  const allDates=new Set();
+  statoEntries.slice(-30).forEach(e=>allDates.add(e.ts.slice(0,10)));
+  entries.slice(-30).forEach(e=>allDates.add(e.ts.slice(0,10)));
+  const dates=[...allDates].sort();
+  if(dates.length<2){box.style.display='none';return;}
+  box.style.display='block';
+  const DPR=window.devicePixelRatio||1;
+  const W=canvas.parentElement.clientWidth-20||340;
+  const H=200;
+  canvas.width=W*DPR;canvas.height=H*DPR;canvas.style.width=W+'px';canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');ctx.scale(DPR,DPR);
+  const ML=28,MT=14,MR=10,MB=36,CW=W-ML-MR,CH=H-MT-MB;
+  const N=dates.length;
+  const xF=i=>ML+(N>1?i*CW/(N-1):CW/2);
+  const yF=v=>MT+(5-v)/4*CH;
+  ctx.fillStyle='#f7f7f6';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(0,0,0,0.07)';ctx.lineWidth=0.5;
+  for(let v=1;v<=5;v++){ctx.beginPath();ctx.moveTo(ML,yF(v));ctx.lineTo(W-MR,yF(v));if(v===3)ctx.setLineDash([3,3]);else ctx.setLineDash([]);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#aaa';ctx.font='bold 8px -apple-system,sans-serif';ctx.textAlign='right';ctx.fillText(String(v),ML-4,yF(v)+3);}
+  CONDS.forEach(({key,color})=>{ctx.strokeStyle=color;ctx.lineWidth=2;ctx.setLineDash([]);ctx.beginPath();let started=false;dates.forEach((date,i)=>{const e=statoEntries.filter(x=>x.ts.slice(0,10)===date);if(!e.length)return;const val=e[e.length-1][key];if(val==null)return;if(!started){ctx.moveTo(xF(i),yF(val));started=true;}else ctx.lineTo(xF(i),yF(val));});ctx.stroke();dates.forEach((date,i)=>{const e=statoEntries.filter(x=>x.ts.slice(0,10)===date);if(!e.length)return;const val=e[e.length-1][key];if(val==null)return;ctx.fillStyle=color;ctx.beginPath();ctx.arc(xF(i),yF(val),3,0,Math.PI*2);ctx.fill();});});
+  const riskColor='#8B5E00';ctx.strokeStyle=riskColor;ctx.lineWidth=2;ctx.setLineDash([5,3]);ctx.beginPath();let rStarted=false;dates.forEach((date,i)=>{const de=entries.filter(e=>e.ts.slice(0,10)===date);if(!de.length)return;const maxR=Math.max(...de.map(e=>e.maxRisk||0));if(!rStarted){ctx.moveTo(xF(i),yF(maxR));rStarted=true;}else ctx.lineTo(xF(i),yF(maxR));});ctx.stroke();ctx.setLineDash([]);dates.forEach((date,i)=>{const de=entries.filter(e=>e.ts.slice(0,10)===date);if(!de.length)return;const maxR=Math.max(...de.map(e=>e.maxRisk||0));ctx.fillStyle=riskColor;ctx.beginPath();ctx.arc(xF(i),yF(maxR),3,0,Math.PI*2);ctx.fill();});
+  // Marker reazioni sul grafico combinato
+  dates.forEach((date,i)=>{const de=entries.filter(e=>e.ts.slice(0,10)===date&&e.symptoms&&e.symptoms.length>0);if(!de.length)return;ctx.strokeStyle='#E24B4A';ctx.lineWidth=1;ctx.setLineDash([2,2]);ctx.globalAlpha=0.4;ctx.beginPath();ctx.moveTo(xF(i),MT);ctx.lineTo(xF(i),MT+CH);ctx.stroke();ctx.globalAlpha=1;ctx.setLineDash([]);});
+  const step=N<=7?1:N<=14?2:3;ctx.fillStyle='#888';ctx.font='8px -apple-system,sans-serif';dates.forEach((date,i)=>{if(i%step===0||i===N-1){ctx.textAlign='center';ctx.fillText(date.slice(5).replace('-','/'),xF(i),H-MB+14);}});
+  ctx.fillStyle='#555';ctx.font='bold 9px -apple-system,sans-serif';ctx.textAlign='left';ctx.fillText('Diario Widal — Andamento',ML,10);
+  legEl.innerHTML=CONDS.map(({color,label})=>`<div class="chart-legend-item"><span class="chart-legend-line" style="background:${color}"></span>${label.split(' ')[0]}</div>`).join('')+`<div class="chart-legend-item"><span class="chart-legend-line" style="background:${riskColor};border-top:2px dashed ${riskColor};height:0;margin-top:1px"></span>Rischio pasto</div>`;
+}
+function exportChart(){drawCombinedChart();const canvas=document.getElementById('combined-chart');if(!canvas)return;const link=document.createElement('a');link.download='widal-grafico-'+new Date().toISOString().slice(0,10)+'.png';link.href=canvas.toDataURL('image/png');link.click();toast('Grafico salvato ✓');}
+function renderStats(){
+  const el=document.getElementById('stats-cnt');
+  if(entries.length<2){el.innerHTML='<div class="empty">Aggiungi qualche voce<br>per vedere le analisi.</div>';drawCombinedChart();return;}
+  const withS=entries.filter(e=>e.symptoms&&e.symptoms.length>0).length;
+  const fast=entries.filter(e=>e.reactionTime&&e.reactionTime.includes('Istantanea')).length;
+  const symC={},foodC={},trigC={};
+  entries.forEach(e=>{if(e.symptoms&&e.symptoms.length>0){e.foods.forEach(f=>foodC[f]=(foodC[f]||0)+1);e.symptoms.forEach(s=>symC[s]=(symC[s]||0)+1);(e.triggers||[]).forEach(t=>trigC[t]=(trigC[t]||0)+1);}});
+  const topS=Object.entries(symC).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const topF=Object.entries(foodC).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const topT=Object.entries(trigC).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const totalWithSym=entries.filter(e=>e.symptoms&&e.symptoms.length>0).length||1;
+  const mF=topF[0]&&topF[0][1]||1,mS=topS[0]&&topS[0][1]||1,mT=topT[0]&&topT[0][1]||1;
+  let html=`<div class="sg"><div class="sc"><div class="sv">${entries.length}</div><div class="sl">pasti registrati</div></div><div class="sc"><div class="sv">${withS}</div><div class="sl">con reazioni</div></div><div class="sc"><div class="sv">${Math.round(withS/entries.length*100)}%</div><div class="sl">tasso reazione</div></div><div class="sc"><div class="sv">${fast}</div><div class="sl">reazioni istantanee</div></div></div>`;
+  if(topF.length){html+='<div class="stit">Alimenti con più reazioni (%)</div>';topF.forEach(([f,n])=>{const pct=Math.round(n/entries.length*100);html+=`<div class="brow"><div class="bn" title="${f}">${f}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mF*100)}%;background:#E24B4A"><span class="bf-pct">${pct}%</span></div></div><div class="bc">${n}x</div></div>`;});}
+  if(topS.length){html+='<div class="stit">Sintomi più frequenti</div>';topS.forEach(([s,n])=>{const pct=Math.round(n/totalWithSym*100);html+=`<div class="brow"><div class="bn">${s}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mS*100)}%;background:#9B30FF"><span class="bf-pct">${pct}%</span></div></div><div class="bc">${n}x</div></div>`;});}
+  if(topT.length){html+='<div class="stit">Trigger più coinvolti</div>';topT.forEach(([t,n])=>{const c=(TS[t]||{c:'#888'}).c;const pct=Math.round(n/totalWithSym*100);html+=`<div class="brow"><div class="bn">${t}</div><div class="bt"><div class="bf" style="width:${Math.round(n/mT*100)}%;background:${c}"><span class="bf-pct">${pct}%</span></div></div><div class="bc">${n}x</div></div>`;});}
+  el.innerHTML=html;
+  drawCombinedChart();
+}
+
+/* ── EXPORT/IMPORT ── */
+function exportData(){const data={version:1,exported:new Date().toISOString(),entries,statoEntries,customFoods};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='widal-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);showSyncStatus('Esportato! Salvalo in iCloud Drive.','ok');}
+function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){try{const data=JSON.parse(e.target.result);if(!data.entries&&!data.statoEntries){showSyncStatus('File non valido.','err');return;}if(data.entries)entries=data.entries;if(data.statoEntries)statoEntries=data.statoEntries;if(data.customFoods)customFoods=data.customFoods;saveData();saveStatoData();saveCustomData();buildCustomGenreChips();buildTrigFilterBar();renderCustomFoods();
+var dateStr='';
+if(data.exported){var d=new Date(data.exported);dateStr=' — backup del '+d.toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'});}
+showSyncStatus('Importati: '+entries.length+' pasti, '+statoEntries.length+' valutazioni, '+customFoods.length+' alimenti'+dateStr+'.','ok');toast('Dati importati ✓');}catch(err){showSyncStatus('Errore JSON: '+err.message,'err');}};reader.readAsText(file);input.value='';}
+function showSyncStatus(msg,type){const el=document.getElementById('sync-status');el.textContent=msg;el.className='sync-status '+(type||'ok');el.style.display='block';}
+function copyForClaude(){const txt='DATI DIARIO WIDAL\n\nPasti recenti:\n'+JSON.stringify(entries.slice(0,12),null,2)+'\n\nStato infiammatorio:\n'+JSON.stringify(statoEntries.slice(-15),null,2)+'\n\nAlimenti personalizzati:\n'+JSON.stringify(customFoods,null,2)+'\n\nChiedo: analizza i pattern, i trigger dominanti e le eventuali correlazioni tra pasti e stato infiammatorio.';navigator.clipboard.writeText(txt).then(()=>toast('Dati copiati ✓')).catch(()=>toast('Errore copia'));}
+
+/* ── TABS ── */
+function showTab(t){
+  ['pasto','hist','stato','alim','stats'].forEach(x=>{document.getElementById('v'+x).style.display=x===t?'block':'none';document.getElementById('tab-'+x).className='tab'+(x===t?' on':'');});
+  if(t==='pasto')updateCtgBar();if(t==='hist')renderHist();
+  if(t==='stato')renderStato();
+  if(t==='alim'){buildTrigFilterBar();renderCustomFoods();initApiKeyUI();}
+  if(t==='stats')renderStats();
+}
+
+/* ── INIT ── */
+loadData();
+initDatePicker();
+buildGenreChips();
+buildCustomGenreChips();
+buildTrigFilterBar();
+buildSyms();buildSevs();setMomento(0);
+updateTriggers();
+</script>
+</body>
+</html>
