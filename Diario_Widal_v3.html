@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="Widal"/>
-<title>Diario Widal v4</title>
+<title>Diario Widal v7.5</title>
 <style>
 :root{
   --bg:#ffffff;--bg2:#f5f5f4;--bg3:#ececea;
@@ -41,17 +41,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;fo
 .date-inp{flex:1;padding:8px 10px;border:0.5px solid var(--bd2);border-radius:var(--r);font-size:13px;background:var(--bg);color:var(--tx);outline:none;-webkit-appearance:none;}
 .date-inp:focus{border-color:var(--blue);}
 .meal-btns{display:flex;gap:3px;}
-.mbtn{padding:6px 10px;border-radius:var(--r);border:0.5px solid transparent;font-size:13px;cursor:pointer;font-weight:600;}
-.mbtn-col{background:#FFF8E7;color:#B87800;border-color:#F5D06A;}
-.mbtn-col.on{background:#F5D06A;color:#7A4F00;border-color:#C8A200;}
-.mbtn-pra{background:#E7F0FF;color:#1A5CB8;border-color:#90B4F0;}
-.mbtn-pra.on{background:#3378DD;color:#fff;border-color:#1A5CB8;}
-.mbtn-cen{background:#EEE7FF;color:#5A2DB8;border-color:#B090F0;}
-.mbtn-cen.on{background:#7B3DDD;color:#fff;border-color:#5A2DB8;}
-.mbtn-spu{background:#E7FFF0;color:#1A7A3C;border-color:#80D4A0;}
-.mbtn-spu.on{background:#28A855;color:#fff;border-color:#1A7A3C;}
-.mbtn-snk{background:#FFE7E7;color:#B82020;border-color:#F09090;}
-.mbtn-snk.on{background:#DD3333;color:#fff;border-color:#B82020;}
+.mbtn{padding:6px 8px;border-radius:var(--r);border:0.5px solid var(--bd2);background:var(--bg2);font-size:12px;cursor:pointer;color:var(--tx2);}
+.mbtn.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);}
 .food-search-wrap{position:relative;margin-bottom:10px;}
 .food-search-inp{width:100%;padding:10px 36px 10px 12px;border:0.5px solid var(--blue);border-radius:var(--r);font-size:14px;background:var(--bg);color:var(--tx);outline:none;-webkit-appearance:none;box-shadow:0 0 0 3px rgba(55,138,221,.08);}
 .food-search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--tx3);cursor:pointer;background:none;border:none;padding:2px 4px;display:none;}
@@ -83,20 +74,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;fo
 .tname{font-size:11px;font-weight:600;}
 .tdesc{font-size:10px;opacity:.8;margin-top:1px;}
 .rbanner{padding:8px 12px;border-radius:var(--r);margin-top:6px;font-size:12px;font-weight:600;}
-/* Glycemic impact banner */
-.gbanner{padding:8px 12px;border-radius:var(--r);margin-top:5px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;}
-.gbanner-icon{font-size:15px;flex-shrink:0;}
-.gbanner-text{flex:1;}
-.gbanner-bar{height:5px;border-radius:3px;overflow:hidden;background:var(--bd);margin-top:5px;}
-.gbanner-fill{height:100%;border-radius:3px;transition:width .3s;}
-.gbanner.ig-low{background:#E8F5EE;color:#2E6644;border:0.5px solid #A8D5B5;}
-.gbanner.ig-med{background:#FFF8E7;color:#7A5A00;border:0.5px solid #F0CC6A;}
-.gbanner.ig-high{background:#FCEAEA;color:#A32D2D;border:0.5px solid #F0A0A0;}
-@media(prefers-color-scheme:dark){
-  .gbanner.ig-low{background:#1a3528;color:#80d4a0;border-color:#2E6644;}
-  .gbanner.ig-med{background:#2e2610;color:#e0c060;border-color:#705c10;}
-  .gbanner.ig-high{background:#2e1010;color:#f07070;border-color:#702020;}
-}
 .notrig{font-size:12px;color:var(--tx3);padding:3px 0;}
 .chips{display:flex;flex-wrap:wrap;gap:5px;}
 .schip,.sevchip{padding:5px 10px;border-radius:20px;font-size:12px;cursor:pointer;border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);display:inline-block;user-select:none;}
@@ -106,24 +83,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;fo
 select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:28px;}
 .savebtn{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;margin-top:10px;}
 .savebtn:active{background:var(--bluedark);transform:scale(.98);}
-/* ── BARCODE SCANNER ── */
-.scan-btn{padding:10px 12px;background:var(--bg2);color:var(--tx2);border:0.5px solid var(--bd2);border-radius:var(--r);font-size:18px;cursor:pointer;flex-shrink:0;transition:background .15s;}
-.scan-btn:active{background:var(--bg3);}
-.scan-btn.active{background:var(--bluelight);color:var(--blue);border-color:var(--blue);}
-.scanner-wrap{display:none;margin-top:10px;border-radius:var(--rl);overflow:hidden;position:relative;background:#000;}
-.scanner-wrap.vis{display:block;}
-.scanner-wrap video{width:100%;display:block;max-height:220px;object-fit:cover;}
-.scanner-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
-.scanner-frame{width:70%;height:50%;border:2px solid rgba(55,138,221,.8);border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.45);}
-.scanner-line{position:absolute;width:68%;height:2px;background:var(--blue);animation:scanline 1.8s ease-in-out infinite;opacity:.8;}
-@keyframes scanline{0%,100%{top:27%}50%{top:67%}}
-.scanner-hint{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:11px;color:rgba(255,255,255,.7);}
-.barcode-status{font-size:12px;color:var(--tx2);margin-top:7px;min-height:18px;display:flex;align-items:center;gap:6px;}
-.barcode-status .spin{display:inline-block;width:12px;height:12px;border:2px solid var(--bd2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;}
-.off-product-card{background:var(--bluelight);border:0.5px solid var(--blue);border-radius:var(--r);padding:10px 12px;margin-top:8px;display:none;}
-.off-product-card.vis{display:block;}
-.off-product-name{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:4px;}
-.off-product-meta{font-size:11px;color:var(--tx2);line-height:1.6;}
 .copy-btn{width:100%;padding:11px;border:0.5px solid var(--bd2);border-radius:var(--r);font-size:13px;cursor:pointer;background:var(--bg2);color:var(--tx);margin-top:12px;font-weight:500;}
 
 /* ══════════════════════════════
@@ -205,42 +164,6 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .risk-section-arrow.open{transform:rotate(90deg);}
 .risk-section-body{padding:0 4px;}
 
-/* Categorie piatti */
-.cat-section{margin-bottom:10px;border:0.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;}
-.cat-section-hdr{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg2);cursor:pointer;user-select:none;}
-.cat-section-icon{font-size:14px;}
-.cat-section-name{font-size:12px;font-weight:600;color:var(--tx2);flex:1;}
-.cat-section-cnt{font-size:11px;color:var(--blue);font-weight:600;}
-.cat-section-arr{font-size:10px;color:var(--tx3);transition:transform .15s;}
-.cat-section-arr.open{transform:rotate(90deg);}
-.cat-section-body{padding:8px 10px;display:none;}
-.cat-section-body.open{display:flex;flex-wrap:wrap;gap:5px;}
-.cat-fchip{display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border-radius:20px;font-size:12px;cursor:pointer;border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx2);user-select:none;}
-.cat-fchip.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);font-weight:600;}
-
-/* Reacting food selector */
-.react-food-box{background:var(--bg2);border-radius:var(--r);padding:10px 12px;margin-top:8px;display:none;}
-.react-food-box.vis{display:block;}
-.react-food-lbl{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
-.react-food-chips{display:flex;flex-wrap:wrap;gap:5px;}
-.rfchip{padding:5px 10px;border-radius:20px;font-size:12px;cursor:pointer;border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx2);}
-.rfchip.on{background:#FCEBEB;color:#A32D2D;border-color:#F7C1C1;font-weight:600;}
-
-/* Glicemia / Peso in Analisi */
-.biometric-box{border:0.5px solid var(--bd2);border-radius:var(--rl);padding:14px;background:var(--bg);margin-bottom:14px;}
-.biometric-box h3{font-size:13px;font-weight:600;margin-bottom:10px;}
-.biometric-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
-.biometric-inp{flex:1;padding:9px 11px;border:0.5px solid var(--bd2);border-radius:var(--r);font-size:14px;background:var(--bg);color:var(--tx);outline:none;}
-.biometric-unit{font-size:12px;color:var(--tx3);white-space:nowrap;min-width:36px;}
-.biometric-add-btn{padding:9px 14px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;}
-.biometric-list{margin-top:10px;}
-.bm-entry{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--bd);font-size:12px;}
-.bm-entry:last-child{border-bottom:none;}
-.bm-time{color:var(--tx3);min-width:90px;flex-shrink:0;}
-.bm-val{font-weight:600;color:var(--tx);}
-.bm-unit{color:var(--tx3);font-size:11px;}
-.bm-del{font-size:11px;color:var(--tx3);cursor:pointer;border:none;background:none;margin-left:auto;}
-
 /* Card alimento custom (più compatta) */
 .cf-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--bd);cursor:pointer;}
 .cf-item:last-child{border-bottom:none;}
@@ -270,6 +193,19 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .ai-rationale{font-size:12px;color:var(--tx2);margin-bottom:10px;line-height:1.5;}
 .ai-triggers-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;}
 .ai-action-row{display:flex;gap:8px;}
+/* Glycemic section */
+.ai-glycemic{border-top:0.5px solid var(--bd);margin-top:10px;padding-top:10px;}
+.ai-glycemic-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx2);margin-bottom:7px;}
+.ai-glycemic-badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px;}
+.gbadge{display:inline-flex;flex-direction:column;align-items:center;padding:5px 10px;border-radius:var(--r);font-size:10px;min-width:54px;}
+.gbadge-val{font-size:15px;font-weight:700;line-height:1;}
+.gbadge-lbl{font-size:9px;margin-top:2px;opacity:.8;}
+.gbadge-low{background:#E8F5EE;color:#2E6644;}
+.gbadge-med{background:#FDF5E0;color:#7A5A00;}
+.gbadge-high{background:#FCEAEA;color:#A32D2D;}
+.gbadge-neutral{background:var(--bg2);color:var(--tx2);}
+.ai-glycemic-note{font-size:11px;color:var(--tx2);line-height:1.5;}
+
 .ai-btn{flex:1;padding:9px;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;border:0.5px solid var(--bd2);}
 .ai-btn-save{background:var(--blue);color:#fff;border-color:var(--blue);}
 .ai-btn-promo{background:var(--greenlight);color:var(--green);border-color:var(--green);}
@@ -376,7 +312,6 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
   .ctg-warning.warn-red{background:#3a1010;color:#f07070;}
 }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/umd/index.min.js"></script>
 </head>
 <body>
 <div class="app">
@@ -404,11 +339,11 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
         <div class="pasto-topbar">
       <input type="date" class="date-inp" id="pasto-date"/>
       <div class="meal-btns">
-        <button class="mbtn mbtn-col" id="mb-col" onclick="setMeal('Colazione')" title="Colazione">&#9749; Col.</button>
-        <button class="mbtn mbtn-pra" id="mb-pra" onclick="setMeal('Pranzo')" title="Pranzo">&#127869; Prz.</button>
-        <button class="mbtn mbtn-cen" id="mb-cen" onclick="setMeal('Cena')" title="Cena">&#127769; Cena</button>
-        <button class="mbtn mbtn-spu" id="mb-spu" onclick="setMeal('Spuntino')" title="Spuntino">&#127822; Spu.</button>
-        <button class="mbtn mbtn-snk" id="mb-snk" onclick="setMeal('Snack')" title="Snack">&#127863; Snk.</button>
+        <button class="mbtn" id="mb-col" onclick="setMeal('Colazione')" title="Colazione">&#9749;</button>
+        <button class="mbtn" id="mb-pra" onclick="setMeal('Pranzo')" title="Pranzo">&#127869;</button>
+        <button class="mbtn" id="mb-cen" onclick="setMeal('Cena')" title="Cena">&#127769;</button>
+        <button class="mbtn" id="mb-spu" onclick="setMeal('Spuntino')" title="Spuntino">&#127822;</button>
+        <button class="mbtn" id="mb-snk" onclick="setMeal('Snack')" title="Snack">&#127863;</button>
       </div>
     </div>
     <div class="field">
@@ -422,64 +357,43 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     </div>
     <div class="field">
       <label class="lbl">Alimenti per categoria</label>
-      <div id="genre-pasta" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('pasta')"><span class="genre-arrow" id="ga-pasta">&#9658;</span><span class="genre-hdr-name">🍝 Pasta &amp; Cereali</span><span class="genre-count" id="gc-cnt-pasta"></span></div>
-        <div class="genre-chips" id="gc-pasta" style="display:none"></div>
-      </div>
-      <div id="genre-zuppe" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('zuppe')"><span class="genre-arrow" id="ga-zuppe">&#9658;</span><span class="genre-hdr-name">🍲 Zuppe &amp; Minestre</span><span class="genre-count" id="gc-cnt-zuppe"></span></div>
-        <div class="genre-chips" id="gc-zuppe" style="display:none"></div>
-      </div>
-      <div id="genre-pesce" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('pesce')"><span class="genre-arrow" id="ga-pesce">&#9658;</span><span class="genre-hdr-name">🐟 Pesce</span><span class="genre-count" id="gc-cnt-pesce"></span></div>
-        <div class="genre-chips" id="gc-pesce" style="display:none"></div>
-      </div>
-      <div id="genre-pollo" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('pollo')"><span class="genre-arrow" id="ga-pollo">&#9658;</span><span class="genre-hdr-name">🍗 Pollo &amp; Tacchino</span><span class="genre-count" id="gc-cnt-pollo"></span></div>
-        <div class="genre-chips" id="gc-pollo" style="display:none"></div>
-      </div>
-      <div id="genre-verdure" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('verdure')"><span class="genre-arrow" id="ga-verdure">&#9658;</span><span class="genre-hdr-name">🥦 Verdure &amp; Uova</span><span class="genre-count" id="gc-cnt-verdure"></span></div>
-        <div class="genre-chips" id="gc-verdure" style="display:none"></div>
-      </div>
-      <div id="genre-formaggi" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('formaggi')"><span class="genre-arrow" id="ga-formaggi">&#9658;</span><span class="genre-hdr-name">🧀 Formaggi</span><span class="genre-count" id="gc-cnt-formaggi"></span></div>
-        <div class="genre-chips" id="gc-formaggi" style="display:none"></div>
-      </div>
-      <div id="genre-insalate" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('insalate')"><span class="genre-arrow" id="ga-insalate">&#9658;</span><span class="genre-hdr-name">🥗 Insalate</span><span class="genre-count" id="gc-cnt-insalate"></span></div>
-        <div class="genre-chips" id="gc-insalate" style="display:none"></div>
+      <div id="genre-vegetali" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('vegetali')"><span class="genre-arrow" id="ga-vegetali">&#9658;</span><span class="genre-hdr-name">&#129382; Vegetali</span><span class="genre-count" id="gc-cnt-vegetali"></span></div>
+        <div class="genre-chips" id="gc-vegetali" style="display:none"></div>
       </div>
       <div id="genre-frutta" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('frutta')"><span class="genre-arrow" id="ga-frutta">&#9658;</span><span class="genre-hdr-name">🍎 Frutta</span><span class="genre-count" id="gc-cnt-frutta"></span></div>
+        <div class="genre-hdr" onclick="togGenre('frutta')"><span class="genre-arrow" id="ga-frutta">&#9658;</span><span class="genre-hdr-name">&#127822; Frutta</span><span class="genre-count" id="gc-cnt-frutta"></span></div>
         <div class="genre-chips" id="gc-frutta" style="display:none"></div>
       </div>
-      <div id="genre-dolci" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('dolci')"><span class="genre-arrow" id="ga-dolci">&#9658;</span><span class="genre-hdr-name">🍰 Dolci &amp; Snack</span><span class="genre-count" id="gc-cnt-dolci"></span></div>
-        <div class="genre-chips" id="gc-dolci" style="display:none"></div>
+      <div id="genre-pesce" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('pesce')"><span class="genre-arrow" id="ga-pesce">&#9658;</span><span class="genre-hdr-name">&#127997; Pesce &amp; Carne &amp; Uova</span><span class="genre-count" id="gc-cnt-pesce"></span></div>
+        <div class="genre-chips" id="gc-pesce" style="display:none"></div>
+      </div>
+      <div id="genre-formaggi" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('formaggi')"><span class="genre-arrow" id="ga-formaggi">&#9658;</span><span class="genre-hdr-name">&#129472; Formaggi</span><span class="genre-count" id="gc-cnt-formaggi"></span></div>
+        <div class="genre-chips" id="gc-formaggi" style="display:none"></div>
       </div>
       <div id="genre-bevande" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('bevande')"><span class="genre-arrow" id="ga-bevande">&#9658;</span><span class="genre-hdr-name">☕ Bevande</span><span class="genre-count" id="gc-cnt-bevande"></span></div>
+        <div class="genre-hdr" onclick="togGenre('bevande')"><span class="genre-arrow" id="ga-bevande">&#9658;</span><span class="genre-hdr-name">&#9749; Bevande</span><span class="genre-count" id="gc-cnt-bevande"></span></div>
         <div class="genre-chips" id="gc-bevande" style="display:none"></div>
       </div>
-      <div id="genre-altro" class="genre-block">
-        <div class="genre-hdr" onclick="togGenre('altro')"><span class="genre-arrow" id="ga-altro">&#9658;</span><span class="genre-hdr-name">🧂 Altro</span><span class="genre-count" id="gc-cnt-altro"></span></div>
-        <div class="genre-chips" id="gc-altro" style="display:none"></div>
+      <div id="genre-piatti" class="genre-block">
+        <div class="genre-hdr" onclick="togGenre('piatti')"><span class="genre-arrow" id="ga-piatti">&#9658;</span><span class="genre-hdr-name">&#127869; Piatti composti</span><span class="genre-count" id="gc-cnt-piatti"></span></div>
+        <div class="genre-chips" id="gc-piatti" style="display:none"></div>
+      </div>
+      <div id="genre-miei" class="genre-block" style="display:none">
+        <div class="genre-hdr" onclick="togGenre('miei')"><span class="genre-arrow" id="ga-miei">&#9658;</span><span class="genre-hdr-name">&#11088; Miei alimenti</span><span class="genre-count" id="gc-cnt-miei"></span></div>
+        <div class="genre-chips" id="gc-miei" style="display:none"></div>
       </div>
     </div>
     <div class="field">
       <label class="lbl">Trigger (automatici)</label>
       <div id="trig-display"><div class="notrig">Seleziona alimenti per vedere i trigger</div></div>
       <div id="rbanner" class="rbanner" style="display:none"></div>
-      <div id="gbanner" class="gbanner" style="display:none"></div>
     </div>
     <div class="field">
       <label class="lbl">Sintomi osservati</label>
       <div class="chips" id="sym-chips"></div>
-      <div class="react-food-box" id="react-food-box">
-        <div class="react-food-lbl">Alimento responsabile della reazione</div>
-        <div class="react-food-chips" id="react-food-chips"></div>
-      </div>
     </div>
     <div class="field">
       <label class="lbl">Gravit&agrave;</label>
@@ -585,7 +499,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       </div>
     </div>
 
-    <div style="font-size:10px;color:var(--tx3);text-align:right;margin-bottom:10px;">0 = assente &nbsp;&middot;&nbsp; 1 = lieve &nbsp;&middot;&nbsp; 5 = severo / invalidante</div>
+    <div style="font-size:10px;color:var(--tx3);text-align:right;margin-bottom:10px;">1 = assente &nbsp;&middot;&nbsp; 5 = severo / invalidante</div>
 
     <div class="field">
       <label class="lbl">Note (farmaci, stagione, stress&hellip;)</label>
@@ -635,23 +549,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       <h3>&#10022; Analisi smart alimento</h3>
       <div class="smart-input-row">
         <input class="inp" id="smart-inp" placeholder="es. focaccia di Recco, avocado..." onkeydown="if(event.key==='Enter')analyzeFood()" style="flex:1"/>
-        <button class="scan-btn" id="scan-btn" onclick="toggleScanner()" title="Scansiona codice a barre">&#128247;</button>
         <button class="analyze-btn" id="analyze-btn" onclick="analyzeFood()">Analizza</button>
-      </div>
-      <!-- Scanner video -->
-      <div class="scanner-wrap" id="scanner-wrap">
-        <video id="scanner-video" playsinline muted></video>
-        <div class="scanner-overlay">
-          <div class="scanner-frame"></div>
-          <div class="scanner-line"></div>
-        </div>
-        <div class="scanner-hint">Inquadra il codice a barre</div>
-      </div>
-      <div class="barcode-status" id="barcode-status"></div>
-      <!-- Scheda prodotto Open Food Facts -->
-      <div class="off-product-card" id="off-product-card">
-        <div class="off-product-name" id="off-product-name"></div>
-        <div class="off-product-meta" id="off-product-meta"></div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
         <label style="font-size:12px;color:var(--tx2);white-space:nowrap;">Ricetta per</label>
@@ -703,19 +601,6 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)"/>
       <div id="sync-status" class="sync-status"></div>
     </div>
-    <!-- BIOMETRIA -->
-    <div class="biometric-box">
-      <h3>&#128200; Glicemia &amp; Peso</h3>
-      <div class="biometric-row">
-        <input type="number" class="biometric-inp" id="bm-glicemia" placeholder="es. 94" min="40" max="400" step="1"/>
-        <span class="biometric-unit">mg/dL</span>
-        <input type="number" class="biometric-inp" id="bm-peso" placeholder="es. 78.5" min="30" max="250" step="0.1"/>
-        <span class="biometric-unit">kg</span>
-        <button class="biometric-add-btn" onclick="saveBiometric()">+</button>
-      </div>
-      <div class="biometric-list" id="bm-list"></div>
-    </div>
-
     <div style="border-top:0.5px solid var(--bd);padding-top:16px;margin-top:4px;">
       <div class="stit">Porta i dati in Claude per l'analisi</div>
       <p style="font-size:12px;color:var(--tx2);margin-bottom:8px;line-height:1.5">Copia i dati e incollali in Claude.ai per un'analisi approfondita dei pattern.</p>
@@ -728,153 +613,86 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 <script>
 const CLINICAL_PROFILE=`
 PROFILO PAZIENTE — CONTESTO CLINICO OBBLIGATORIO:
-- Sindrome di Widal (triade di Samter): asma + poliposi nasale + intolleranza aspirina/FANS
-- Iperreattività mastocitaria con probabile MCAS secondaria
-- Reazioni pseudoallergiche non-IgE mediate
-- Probabile deficit DAO
-- Reazioni istantanee <2 min tipiche; verificate su: aceto, cacao, mirtilli, avocado
-SCALA RISCHIO 0-5: 0=sicuro, 1=minimo, 2=monitorare, 3=cautela, 4=evitare quasi sempre, 5=EVITARE
-TRIGGER: Istamina, Salicilati, Ammine biogene, Tiramina, TRPA1, Istamina-lib.
-Per piatti composti analizza ogni ingrediente + profilo combinato.`;
 
-// ── CATEGORIES — DB unificato alimenti (persistito in localStorage) ──
-const CATEGORIES_DEFAULT=[
-  {id:"pasta", label:"🍝 Pasta & Cereali", items:[
-    {n:"Farinata di ceci",              t:["Istamina-lib."],r:1,g:35},
-    {n:"Gnocchi al burro",              t:["Istamina"],r:1,g:70},
-    {n:"Lasagne in bianco di verdure",  t:["Istamina","Salicilati","Ammine biogene","Tiramina"],r:4,g:55},
-    {n:"Pasta e fagioli",               t:["Istamina","Salicilati","Ammine biogene"],r:3,g:45},
-    {n:"Pasta in bianco",               t:[],r:0,g:65},
-    {n:"Penne in bianco senza formaggio",t:["Istamina"],r:1,g:65},
-    {n:"Risotto bianco",                t:[],r:1,g:70},
-    {n:"Spaghetti in bianco",           t:["Istamina"],r:1,g:60},
-    {n:"Tagliatelle al burro",          t:["Istamina","Ammine biogene"],r:2,g:55},
-    {n:"Tagliolini alla crema di zucchine",t:["Istamina","Salicilati"],r:2,g:50},
-    {n:"Zuppa di orzo",                 t:["Istamina","Salicilati"],r:2,g:35},
-  ]},
-  {id:"zuppe", label:"🍲 Zuppe & Minestre", items:[
-    {n:"Minestra ceci/bietole",         t:["Istamina","Salicilati","Ammine biogene"],r:3,g:35},
-    {n:"Minestrone misto",              t:["Istamina","Salicilati","Ammine biogene"],r:3,g:40},
-    {n:"Passata di zucca",              t:["Salicilati"],r:1,g:55},
-    {n:"Passata di zucchine con ceci",  t:["Salicilati"],r:1,g:35},
-    {n:"Passata verdure verdi",         t:["Salicilati","Istamina"],r:2,g:35},
-  ]},
-  {id:"pesce", label:"🐟 Pesce", items:[
-    {n:"Acciughe sotto sale",           t:["Istamina","Tiramina","Ammine biogene"],r:5,g:0},
-    {n:"Branzino in padella con zucchine",t:["Istamina"],r:1,g:5},
-    {n:"Branzino in padella nature",    t:["Istamina","Ammine biogene"],r:2,g:0},
-    {n:"Filetto di limanda fritto",     t:["Istamina","Ammine biogene","Istamina-lib."],r:3,g:25},
-    {n:"Merluzzo al vapore",            t:[],r:1,g:0},
-    {n:"Merluzzo al vapore con patate", t:["Istamina"],r:1,g:35},
-    {n:"Merluzzo fresco",               t:[],r:1,g:0},
-    {n:"Pesce persico",                 t:["Ammine biogene"],r:1,g:0},
-    {n:"Persico impanato fritto",       t:["Ammine biogene"],r:1,g:30},
-    {n:"Rombo in umido nature",         t:["Istamina","Ammine biogene"],r:2,g:0},
-    {n:"Rombo liscio in padella",       t:["Istamina"],r:1,g:0},
-    {n:"Salmone affumicato",            t:["Istamina","Tiramina","Ammine biogene"],r:5,g:0},
-    {n:"Salmone alla griglia",          t:["Istamina"],r:2,g:0},
-    {n:"Trancio di salmone al forno",   t:["Istamina","Ammine biogene"],r:3,g:0},
-  ]},
-  {id:"pollo", label:"🍗 Pollo & Tacchino", items:[
-    {n:"Bresaola",                      t:["Ammine biogene","Tiramina"],r:3,g:0},
-    {n:"Fetta di tacchino ai ferri",    t:["Ammine biogene"],r:1,g:0},
-    {n:"Petto di pollo",                t:[],r:0,g:0},
-    {n:"Petto di pollo alla piastra",   t:[],r:0,g:0},
-    {n:"Piccata di tacchino nell'uovo", t:["Istamina","Ammine biogene"],r:2,g:10},
-    {n:"Pollo al curry",                t:["Salicilati"],r:3,g:5},
-    {n:"Pollo alla cacciatore",         t:["Istamina","Salicilati"],r:3,g:10},
-    {n:"Pollo allo spiedo con patate",  t:[],r:1,g:45},
-    {n:"Pollo impanato fritto",         t:["Ammine biogene"],r:1,g:30},
-    {n:"Tacchino impanato",             t:["Istamina","Ammine biogene","Istamina-lib."],r:3,g:30},
-    {n:"Uova sode",                     t:["Ammine biogene"],r:1,g:0},
-  ]},
-  {id:"verdure", label:"🥦 Verdure & Uova", items:[
-    {n:"Aglio crudo",                   t:["TRPA1"],r:3,g:5},
-    {n:"Broccoli",                      t:["Salicilati"],r:1,g:15},
-    {n:"Carote",                        t:[],r:0,g:35},
-    {n:"Carote e patate fritte",        t:["Salicilati","Istamina-lib."],r:2,g:70},
-    {n:"Carote, patate e fagiolini al forno",t:["Salicilati"],r:1,g:55},
-    {n:"Carote, zucchine e fagiolini al vapore",t:["Salicilati"],r:1,g:20},
-    {n:"Cavolfiore",                    t:[],r:0,g:15},
-    {n:"Cavolfiore al vapore",          t:[],r:0,g:15},
-    {n:"Cipolla",                       t:["Salicilati"],r:2,g:10},
-    {n:"Crocchette di patate",          t:["Istamina-lib.","Ammine biogene"],r:2,g:70},
-    {n:"Fagioli stufati nature",        t:["Istamina","Istamina-lib."],r:2,g:30},
-    {n:"Fagiolini",                     t:["Salicilati"],r:1,g:15},
-    {n:"Fette di zucca al forno",       t:["Salicilati"],r:1,g:55},
-    {n:"Fiori di zucchine in tempura",  t:["Istamina-lib.","TRPA1"],r:2,g:45},
-    {n:"Melanzane",                     t:["Istamina","Ammine biogene"],r:4,g:15},
-    {n:"Melanzane alla parmigiana",     t:["Istamina","Ammine biogene","Salicilati"],r:4,g:25},
-    {n:"Omelette alle zucchine",        t:["Istamina","Ammine biogene"],r:2,g:5},
-    {n:"Omelette nature",               t:["Ammine biogene","Istamina-lib."],r:2,g:0},
-    {n:"Patate",                        t:[],r:0,g:65},
-    {n:"Patate al forno",               t:[],r:0,g:75},
-    {n:"Patate al vapore",              t:[],r:1,g:65},
-    {n:"Peperoni",                      t:["Salicilati","TRPA1"],r:3,g:15},
-    {n:"Pomodoro",                      t:["Istamina","Salicilati"],r:3,g:15},
-    {n:"Spinaci",                       t:["Istamina","Salicilati"],r:3,g:15},
-    {n:"Spinaci aglio/peperoncino",     t:["Istamina","Salicilati","TRPA1","Ammine biogene"],r:4,g:15},
-    {n:"Zucchine",                      t:["Salicilati"],r:1,g:15},
-    {n:"Zucchine carote cavolfiore al vapore",t:["Salicilati"],r:1,g:15},
-  ]},
-  {id:"formaggi", label:"🧀 Formaggi", items:[
-    {n:"Emmental",                      t:["Istamina","Ammine biogene"],r:3,g:0},
-    {n:"Feta",                          t:["Istamina","Ammine biogene"],r:3,g:0},
-    {n:"Focaccia al formaggio di Recco",t:["Istamina","Ammine biogene","Tiramina","Istamina-lib."],r:4,g:55},
-    {n:"Formaggio Gottardo",            t:["Istamina","Ammine biogene","Tiramina"],r:5,g:0},
-    {n:"Grana padano",                  t:["Istamina","Ammine biogene","Tiramina"],r:4,g:0},
-    {n:"Mozzarella di bufala",          t:["Istamina"],r:2,g:0},
-    {n:"Parmigiano",                    t:["Istamina","Tiramina"],r:4,g:0},
-    {n:"Pecorino stagionato",           t:["Istamina","Tiramina","Ammine biogene"],r:4,g:0},
-  ]},
-  {id:"insalate", label:"🥗 Insalate", items:[
-    {n:"Cuore di lattuga",              t:[],r:1,g:10},
-    {n:"Iceberg con olio di oliva",     t:["Salicilati"],r:1,g:10},
-    {n:"Insalata di pollo con emmental",t:["Tiramina","Ammine biogene","Istamina"],r:3,g:10},
-    {n:"Insalata mista condita (aceto)",t:["Istamina","Salicilati","Ammine biogene","TRPA1"],r:5,g:10},
-    {n:"Insalata mista/pomodori",       t:["Istamina","Salicilati"],r:3,g:10},
-    {n:"Insalata verde scarola",        t:["Salicilati"],r:1,g:10},
-    {n:"Insalata, carote, cetriolo",    t:["Salicilati"],r:1,g:10},
-  ]},
-  {id:"frutta", label:"🍎 Frutta", items:[
-    {n:"Banana",                        t:["Ammine biogene"],r:2,g:55},
-    {n:"Mela sbucciata cotta",          t:["Salicilati"],r:2,g:40},
-    {n:"Mela sbucciata cruda",          t:["Salicilati"],r:3,g:35},
-    {n:"Pera",                          t:[],r:1,g:30},
-    {n:"Sorbetto di mango",             t:["Salicilati"],r:2,g:60},
-    {n:"Sorbetto di pera",              t:[],r:1,g:50},
-  ]},
-  {id:"dolci", label:"🍰 Dolci & Snack", items:[
-    {n:"Affogato di vaniglia all'orzo", t:["Istamina","Ammine biogene","Istamina-lib."],r:3,g:60},
-    {n:"Biscotti Macine",               t:["Istamina","Salicilati","Ammine biogene","Istamina-lib."],r:3,g:65},
-    {n:"Biscotti petit beurre",         t:["Istamina-lib.","Ammine biogene"],r:2,g:55},
-    {n:"Canestrelli semplici",          t:[],r:1,g:55},
-    {n:"Crostata marmellata pera",      t:["Salicilati"],r:2,g:60},
-    {n:"Dolcetto pastafrolla cioccolato",t:["Istamina","Salicilati","Ammine biogene","Tiramina"],r:4,g:65},
-    {n:"Gelato alla crema",             t:["Istamina","Ammine biogene","Istamina-lib."],r:4,g:65},
-    {n:"Gelato fiordilatte",            t:["Istamina","Ammine biogene","Istamina-lib."],r:3,g:60},
-    {n:"Mandorle pelate",               t:["Salicilati","Ammine biogene"],r:2,g:15},
-    {n:"Pastafrolla",                   t:["Istamina-lib.","Ammine biogene"],r:2,g:55},
-    {n:"Patatine chips",                t:["Istamina","Ammine biogene","Istamina-lib."],r:3,g:60},
-  ]},
-  {id:"bevande", label:"☕ Bevande", items:[
-    {n:"Acqua",                         t:[],r:0,g:0},
-    {n:"Caffè d'orzo",                  t:[],r:1,g:0},
-    {n:"Caffè decaffeinato",            t:["Salicilati"],r:2,g:0},
-    {n:"Camomilla",                     t:["Salicilati","Istamina-lib."],r:4,g:0},
-    {n:"Cappuccino d'orzo",             t:[],r:1,g:5},
-    {n:"Cappuccino decaffeinato",       t:["Istamina","Ammine biogene","Istamina-lib."],r:3,g:10},
-    {n:"Cappuccino di caffè intero",    t:["Istamina","Salicilati","Ammine biogene","Istamina-lib."],r:4,g:10},
-    {n:"Tisana istantanea di finocchio",t:["Salicilati","Istamina-lib."],r:2,g:0},
-    {n:"Tisana zafferano",              t:[],r:1,g:0},
-  ]},
-  {id:"altro", label:"🧂 Altro", items:[]},
+MCAS / SINDROME DI WIDAL:
+- Triade di Samter: asma + poliposi nasale + intolleranza aspirina/FANS
+- Iperreattività mastocitaria con probabile MCAS secondaria
+- Reazioni pseudoallergiche non-IgE mediate, probabile deficit DAO
+- Reazioni istantanee <2 min tipiche
+- Trigger verificati empiricamente: aceto (istamina diretta), cacao, mirtilli, avocado, pepe
+- In terapia: Aerius (antistaminico permanente) + Mometasone spray nasale mattina e sera
+- Scala rischio MCAS 0-5: 0=sicuro, 1=minimo, 2=monitorare, 3=cautela, 4=evitare, 5=EVITARE
+- Trigger: Istamina, Salicilati, Ammine biogene, Tiramina, TRPA1, Istamina-lib.
+
+PROFILO GLICEMICO:
+- Prediabete borderline: HbA1c oscillante 5.5% (dieta ottimale) - 6.8% (dieta libera)
+- Glicemia a digiuno alterata (IFG): 5.4-6.1 mmol/L al mattino
+- Resistenza insulinica epatica probabile (dawn phenomenon documentato)
+- Monitoraggio CGM continuo FreeStyle Libre 3; dati personali maggio 2026:
+  * Media glicemica: 5.43 mmol/L, TIR (3.9-7.8) 97%, CV 12.4% (eccellente stabilità)
+  * Spike reali misurati: orzo/minestra +3.25, tacchino impanato +2.86, orata+verdure +2.0, branzino/rombo +0.0-1.0, pera sbucciata +0.17-2.0
+- Obiettivo: IG target <55, carico glicemico giornaliero contenuto, preferire fibra solubile
+- CONFLITTO DIETETICO: alcuni alimenti ottimi per glicemia (legumi, frutti rossi, fermentati) sono trigger MCAS — in caso di conflitto priorita MCAS
+
+Per piatti composti analizza ogni ingrediente + profilo combinato MCAS e glicemico.`;
+
+const DISHES=[
+  {n:"Minestrone misto",t:["Istamina","Salicilati","Ammine biogene"],r:3},
+  {n:"Minestra ceci/bietole",t:["Istamina","Salicilati","Ammine biogene"],r:3},
+  {n:"Pasta e fagioli",t:["Istamina","Salicilati","Ammine biogene"],r:3},
+  {n:"Passata verdure verdi",t:["Salicilati","Istamina"],r:2},
+  {n:"Pasta al pomodoro",t:["Istamina","Salicilati"],r:3},
+  {n:"Risotto bianco",t:[],r:1},
+  {n:"Pasta in bianco",t:[],r:0},
+  {n:"Branzino con pomodoro",t:["Istamina","Salicilati"],r:3},
+  {n:"Persico impanato fritto",t:["Ammine biogene"],r:1},
+  {n:"Salmone alla griglia",t:["Istamina"],r:2},
+  {n:"Salmone affumicato",t:["Istamina","Tiramina","Ammine biogene"],r:5},
+  {n:"Acciughe sotto sale",t:["Istamina","Tiramina","Ammine biogene"],r:5},
+  {n:"Merluzzo al vapore",t:[],r:1},
+  {n:"Pollo impanato fritto",t:["Ammine biogene"],r:1},
+  {n:"Pollo al curry",t:["Salicilati"],r:3},
+  {n:"Pollo alla cacciatore",t:["Istamina","Salicilati"],r:3},
+  {n:"Petto di pollo alla piastra",t:[],r:0},
+  {n:"Melanzane alla parmigiana",t:["Istamina","Ammine biogene","Salicilati"],r:4},
+  {n:"Insalata mista/pomodori",t:["Istamina","Salicilati"],r:3},
+  {n:"Spinaci aglio/peperoncino",t:["Istamina","Salicilati","TRPA1","Ammine biogene"],r:4},
+  {n:"Cavolfiore al vapore",t:[],r:0},
+  {n:"Patate al forno",t:[],r:0},
+  {n:"Sorbetto di pera",t:[],r:1},
+  {n:"Sorbetto di mango",t:["Salicilati"],r:2},
+  {n:"Crostata marmellata pera",t:["Salicilati"],r:2},
 ];
-let CATEGORIES=JSON.parse(JSON.stringify(CATEGORIES_DEFAULT)); // mutable working copy
-// ── Compatibilità con il codice legacy che usa SINGLES/DISHES come lookup ──
-function rebuildDISHES(){return CATEGORIES.flatMap(c=>c.items.map(f=>({...f,cat:c.label})));}
-let DISHES=rebuildDISHES();
-const SINGLES=Object.fromEntries(CATEGORIES.map(c=>[c.id,c.items]));
+const SINGLES={
+  vegetali:[
+    {n:"Cavolfiore",t:[],r:0},{n:"Zucchine",t:["Salicilati"],r:1},
+    {n:"Carote",t:[],r:0},{n:"Patate",t:[],r:0},
+    {n:"Spinaci",t:["Istamina","Salicilati"],r:3},{n:"Pomodoro",t:["Istamina","Salicilati"],r:3},
+    {n:"Melanzane",t:["Istamina","Ammine biogene"],r:4},{n:"Peperoni",t:["Salicilati","TRPA1"],r:3},
+    {n:"Aglio crudo",t:["TRPA1"],r:3},{n:"Cipolla",t:["Salicilati"],r:2},
+    {n:"Fagiolini",t:["Salicilati"],r:1},{n:"Broccoli",t:["Salicilati"],r:1},
+  ],
+  frutta:[
+    {n:"Mela sbucciata cotta",t:["Salicilati"],r:2},{n:"Mela sbucciata cruda",t:["Salicilati"],r:3},
+    {n:"Pera",t:[],r:1},{n:"Banana",t:["Ammine biogene"],r:2},
+    {n:"Sorbetto di pera",t:[],r:1},{n:"Sorbetto di mango",t:["Salicilati"],r:2},
+  ],
+  pesce:[
+    {n:"Uova sode",t:[],r:0},{n:"Petto di pollo",t:[],r:0},
+    {n:"Pesce persico",t:["Ammine biogene"],r:1},{n:"Merluzzo fresco",t:[],r:1},
+    {n:"Bresaola",t:["Ammine biogene","Tiramina"],r:3},
+  ],
+  formaggi:[
+    {n:"Mozzarella di bufala",t:["Istamina"],r:2},{n:"Feta",t:["Istamina","Ammine biogene"],r:3},
+    {n:"Emmental",t:["Istamina","Ammine biogene"],r:3},{n:"Parmigiano",t:["Istamina","Tiramina"],r:4},
+    {n:"Pecorino stagionato",t:["Istamina","Tiramina","Ammine biogene"],r:4},
+  ],
+  bevande:[
+    {n:"Acqua",t:[],r:0},{n:"Caffe",t:["Istamina-lib.","Salicilati"],r:3},
+    {n:"Caffe decaffeinato",t:["Salicilati"],r:2},{n:"Cappuccino",t:["Istamina-lib.","Salicilati"],r:3},
+    {n:"Tisana zafferano",t:[],r:1},{n:"Tisana menta",t:["Salicilati","TRPA1"],r:3},
+  ],
+};
 const TS={"Istamina":{bg:"#FCEBEB",c:"#A32D2D",d:"istamina preformata → degranulazione diretta"},"Salicilati":{bg:"#FAEEDA",c:"#854F0B",d:"COX-1 → leucotrieni"},"Ammine biogene":{bg:"#FAECE7",c:"#993C1D",d:"attivazione mastociti"},"Tiramina":{bg:"#FCEBEB",c:"#791F1F",d:"vasoattiva → degranulazione"},"TRPA1":{bg:"#EEEDFE",c:"#3C3489",d:"neurogeno su mucose"},"Istamina-lib.":{bg:"#FBEAF0",c:"#993556",d:"induce rilascio"}};
 const RC=["","#5DCAA5","#5DCAA5","#EF9F27","#E24B4A","#E24B4A"];
 const RBG=["transparent","#E1F5EE","#E1F5EE","#FAEEDA","#FCEBEB","#FCEBEB"];
@@ -903,86 +721,22 @@ const RISK_SECTIONS=[
 ];
 
 let selItems={},selSym={},selSev=null,selMeal=null;
-let entries=[],statoEntries=[],apiKey='',currentAiResult=null;
-// Legacy — kept only for import compatibility, always empty in normal operation
-let customFoods=[];
+// statoSel legacy (kept for import compat)
+let entries=[],statoEntries=[],customFoods=[],apiKey='',currentAiResult=null;
 // Stato filtri storico
 let histFilter='all',histSearchQuery='';
 // Stato filtri alimenti
 let alimSearchQuery='',alimTrigFilter=null;
 
-// ── PERSISTENCE: unified DB ──
-function saveCategories(){try{localStorage.setItem('widal-foods-v1',JSON.stringify(CATEGORIES));}catch(e){}}
-
 function loadData(){
   try{const r=localStorage.getItem('widal-diary-v3');if(r)entries=JSON.parse(r);}catch(e){entries=[];}
   try{const r=localStorage.getItem('widal-stato-v1');if(r)statoEntries=JSON.parse(r);}catch(e){statoEntries=[];}
+  try{const r=localStorage.getItem('widal-custom-v1');if(r)customFoods=JSON.parse(r);}catch(e){customFoods=[];}
   try{const r=localStorage.getItem('widal-apikey-v1');if(r)apiKey=r;}catch(e){}
-  loadBiometrics();
-  // Load unified DB from localStorage (if exists)
-  try{
-    const saved=localStorage.getItem('widal-foods-v1');
-    if(saved){CATEGORIES=JSON.parse(saved);DISHES=rebuildDISHES();}
-  }catch(e){}
-  // One-time migration: merge old customFoods into CATEGORIES
-  migrateCustomFoods();
 }
-
-function migrateCustomFoods(){
-  if(localStorage.getItem('widal-migration-v3'))return;
-  // Load old customFoods
-  let oldCustom=[];
-  try{const r=localStorage.getItem('widal-custom-v1');if(r)oldCustom=JSON.parse(r);}catch(e){}
-  if(!oldCustom.length){localStorage.setItem('widal-migration-v3','1');saveCategories();return;}
-
-  const defaultIG={pasta:55,zuppe:35,pesce:0,pollo:5,verdure:20,formaggi:0,insalate:10,frutta:40,dolci:60,bevande:0,altro:30};
-  let merged=0,added=0;
-
-  oldCustom.forEach(cf=>{
-    const catId=cf.category||'altro';
-    let targetCat=CATEGORIES.find(c=>c.id===catId);
-    if(!targetCat)targetCat=CATEGORIES.find(c=>c.id==='altro');
-    if(!targetCat)return;
-    // Check if already exists (case-insensitive)
-    const existing=targetCat.items.find(f=>f.n.toLowerCase().trim()===cf.name.toLowerCase().trim());
-    if(existing){
-      // Merge: update trigger/risk from AI if available, add IG if missing
-      if(cf.triggers&&cf.triggers.length)existing.t=cf.triggers;
-      if(cf.risk!=null)existing.r=cf.risk;
-      if(existing.g==null)existing.g=cf.glycemicIndex!=null?cf.glycemicIndex:(defaultIG[catId]||30);
-      if(cf.rationale&&!existing.rationale)existing.rationale=cf.rationale;
-      merged++;
-    }else{
-      // Also check ALL categories for fuzzy match
-      let found=false;
-      for(const cat of CATEGORIES){
-        const match=cat.items.find(f=>f.n.toLowerCase().trim()===cf.name.toLowerCase().trim());
-        if(match){found=true;if(match.g==null)match.g=cf.glycemicIndex!=null?cf.glycemicIndex:(defaultIG[cat.id]||30);merged++;break;}
-      }
-      if(!found){
-        targetCat.items.push({
-          n:cf.name,t:cf.triggers||[],r:cf.risk||0,
-          g:cf.glycemicIndex!=null?cf.glycemicIndex:(defaultIG[catId]||30),
-          rationale:cf.rationale||null
-        });
-        added++;
-      }
-    }
-  });
-  // Sort each category
-  CATEGORIES.forEach(cat=>cat.items.sort((a,b)=>a.n.localeCompare(b.n,'it')));
-  DISHES=rebuildDISHES();
-  saveCategories();
-  // Clear old customFoods
-  customFoods=[];
-  try{localStorage.removeItem('widal-custom-v1');}catch(e){}
-  localStorage.setItem('widal-migration-v3','1');
-  console.log('[Migration] merged:'+merged+' added:'+added+' total items:'+DISHES.length);
-}
-
 function saveData(){try{localStorage.setItem('widal-diary-v3',JSON.stringify(entries));}catch(e){}}
 function saveStatoData(){try{localStorage.setItem('widal-stato-v1',JSON.stringify(statoEntries));}catch(e){}}
-function saveCustomData(){/* legacy no-op — everything in CATEGORIES now */}
+function saveCustomData(){try{localStorage.setItem('widal-custom-v1',JSON.stringify(customFoods));}catch(e){}}
 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 function rdot(r){return r>0?`<span class="rdot" style="background:${RC[r]}"></span>`:'';}
@@ -995,38 +749,22 @@ function capFirst(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 
 function getItemData(key){
   const parts=key.split(':');const type=parts[0],ref=parts.slice(1).join(':');
-  // Normal catId:name key
-  const cat=CATEGORIES.find(c=>c.id===type);
-  if(cat){const s=cat.items.find(x=>x.n===ref);if(s)return{n:s.n,t:s.t,r:s.r,g:s.g};}
-  // Fallback: search all categories by name (handles legacy keys, dish:, custom:, etc.)
-  for(const c of CATEGORIES){const s=c.items.find(x=>x.n===ref||x.n.toLowerCase()===ref.toLowerCase());if(s)return{n:s.n,t:s.t,r:s.r,g:s.g};}
-  return{n:ref,t:[],r:0,g:null};
+  if(type==='dish'){const d=DISHES.find(x=>x.n===ref);return d?{n:d.n,t:d.t,r:d.r}:{n:ref,t:[],r:0};}
+  if(type==='custom'){const cf=customFoods.find(x=>x.id===ref);return cf?{n:cf.name,t:cf.triggers,r:cf.risk}:{n:ref,t:[],r:0};}
+  const arr=SINGLES[type]||[];const s=arr.find(x=>x.n===ref);
+  if(s)return{n:s.n,t:s.t,r:s.r};
+  const cf=customFoods.find(x=>x.name===ref);
+  return cf?{n:cf.name,t:cf.triggers,r:cf.risk}:{n:ref,t:[],r:0};
 }
 function computeAllTriggers(){const ts=new Set();Object.keys(selItems).forEach(k=>{const d=getItemData(k);d.t.forEach(t=>ts.add(t));});return[...ts];}
 function computeMaxRisk(){let m=0;Object.keys(selItems).forEach(k=>{const d=getItemData(k);m=Math.max(m,d.r);});return m;}
 function getAllSelectedNames(){return Object.keys(selItems).map(k=>getItemData(k).n);}
 
-// ── IMPATTO GLICEMICO PASTO ──
-function computeGlycemicImpact(){
-  const keys=Object.keys(selItems);if(!keys.length)return{avg:0,max:0,level:'none',count:0};
-  let vals=[],maxG=0;
-  keys.forEach(k=>{const d=getItemData(k);if(d.g!=null&&d.g>0){vals.push(d.g);maxG=Math.max(maxG,d.g);}});
-  if(!vals.length)return{avg:0,max:0,level:'low',count:keys.length};
-  const avg=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
-  // Weighted: if many high-IG items, impact is higher
-  const highCount=vals.filter(v=>v>=55).length;
-  const score=avg+(highCount>1?highCount*5:0);
-  let level='low';
-  if(score>=55||maxG>=65)level='high';
-  else if(score>=35||maxG>=55)level='med';
-  return{avg,max:maxG,level,count:vals.length,highCount};
-}
-
 function getSearchPool(){
   const pool=[];
-  CATEGORIES.forEach(cat=>cat.items.forEach(f=>{
-    pool.push({key:cat.id+':'+f.n,n:f.n,r:f.r,t:f.t,g:f.g,cat:cat.label.replace(/^\S+\s/,'')});
-  }));
+  DISHES.forEach(d=>pool.push({key:'dish:'+d.n,n:d.n,r:d.r,t:d.t,cat:'Piatto'}));
+  Object.entries(SINGLES).forEach(([genre,items])=>items.forEach(f=>pool.push({key:genre+':'+f.n,n:f.n,r:f.r,t:f.t,cat:capFirst(genre)})));
+  customFoods.forEach(f=>pool.push({key:'custom:'+f.id,n:f.name,r:f.risk,t:f.triggers,cat:'Personale'}));
   return pool;
 }
 
@@ -1065,9 +803,12 @@ function clearFoodSearch(){const inp=document.getElementById('food-search');if(i
 function removeItem(key){delete selItems[key];renderSelTags();updateTriggers();syncChipState(key,false);}
 function syncChipState(key,on){
   const parts=key.split(':');const type=parts[0],ref=parts.slice(1).join(':');
-  const chipId='sg-'+type+'-'+escId(ref);
+  let chipId;
+  if(type==='dish')chipId='gc-piatti-'+escId(ref);
+  else if(type==='custom'){const cf=customFoods.find(f=>f.id===ref);if(cf)chipId='cf-chip-'+ref;}
+  else chipId='sg-'+type+'-'+escId(ref);
   const el=document.getElementById(chipId);
-  if(el)el.className='fchip'+(on?' on':'');
+  if(el){const isCustom=el.className.includes('custom');el.className='fchip'+(isCustom?' custom':'')+(on?' on':'');}
 }
 document.addEventListener('click',function(e){
   const ac=document.getElementById('food-ac');
@@ -1087,10 +828,13 @@ function togGenre(g){
   if(ar)ar.className='genre-arrow'+(open?'':' open');
 }
 function buildGenreChips(){
-  CATEGORIES.forEach(cat=>{
-    const el=document.getElementById('gc-'+cat.id);if(!el)return;
-    el.innerHTML=cat.items.map(f=>`<div class="fchip" id="sg-${cat.id}-${escId(f.n)}" onclick="togSingle('${cat.id}','${escQ(f.n)}')">${rdot(f.r)}${f.n}</div>`).join('');
+  Object.entries(SINGLES).forEach(([genre,items])=>{
+    const el=document.getElementById('gc-'+genre);if(!el)return;
+    el.innerHTML=items.map(f=>`<div class="fchip" id="sg-${genre}-${escId(f.n)}" onclick="togSingle('${genre}','${escQ(f.n)}')">${rdot(f.r)}${f.n}</div>`).join('');
   });
+  const elP=document.getElementById('gc-piatti');if(elP){
+    elP.innerHTML=DISHES.map(d=>`<div class="fchip" id="gc-piatti-${escId(d.n)}" onclick="togDish('${escQ(d.n)}')">${rdot(d.r)}${d.n}</div>`).join('');
+  }
 }
 function togSingle(genre,name){
   const key=genre+':'+name;
@@ -1099,12 +843,26 @@ function togSingle(genre,name){
   if(el)el.className='fchip'+(selItems[key]?' on':'');
   updateGenreCount(genre);renderSelTags();updateTriggers();
 }
-function togDish(name){togSingle('altro',name);}  // legacy compat
+function togDish(name){
+  const key='dish:'+name;
+  if(selItems[key]){delete selItems[key];}else{selItems[key]=true;}
+  const el=document.getElementById('gc-piatti-'+escId(name));
+  if(el)el.className='fchip'+(selItems[key]?' on':'');
+  updateGenreCount('piatti');renderSelTags();updateTriggers();
+}
 function updateGenreCount(genre){
-  const cnt=Object.keys(selItems).filter(k=>k.startsWith(genre+':')).length;
+  let cnt=0;
+  if(genre==='piatti')cnt=Object.keys(selItems).filter(k=>k.startsWith('dish:')).length;
+  else cnt=Object.keys(selItems).filter(k=>k.startsWith(genre+':')).length;
   const el=document.getElementById('gc-cnt-'+genre);if(el)el.textContent=cnt>0?String(cnt):'';
 }
-function buildCustomGenreChips(){/* "Miei alimenti" rimosso — custom foods ora distribuiti nelle categorie */}
+function buildCustomGenreChips(){
+  const promoted=customFoods.filter(f=>f.promoted);
+  const el=document.getElementById('gc-miei'),wrap=document.getElementById('genre-miei');
+  if(!promoted.length){if(wrap)wrap.style.display='none';return;}
+  if(wrap)wrap.style.display='block';
+  el.innerHTML=promoted.map(f=>`<div class="fchip custom" id="cf-chip-${f.id}" onclick="togCustom('${f.id}')">${rdot(f.risk)}${f.name}</div>`).join('');
+}
 function togCustom(id){
   const key='custom:'+id;
   if(selItems[key]){delete selItems[key];}else{selItems[key]=true;}
@@ -1148,57 +906,21 @@ function updateCtgBar(){
 
 function updateTriggers(){
   const trigs=computeAllTriggers(),mr=computeMaxRisk();
-  const el=document.getElementById('trig-display'),rb=document.getElementById('rbanner'),gb=document.getElementById('gbanner');
-  const hasItems=Object.keys(selItems).length>0;
-  if(!trigs.length){
-    el.innerHTML='<div class="notrig">Seleziona alimenti per vedere i trigger</div>';
-    rb.style.display='none';
-    // Even with no triggers, show glycemic banner if items selected
-    if(gb){
-      if(hasItems){
-        const gi=computeGlycemicImpact();
-        if(gi.level!=='none'){
-          gb.style.display='flex';
-          const icons={low:'🟢',med:'🟡',high:'🔴'};
-          const labels={low:'Basso',med:'Medio',high:'Alto'};
-          const tips={low:'Buon mix — impatto glicemico contenuto.',med:'Attenzione — abbina una proteina per ridurre il picco.',high:'Pasto ad alto carico glicemico — troppi carboidrati rapidi.'};
-          gb.className='gbanner ig-'+gi.level;
-          let detail=gi.highCount>1?` (${gi.highCount} alimenti con IG ≥55)`:'';
-          gb.innerHTML=`<span class="gbanner-icon">${icons[gi.level]}</span><div class="gbanner-text"><div>Impatto glicemico: <strong>${labels[gi.level]}</strong> (IG medio ${gi.avg}${detail})</div><div style="font-size:10px;opacity:.8;margin-top:2px">${tips[gi.level]}</div></div>`;
-        }else{gb.style.display='none';}
-      }else{gb.style.display='none';}
-    }
-    updateCtgBar();return;
-  }
+  const el=document.getElementById('trig-display'),rb=document.getElementById('rbanner');
+  if(!trigs.length){el.innerHTML='<div class="notrig">Seleziona alimenti per vedere i trigger</div>';rb.style.display='none';return;}
   el.innerHTML=`<div class="tblock">${trigs.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A',d:''};return`<div class="tchip" style="background:${s.bg};color:${s.c}"><span class="tname">${t}</span><span class="tdesc">${s.d}</span></div>`;}).join('')}</div>`;
   rb.style.display='block';rb.style.background=RBG[mr];rb.style.color=RTC[mr];
-  rb.textContent='Profilo di rischio pasto: '+RL[mr];
-  // Glycemic impact
-  if(gb){
-    const gi=computeGlycemicImpact();
-    if(gi.level==='none'){gb.style.display='none';}
-    else{
-      gb.style.display='flex';
-      const icons={low:'🟢',med:'🟡',high:'🔴'};
-      const labels={low:'Basso',med:'Medio',high:'Alto'};
-      const tips={low:'Buon mix — impatto glicemico contenuto.',med:'Attenzione — abbina una proteina per ridurre il picco.',high:'Pasto ad alto carico glicemico — troppi carboidrati rapidi.'};
-      gb.className='gbanner ig-'+gi.level;
-      let detail=gi.highCount>1?` (${gi.highCount} alimenti con IG ≥55)`:'';
-      gb.innerHTML=`<span class="gbanner-icon">${icons[gi.level]}</span><div class="gbanner-text"><div>Impatto glicemico: <strong>${labels[gi.level]}</strong> (IG medio ${gi.avg}${detail})</div><div style="font-size:10px;opacity:.8;margin-top:2px">${tips[gi.level]}</div></div>`;
-    }
-  }
-  updateCtgBar();
+  rb.textContent='Profilo di rischio pasto: '+RL[mr];updateCtgBar();
 }
 
 function setMeal(m){
   selMeal=selMeal===m?null:m;
   const map={col:'Colazione',pra:'Pranzo',cen:'Cena',spu:'Spuntino',snk:'Snack'};
-  const cls={col:'mbtn-col',pra:'mbtn-pra',cen:'mbtn-cen',spu:'mbtn-spu',snk:'mbtn-snk'};
-  Object.entries(map).forEach(([k,v])=>{const el=document.getElementById('mb-'+k);if(el)el.className='mbtn '+cls[k]+(selMeal===v?' on':'');});
+  Object.entries(map).forEach(([k,v])=>{const el=document.getElementById('mb-'+k);if(el)el.className='mbtn'+(selMeal===v?' on':'');});
 }
 function initDatePicker(){const inp=document.getElementById('pasto-date');if(inp)inp.value=new Date().toISOString().slice(0,10);}
 function buildSyms(){document.getElementById('sym-chips').innerHTML=SYMS.map(s=>`<div class="schip" id="sc-${s.replace(/ /g,'_')}" onclick="togSym('${s}')">${s}</div>`).join('');}
-function togSym(s){const k=s.replace(/ /g,'_');selSym[s]?delete selSym[s]:(selSym[s]=true);document.getElementById('sc-'+k).className='schip'+(selSym[s]?' on':'');updateReactFoodBox();}
+function togSym(s){const k=s.replace(/ /g,'_');selSym[s]?delete selSym[s]:(selSym[s]=true);document.getElementById('sc-'+k).className='schip'+(selSym[s]?' on':'');}
 function buildSevs(){document.getElementById('sev-chips').innerHTML=SEVS.map((s,i)=>`<div class="sevchip" id="sv${i}" onclick="togSev('${s}',${i})">${s}</div>`).join('');}
 function togSev(s,i){SEVS.forEach((_,j)=>{const e=document.getElementById('sv'+j);if(e){e.className='sevchip';e.style.cssText='';}});if(selSev===s){selSev=null;return;}selSev=s;const e=document.getElementById('sv'+i),ss=SS[i];e.style.background=ss.bg;e.style.color=ss.c;e.style.borderColor=ss.c;}
 
@@ -1207,7 +929,7 @@ function saveEntry(){
   if(!names.length){const el=document.getElementById('sel-tags');el.style.outline='2px solid #E24B4A';el.style.borderRadius='8px';setTimeout(()=>{el.style.outline='';},1500);return;}
   const dateVal=document.getElementById('pasto-date').value;
   const ts=dateVal?new Date(dateVal+'T'+new Date().toTimeString().slice(0,8)).toISOString():new Date().toISOString();
-  entries.unshift({id:Date.now(),foods:names,triggers:computeAllTriggers(),maxRisk:computeMaxRisk(),glycemic:computeGlycemicImpact(),symptoms:Object.keys(selSym),severity:selSev,meal:selMeal,reactionTime:document.getElementById('react-time').value,note:document.getElementById('note-inp').value.trim(),reactingFood:reactingFood,ts});
+  entries.unshift({id:Date.now(),foods:names,triggers:computeAllTriggers(),maxRisk:computeMaxRisk(),symptoms:Object.keys(selSym),severity:selSev,meal:selMeal,reactionTime:document.getElementById('react-time').value,note:document.getElementById('note-inp').value.trim(),ts});
   saveData();resetPasto();toast('Pasto salvato ✓');
 }
 function resetPasto(){
@@ -1215,8 +937,8 @@ function resetPasto(){
   renderSelTags();
   document.querySelectorAll('.fchip.on').forEach(el=>el.classList.remove('on'));
   Object.keys(SINGLES).forEach(g=>updateGenreCount(g));
-  CATEGORIES.forEach(c=>updateGenreCount(c.id));
-  reactingFood=null;updateReactFoodBox();updateTriggers();buildSyms();buildSevs();
+  updateGenreCount('piatti');
+  updateTriggers();buildSyms();buildSevs();
   document.getElementById('react-time').value='';document.getElementById('note-inp').value='';
   clearFoodSearch();initDatePicker();updateCtgBar();
 }
@@ -1292,14 +1014,12 @@ function renderHist(){
           const mealColor=e.meal&&MEAL_COLORS[e.meal]?MEAL_COLORS[e.meal]:'#9a9a9a';
           const hasReaction=e.symptoms&&e.symptoms.length>0;
           const riskBadge=e.maxRisk>0?`<span class="entry-risk-badge" style="background:${RBG[e.maxRisk]};color:${RTC[e.maxRisk]}">${e.maxRisk}</span>`:'';
-          const giLevel=e.glycemic?e.glycemic.level:null;
-          const giBadge=giLevel==='high'?'<span class="entry-risk-badge" style="background:#FFF3C4;color:#7A5A00">IG&#8593;</span>':giLevel==='med'?'<span class="entry-risk-badge" style="background:#FFF8E7;color:#9A7A00;font-size:8px">IG</span>':'';
           const symIcon=hasReaction?'<span class="entry-sym-icon">&#128276;</span>':'';
           return`<div class="entry${hasReaction?' has-reaction':''}" id="entry-${e.id}">
             <div class="entry-summary" onclick="togEntry(${e.id})">
               <span class="entry-meal-dot" style="background:${mealColor}" title="${e.meal||''}"></span>
               <span class="entry-foods-short" title="${e.foods.join(', ')}">${e.foods.join(', ')}</span>
-              <span class="entry-badges">${riskBadge}${giBadge}${symIcon}</span>
+              <span class="entry-badges">${riskBadge}${symIcon}</span>
               <span class="entry-time">${fmtT(e.ts).split(' ').pop()}</span>
             </div>
             <div class="entry-detail" id="detail-${e.id}">
@@ -1311,8 +1031,6 @@ function renderHist(){
                 ${ss?`<span class="etag" style="background:${ss.bg};color:${ss.c}">${e.severity}</span>`:''}
                 ${e.maxRisk>0?`<span class="etag" style="background:${RBG[e.maxRisk]};color:${RTC[e.maxRisk]}">Rischio ${RL[e.maxRisk]}</span>`:''}
               </div>
-              ${e.reactingFood?`<div class="ereact" style="color:#A32D2D;font-weight:600">&#128276; Alimento responsabile: ${e.reactingFood}</div>`:''}
-              ${e.glycemic&&e.glycemic.level!=='none'&&e.glycemic.level!=='low'?`<div class="ereact" style="color:#7A5A00;font-weight:600">${e.glycemic.level==='high'?'🔴':'🟡'} IG medio: ${e.glycemic.avg} — impatto ${e.glycemic.level==='high'?'alto':'medio'}</div>`:''}
               ${e.note?`<div class="enote">${e.note}</div>`:''}
               <div id="annota-panel-${e.id}"></div>
               <div class="eactions">
@@ -1414,11 +1132,10 @@ function buildRbtns(containerId,key,color){
   if(!el)return;
   var sel=getStoSel();
   var html='';
-  for(var v=0;v<=5;v++){
+  for(var v=1;v<=5;v++){
     var active=sel[key]===v;
     var style=active?'background:'+color+';color:white;border-color:'+color+';':'';
-    var label=v===0?'OK':String(v);
-    html+='<button class="rbtn" data-key="'+key+'" data-val="'+v+'" data-color="'+color+'" style="'+style+'" onclick="togRbtn(this)">'+label+'</button>';
+    html+='<button class="rbtn" data-key="'+key+'" data-val="'+v+'" data-color="'+color+'" style="'+style+'" onclick="togRbtn(this)">'+v+'</button>';
   }
   el.innerHTML=html;
 }
@@ -1825,9 +1542,8 @@ function setTrigFilter(trig){
   renderCustomFoods();
 }
 function buildTrigFilterBar(){
-  // Raccoglie trigger da TUTTE le CATEGORIES
-  const trigSet=new Set();
-  CATEGORIES.forEach(cat=>cat.items.forEach(f=>f.t.forEach(t=>trigSet.add(t))));
+  // Raccoglie trigger presenti nei custom foods
+  const trigSet=new Set();customFoods.forEach(f=>f.triggers.forEach(t=>trigSet.add(t)));
   const bar=document.getElementById('trig-filter-bar');if(!bar)return;
   let html=`<button class="tfbtn on" id="tf-all" data-trig="" onclick="setTrigFilter(null)">Tutti</button>`;
   [...trigSet].sort().forEach(t=>{
@@ -1840,20 +1556,17 @@ function buildTrigFilterBar(){
 function renderCustomFoods(){
   const el=document.getElementById('custom-foods-list');
   const cnt=document.getElementById('cf-count');
-  // Flatten all items from CATEGORIES
-  const allItems=[];
-  CATEGORIES.forEach(cat=>cat.items.forEach(f=>allItems.push({...f,catId:cat.id,catLabel:cat.label})));
-  if(cnt)cnt.textContent=allItems.length;
+  if(cnt)cnt.textContent=customFoods.length;
 
-  if(!allItems.length){
-    el.innerHTML='<div class="notrig" style="padding:12px 0">Nessun alimento nel database.</div>';
+  if(!customFoods.length){
+    el.innerHTML='<div class="notrig" style="padding:12px 0">Nessun alimento codificato ancora.<br>Usa "Analisi smart" qui sopra per aggiungerne.</div>';
     return;
   }
 
   // Applica filtri
-  let filtered=allItems;
-  if(alimSearchQuery)filtered=filtered.filter(f=>f.n.toLowerCase().includes(alimSearchQuery));
-  if(alimTrigFilter)filtered=filtered.filter(f=>f.t.includes(alimTrigFilter));
+  let filtered=[...customFoods];
+  if(alimSearchQuery)filtered=filtered.filter(f=>f.name.toLowerCase().includes(alimSearchQuery));
+  if(alimTrigFilter)filtered=filtered.filter(f=>f.triggers.includes(alimTrigFilter));
 
   if(!filtered.length){
     el.innerHTML='<div class="empty" style="padding:20px 0">Nessun alimento corrisponde al filtro.</div>';
@@ -1862,7 +1575,7 @@ function renderCustomFoods(){
 
   let html='';
   RISK_SECTIONS.forEach(sec=>{
-    const items=filtered.filter(f=>f.r>=sec.minR&&f.r<=sec.maxR).sort((a,b)=>b.r-a.r||a.n.localeCompare(b.n,'it'));
+    const items=filtered.filter(f=>f.risk>=sec.minR&&f.risk<=sec.maxR).sort((a,b)=>b.risk-a.risk||a.name.localeCompare(b.name,'it'));
     if(!items.length)return;
     const secId='rsec-'+sec.id;
     html+=`<div class="risk-section">
@@ -1873,16 +1586,16 @@ function renderCustomFoods(){
       </div>
       <div class="risk-section-body" id="${secId}">
         ${items.map(f=>{
-          const tH=f.t.length?f.t.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A'};return`<span class="etag" style="background:${s.bg};color:${s.c};font-size:10px">${t}</span>`;}).join(''):'<span style="font-size:10px;color:var(--tx3)">nessun trigger</span>';
-          const igStr=f.g!=null?'<span style="font-size:10px;background:#FAEEDA;color:#854F0B;padding:1px 6px;border-radius:10px;margin-left:4px">IG '+f.g+'</span>':'';
-          return`<div class="cf-item" onclick="togCfMeta('cfm-${escId(f.n)}')">
+          const tH=f.triggers.length?f.triggers.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A'};return`<span class="etag" style="background:${s.bg};color:${s.c};font-size:10px">${t}</span>`;}).join(''):'<span style="font-size:10px;color:var(--tx3)">nessun trigger</span>';
+          return`<div class="cf-item" onclick="togCfMeta('cf-meta-${f.id}')">
             <div class="cf-info">
-              <div class="cf-row1">${rdot(f.r)}<span class="cf-name">${f.n}</span>${igStr}<span style="font-size:9px;color:var(--tx3);margin-left:4px">${f.catLabel}</span></div>
+              <div class="cf-row1">${rdot(f.risk)}<span class="cf-name">${f.name}</span>${f.promoted?'<span class="promo-badge">chip</span>':''}</div>
               <div class="cf-tags-row">${tH}</div>
-              <div class="cf-meta" id="cfm-${escId(f.n)}">${f.rationale||''}</div>
+              <div class="cf-meta" id="cf-meta-${f.id}">${f.rationale||''}${f.note?('<br><em>'+f.note+'</em>'):''}</div>
             </div>
             <div class="cf-actions" onclick="event.stopPropagation()">
-              <button class="cf-del-btn" onclick="deleteFoodFromDb('${f.catId}','${escQ(f.n)}')">&#10005;</button>
+              <button class="cf-promo-btn" onclick="togglePromotion('${f.id}')" title="${f.promoted?'Rimuovi dai chip':'Aggiungi ai chip'}">${f.promoted?'&#9733;':'&#9734;'}</button>
+              <button class="cf-del-btn" onclick="deleteCustomFood('${f.id}')">&#10005;</button>
             </div>
           </div>`;
         }).join('')}
@@ -1898,117 +1611,10 @@ function togRiskSection(id){
   el.style.display=open?'none':'block';
   if(arr)arr.className='risk-section-arrow'+(open?'':' open');
 }
-function togglePromotion(id){/* no-op — promotion concept removed, everything is in CATEGORIES */}
-function deleteCustomFood(id){/* legacy no-op */}
-function deleteFoodFromDb(catId,name){
-  const cat=CATEGORIES.find(c=>c.id===catId);
-  if(!cat)return;
-  cat.items=cat.items.filter(f=>f.n!==name);
-  DISHES=rebuildDISHES();
-  saveCategories();
-  buildGenreChips();buildTrigFilterBar();renderCustomFoods();
-  toast('Alimento rimosso');
-}
+function togglePromotion(id){const cf=customFoods.find(f=>f.id===id);if(!cf)return;cf.promoted=!cf.promoted;saveCustomData();buildCustomGenreChips();renderCustomFoods();toast(cf.promoted?'Aggiunto ai chip ✓':'Rimosso dai chip');}
+function deleteCustomFood(id){customFoods=customFoods.filter(f=>f.id!==id);delete selItems['custom:'+id];saveCustomData();buildCustomGenreChips();buildTrigFilterBar();renderCustomFoods();toast('Alimento rimosso');}
 
 /* ── AI ANALYSIS ── */
-/* ── BARCODE SCANNER ────────────────────────────────────── */
-var barcodeReader=null, barcodeStream=null, barcodeActive=false;
-
-function toggleScanner(){
-  if(barcodeActive) stopScanner();
-  else startScanner();
-}
-
-async function startScanner(){
-  const wrap=document.getElementById('scanner-wrap');
-  const btn=document.getElementById('scan-btn');
-  const status=document.getElementById('barcode-status');
-  document.getElementById('off-product-card').className='off-product-card';
-  status.innerHTML='<span class="spin"></span> Avvio fotocamera...';
-  wrap.className='scanner-wrap vis';
-  btn.className='scan-btn active';
-  barcodeActive=true;
-  try{
-    if(typeof ZXing==='undefined'){status.textContent='⚠ Libreria scanner non caricata. Connessione internet necessaria.';stopScanner();return;}
-    const hints=new Map();
-    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[
-      ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,
-      ZXing.BarcodeFormat.UPC_A,ZXing.BarcodeFormat.UPC_E,
-      ZXing.BarcodeFormat.CODE_128,ZXing.BarcodeFormat.QR_CODE
-    ]);
-    barcodeReader=new ZXing.BrowserMultiFormatReader(hints);
-    const video=document.getElementById('scanner-video');
-    // Usa constraints diretti per preferire fotocamera posteriore (no listVideoInputDevices)
-    const constraints={video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}};
-    barcodeStream=await navigator.mediaDevices.getUserMedia(constraints);
-    video.srcObject=barcodeStream;
-    await video.play();
-    status.textContent='';
-    // Decode loop
-    barcodeReader.decodeFromStream(barcodeStream,video,function(result,err){
-      if(result){
-        const code=result.getText();
-        stopScanner();
-        lookupBarcode(code);
-      }
-      // err = no barcode yet, normale durante la scansione, ignora
-    });
-  }catch(err){
-    status.textContent='⚠ '+(err.name==='NotAllowedError'?'Permesso fotocamera negato — abilita nelle impostazioni Safari':err.message);
-    stopScanner();
-  }
-}
-
-function stopScanner(){
-  if(barcodeReader){try{barcodeReader.reset();}catch(e){}}
-  if(barcodeStream){barcodeStream.getTracks().forEach(t=>t.stop());barcodeStream=null;}
-  const video=document.getElementById('scanner-video');
-  if(video){video.srcObject=null;}
-  barcodeReader=null;
-  barcodeActive=false;
-  document.getElementById('scanner-wrap').className='scanner-wrap';
-  document.getElementById('scan-btn').className='scan-btn';
-  document.getElementById('barcode-status').textContent='';
-}
-
-async function lookupBarcode(code){
-  const status=document.getElementById('barcode-status');
-  const card=document.getElementById('off-product-card');
-  status.innerHTML='<span class="spin"></span> Codice: '+code+' — ricerca Open Food Facts...';
-  card.className='off-product-card';
-  try{
-    const url='https://world.openfoodfacts.org/api/v2/product/'+code+'?fields=product_name,brands,ingredients_text,nutriments,categories_tags,labels_tags,quantity';
-    const res=await fetch(url);
-    const data=await res.json();
-    if(data.status!==1||!data.product){
-      status.textContent='⚠ Prodotto non trovato (cod. '+code+') — inserisci il nome manualmente';
-      return;
-    }
-    const p=data.product;
-    const name=(p.product_name||'').trim()||(p.brands||'').trim()||'Prodotto '+code;
-    const brand=p.brands||'';
-    const ingredients=(p.ingredients_text||'').replace(/<[^>]+>/g,'').trim();
-    const quantity=p.quantity||'';
-    // Build display
-    document.getElementById('off-product-name').textContent=name+(brand?' — '+brand:'')+(quantity?' ('+quantity+')':'');
-    var metaParts=[];
-    if(ingredients)metaParts.push('🧪 '+ingredients.slice(0,200)+(ingredients.length>200?'…':''));
-    var n=p.nutriments||{};
-    if(n['energy-kcal_100g'])metaParts.push('⚡ '+Math.round(n['energy-kcal_100g'])+' kcal/100g');
-    if(n['sugars_100g']!=null)metaParts.push('🍬 zuccheri '+n['sugars_100g']+'g');
-    document.getElementById('off-product-meta').innerHTML=metaParts.join('<br>');
-    card.className='off-product-card vis';
-    status.textContent='✓ Trovato — clicca Analizza per valutare il rischio Widal';
-    // Pre-fill smart input with name + key ingredients for better AI analysis
-    var aiQuery=name;
-    if(ingredients)aiQuery+='. Ingredienti: '+ingredients.slice(0,300);
-    document.getElementById('smart-inp').value=aiQuery;
-  }catch(err){
-    status.textContent='⚠ Errore ricerca: '+err.message;
-  }
-}
-/* ── FINE BARCODE SCANNER ─────────────────────────────── */
-
 async function analyzeFood(){
   const query=document.getElementById('smart-inp').value.trim();if(!query)return;
   const portions=Math.max(1,parseInt(document.getElementById('smart-portions').value)||1);
@@ -2017,7 +1623,7 @@ async function analyzeFood(){
   resEl.innerHTML='<div class="ai-loading"><span class="ai-spinner"></span>Analisi in corso...</div>';
   currentAiResult=null;
   const portNote=portions>1?'\n\nRicetta per '+portions+' porzioni: valuta rischio sulla SINGOLA porzione.':'';
-  const prompt=`${CLINICAL_PROFILE}\n\nRICHIESTA: Analizza: "${query}"${portNote}\n\nRispondi SOLO con JSON valido:\n{"name":"nome","risk":0-5,"triggers":["Istamina"|"Salicilati"|"Ammine biogene"|"Tiramina"|"TRPA1"|"Istamina-lib."],"rationale":"2-3 frasi cliniche","note":"avvertenze o stringa vuota","glycemicIndex":numero_IG_0-100_o_null,"glycemicCat":"basso|medio|alto|null","category":"pasta|pollo|pesce|zuppe|insalate|verdure|frutta|dolci|formaggi|bevande|altro"}`;
+  const prompt=`${CLINICAL_PROFILE}\n\nRICHIESTA: Analizza: "${query}"${portNote}\n\nRispondi SOLO con JSON valido (niente altro, niente backtick, niente testo prima o dopo):\n{"name":"nome alimento","risk":0-5,"triggers":["Istamina"|"Salicilati"|"Ammine biogene"|"Tiramina"|"TRPA1"|"Istamina-lib."],"rationale":"2-3 frasi cliniche sul profilo MCAS","note":"avvertenze specifiche MCAS o stringa vuota","glycemic":{"ig":numero_0-100_o_null_se_non_applicabile,"cg":"basso|medio|alto","fiber":"solubile|insolubile|mista|assente","ins":"normale|elevato","note_g":"1 frase pratica: impatto glicemico, abbinamenti consigliati, effetto cottura se rilevante","conflict":"stringa non vuota SOLO se conflitto MCAS vs glicemia, altrimenti stringa vuota"}}`;
   try{
     if(!apiKey){resEl.innerHTML='<div style="font-size:13px;color:#A32D2D;padding:8px">&#128273; Chiave API non configurata.</div>';btn.disabled=false;btn.textContent='Analizza';return;}
     const response=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:prompt}]})});
@@ -2035,57 +1641,32 @@ function renderAiResult(r){
   const tH=r.triggers.length?r.triggers.map(t=>{const s=TS[t]||{bg:'#F1EFE8',c:'#5F5E5A'};return`<span class="etag" style="background:${s.bg};color:${s.c};font-size:11px;padding:3px 9px">${t}</span>`;}).join(''):'<span style="font-size:11px;color:var(--tx3)">Nessun trigger</span>';
   const portBadge=r.portions>1?` <span style="font-size:10px;color:var(--tx3)">(1/${r.portions} porz.)</span>`:'';
   resEl.style.display='block';
-  var igBadge=r.glycemicIndex?'<span style="font-size:10px;background:#FAEEDA;color:#854F0B;padding:2px 7px;border-radius:10px;margin-left:6px">IG '+r.glycemicIndex+(r.glycemicCat?' — '+r.glycemicCat:'')+'</span>':'';
-  var catBadge=r.category?'<span style="font-size:10px;background:var(--bg3);color:var(--tx2);padding:2px 7px;border-radius:10px;margin-left:4px">'+r.category+'</span>':'';
-  var nm=escQ(r.name);
-  resEl.innerHTML='<div class="ai-result-header"><div class="ai-food-name">'+r.name+portBadge+igBadge+catBadge+'</div><div class="ai-risk-badge" style="background:'+riskBg+';color:'+riskColor+'">'+r.risk+'/5 -- '+riskLabel+'</div></div><div class="ai-triggers-row">'+tH+'</div><div class="ai-rationale">'+r.rationale+(r.note?'<br><em>'+r.note+'</em>':'')+'</div><div class="ai-action-row"><button class="ai-btn ai-btn-promo" onclick="saveAndPromote(&quot;'+nm+'&quot;)">&#9733; Salva + chip</button><button class="ai-btn ai-btn-save" onclick="saveCustomOnly(&quot;'+nm+'&quot;)">Salva DB</button><button class="ai-btn ai-btn-disc" onclick="discardAi()">&#215;</button></div>';
+  var gH="";
+  if(r.glycemic){
+    var g=r.glycemic;
+    var igCls=g.ig<=55?"gbadge-low":g.ig<=69?"gbadge-med":"gbadge-high";
+    var cgCls=g.cg==="basso"?"gbadge-low":g.cg==="medio"?"gbadge-med":"gbadge-high";
+    var fibrCls=g.fiber==="solubile"?"gbadge-low":g.fiber==="mista"?"gbadge-med":"gbadge-neutral";
+    var insKey=g.ins||g.insulin_response||'';
+    var insCls=insKey==="normale"?"gbadge-low":"gbadge-high";
+    gH='<div class="ai-glycemic">'+
+      '<div class="ai-glycemic-title">&#128200; Profilo glicemico</div>'+
+      '<div class="ai-glycemic-badges">'+
+      '<div class="gbadge '+igCls+'"><span class="gbadge-val">'+g.ig+'</span><span class="gbadge-lbl">IG</span></div>'+
+      '<div class="gbadge '+cgCls+'"><span class="gbadge-val">'+g.cg+'</span><span class="gbadge-lbl">Carico Glic.</span></div>'+
+      '<div class="gbadge '+fibrCls+'"><span class="gbadge-val">'+g.fiber+'</span><span class="gbadge-lbl">Fibra</span></div>'+
+      '<div class="gbadge '+insCls+'"><span class="gbadge-val">'+g.insulin_response+'</span><span class="gbadge-lbl">Insulina</span></div>'+
+      '</div>'+
+      (g.note_g||g.note?('<div class="ai-glycemic-note">'+(g.note_g||g.note)+'</div>'):'')+ 
+      (g.conflict?('<div style="margin-top:6px;padding:6px 10px;border-radius:6px;background:#FDF5E0;font-size:11px;color:#7A5A00;font-weight:600">Conflitto MCAS/Glicemia: '+g.conflict+'</div>'):'')+ 
+      '</div>';
+  }
+  resEl.innerHTML=`<div class="ai-result-header"><div class="ai-food-name">${r.name}${portBadge}</div><div class="ai-risk-badge" style="background:${riskBg};color:${riskColor}">${r.risk}/5 -- ${riskLabel}</div></div><div class="ai-triggers-row">${tH}</div><div class="ai-rationale">${r.rationale}${r.note?'<br><em>'+r.note+'</em>':''}</div>`+gH+
+  `<div class="ai-action-row"><button class="ai-btn ai-btn-promo" onclick="saveAndPromote('${escQ(r.name)}')">&#9733; Salva + chip</button><button class="ai-btn ai-btn-save" onclick="saveCustomOnly('${escQ(r.name)}')">Salva DB</button><button class="ai-btn ai-btn-disc" onclick="discardAi()">&#215;</button></div>`;
 }
 function discardAi(){document.getElementById('ai-result').style.display='none';document.getElementById('smart-inp').value='';currentAiResult=null;}
-
-// ── Save AI result directly into CATEGORIES ──
-function addToCategories(r){
-  const defaultIG={pasta:55,zuppe:35,pesce:0,pollo:5,verdure:20,formaggi:0,insalate:10,frutta:40,dolci:60,bevande:0,altro:30};
-  var catId=r.category||getCatForFood(r.name)||'altro';
-  var cat=CATEGORIES.find(c=>c.id===catId)||CATEGORIES.find(c=>c.id==='altro');
-  if(!cat)return null;
-  var existing=cat.items.find(f=>f.n.toLowerCase()===r.name.toLowerCase());
-  if(existing){
-    // Update existing
-    if(r.triggers&&r.triggers.length)existing.t=r.triggers;
-    if(r.risk!=null)existing.r=r.risk;
-    if(r.glycemicIndex!=null)existing.g=r.glycemicIndex;
-    else if(existing.g==null)existing.g=defaultIG[catId]||30;
-    if(r.rationale)existing.rationale=r.rationale;
-  }else{
-    // Add new
-    var newItem={n:r.name,t:r.triggers||[],r:r.risk||0,
-      g:r.glycemicIndex!=null?r.glycemicIndex:(defaultIG[catId]||30),
-      rationale:r.rationale||null};
-    var idx=cat.items.findIndex(f=>f.n.localeCompare(newItem.n,'it')>0);
-    if(idx<0)cat.items.push(newItem);else cat.items.splice(idx,0,newItem);
-  }
-  DISHES=rebuildDISHES();
-  saveCategories();
-  return cat;
-}
-
-function saveCustomOnly(name){
-  if(!currentAiResult)return;
-  var r=currentAiResult;
-  // Check duplicate
-  for(var c of CATEGORIES){if(c.items.find(f=>f.n.toLowerCase()===r.name.toLowerCase())){toast('Già presente — aggiornato');addToCategories(r);buildGenreChips();buildTrigFilterBar();renderCustomFoods();discardAi();return;}}
-  addToCategories(r);
-  buildGenreChips();buildTrigFilterBar();renderCustomFoods();discardAi();
-  toast('Salvato nel DB ✓');
-}
-
-function saveAndPromote(name){
-  if(!currentAiResult)return;
-  var r=currentAiResult;
-  var cat=addToCategories(r);
-  buildGenreChips();buildTrigFilterBar();renderCustomFoods();discardAi();
-  toast('✓ Aggiunto in '+(cat?cat.label:'Altro'));
-}
+function saveCustomOnly(name){if(!currentAiResult)return;const r=currentAiResult;if(customFoods.find(f=>f.name.toLowerCase()===r.name.toLowerCase())){toast('Già presente');return;}customFoods.push({id:'cf'+Date.now(),name:r.name,risk:r.risk,triggers:r.triggers,rationale:r.rationale,note:r.note||'',promoted:false,ts:new Date().toISOString()});saveCustomData();buildCustomGenreChips();buildTrigFilterBar();renderCustomFoods();discardAi();toast('Salvato nel DB ✓');}
+function saveAndPromote(name){if(!currentAiResult)return;const r=currentAiResult;const existing=customFoods.find(f=>f.name.toLowerCase()===r.name.toLowerCase());if(existing){existing.promoted=true;}else{customFoods.push({id:'cf'+Date.now(),name:r.name,risk:r.risk,triggers:r.triggers,rationale:r.rationale,note:r.note||'',promoted:true,ts:new Date().toISOString()});}saveCustomData();buildCustomGenreChips();buildTrigFilterBar();renderCustomFoods();discardAi();toast('Salvato e promosso a chip ✓');}
 
 /* ── API KEY ── */
 function saveApiKey(){const inp=document.getElementById('apikey-inp');const raw=inp.value.trim();const val=(raw.includes('\u2022')||raw.includes('•'))?apiKey:raw;if(!val||!val.startsWith('sk-ant-')){showKeyStatus('Formato non valido. Deve iniziare con sk-ant-',false);return;}apiKey=val;try{localStorage.setItem('widal-apikey-v1',apiKey);}catch(e){}inp.value=maskKey(apiKey);inp.type='password';showKeyStatus('Chiave salvata ✓',true);}
@@ -2146,13 +1727,13 @@ function renderStats(){
 }
 
 /* ── EXPORT/IMPORT ── */
-function exportData(){const data={version:2,exported:new Date().toISOString(),entries,statoEntries,foods:CATEGORIES,biometrics};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='widal-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);showSyncStatus('Esportato! Salvalo in iCloud Drive.','ok');}
-function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){try{const data=JSON.parse(e.target.result);if(!data.entries&&!data.statoEntries){showSyncStatus('File non valido.','err');return;}if(data.entries)entries=data.entries;if(data.statoEntries)statoEntries=data.statoEntries;if(data.foods){CATEGORIES=data.foods;DISHES=rebuildDISHES();saveCategories();}else if(data.customFoods){customFoods=data.customFoods;localStorage.removeItem('widal-migration-v3');migrateCustomFoods();}if(data.biometrics)biometrics=data.biometrics;saveBiometrics();saveData();saveStatoData();buildGenreChips();buildTrigFilterBar();renderCustomFoods();
+function exportData(){const data={version:1,exported:new Date().toISOString(),entries,statoEntries,customFoods};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='widal-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);showSyncStatus('Esportato! Salvalo in iCloud Drive.','ok');}
+function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){try{const data=JSON.parse(e.target.result);if(!data.entries&&!data.statoEntries){showSyncStatus('File non valido.','err');return;}if(data.entries)entries=data.entries;if(data.statoEntries)statoEntries=data.statoEntries;if(data.customFoods)customFoods=data.customFoods;saveData();saveStatoData();saveCustomData();buildCustomGenreChips();buildTrigFilterBar();renderCustomFoods();
 var dateStr='';
 if(data.exported){var d=new Date(data.exported);dateStr=' — backup del '+d.toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'});}
-showSyncStatus('Importati: '+entries.length+' pasti, '+statoEntries.length+' valutazioni, '+DISHES.length+' alimenti'+dateStr+'.','ok');toast('Dati importati ✓');}catch(err){showSyncStatus('Errore JSON: '+err.message,'err');}};reader.readAsText(file);input.value='';}
+showSyncStatus('Importati: '+entries.length+' pasti, '+statoEntries.length+' valutazioni, '+customFoods.length+' alimenti'+dateStr+'.','ok');toast('Dati importati ✓');}catch(err){showSyncStatus('Errore JSON: '+err.message,'err');}};reader.readAsText(file);input.value='';}
 function showSyncStatus(msg,type){const el=document.getElementById('sync-status');el.textContent=msg;el.className='sync-status '+(type||'ok');el.style.display='block';}
-function copyForClaude(){const allFoods=CATEGORIES.flatMap(c=>c.items.map(f=>({name:f.n,risk:f.r,triggers:f.t,ig:f.g,cat:c.id})));const txt='DATI DIARIO WIDAL\n\nPasti recenti:\n'+JSON.stringify(entries.slice(0,12),null,2)+'\n\nStato infiammatorio:\n'+JSON.stringify(statoEntries.slice(-15),null,2)+'\n\nDB Alimenti ('+allFoods.length+'):\n'+JSON.stringify(allFoods,null,2)+'\n\nChiedo: analizza i pattern, i trigger dominanti e le eventuali correlazioni tra pasti e stato infiammatorio.';navigator.clipboard.writeText(txt).then(()=>toast('Dati copiati ✓')).catch(()=>toast('Errore copia'));}
+function copyForClaude(){const txt='DATI DIARIO WIDAL\n\nPasti recenti:\n'+JSON.stringify(entries.slice(0,12),null,2)+'\n\nStato infiammatorio:\n'+JSON.stringify(statoEntries.slice(-15),null,2)+'\n\nAlimenti personalizzati:\n'+JSON.stringify(customFoods,null,2)+'\n\nChiedo: analizza i pattern, i trigger dominanti e le eventuali correlazioni tra pasti e stato infiammatorio.';navigator.clipboard.writeText(txt).then(()=>toast('Dati copiati ✓')).catch(()=>toast('Errore copia'));}
 
 /* ── TABS ── */
 function showTab(t){
@@ -2160,117 +1741,14 @@ function showTab(t){
   if(t==='pasto')updateCtgBar();if(t==='hist')renderHist();
   if(t==='stato')renderStato();
   if(t==='alim'){buildTrigFilterBar();renderCustomFoods();initApiKeyUI();}
-  if(t==='stats'){renderStats();renderBiometrics();}
   if(t==='stats')renderStats();
 }
 
-
-// ── CATEGORIE PIATTI ──
-var FOOD_CATS=[
-  {id:'pasta',icon:'\uD83C\uDF5D',label:'Pasta & Cereali',names:['Gnocchi al burro','Penne in bianco senza formaggio','Spaghetti in bianco','Tagliatelle al burro','Tagliolini alla crema di zucchine','Lasagne in bianco di verdure a foglia verde','Zuppa di orzo']},
-  {id:'pollo',icon:'\uD83C\uDF57',label:'Pollo & Tacchino',names:['Fetta di tacchino ai ferri','Insalata di pollo con dadini di emmental fagiolini, patate e carote','Pollo allo spiedo con patate al forno','Tacchino impanato']},
-  {id:'pesce',icon:'\uD83D\uDC1F',label:'Pesce',names:['Branzino in padella con zucchine lessate','Branzino in padella nature','Merluzzo al vapore con patate al valore','Rombo in umido nature','Rombo liscio in padella','Trancio di salmone fresco al forno']},
-  {id:'zuppe',icon:'\uD83C\uDF72',label:'Zuppe & Minestre',names:['Farinata di ceci','Fagioli in umido','Fagioli stufati nature','Passata di zucca','Passata di zucchine con ceci lessati, olio e sale']},
-  {id:'insalate',icon:'\uD83E\uDD57',label:'Insalate',names:['Cuore di lattuga','Iceberg condita con olio di oliva','Insalata mista condita (aceto)','Insalata verde scarola','Insalata, carote, cetriolo']},
-  {id:'verdure',icon:'\uD83E\uDD66',label:'Verdure & Uova',names:['Carote e patate fritte','Carote, patate e fagiolini al forno','Carote, zucchine e fagiolini al vapore','Crocchette di patate','Fagiolini','Fette di Zucca al forno','Fiori di Zucchine in tempura','Omelette alle zucchine','Omelette nature','Patate al vapore','Patatine chips','Uova sode','Zucchine carote cavolfiore al vapore','Mandorle pelate']},
-  {id:'frutta',icon:'\uD83C\uDF4E',label:'Frutta',names:['Mela sbucciata cotta']},
-  {id:'dolci',icon:'\uD83C\uDF70',label:'Dolci & Snack',names:['Affogato di vaniglia all\u2019orzo','Biscotti Macine','Biscotti petit beurre','Canestrelli semplici farina burro zucchero','Dolcetto di pastafrolla con goccia di cioccolato','Gelato alla crema','Gelato fiordilatte','Pastafrolla']},
-  {id:'formaggi',icon:'\uD83E\uDDC0',label:'Formaggi',names:['Focaccia al formaggio di Recco','Formaggio Gottardo','Grana padano']},
-  {id:'bevande',icon:'\u2615',label:'Bevande',names:['Caff\u00E8 d\u2019orzo','Camomilla','Cappuccino d\u2019orzo','Cappuccino decaffeinato','Cappuccino di caff\u00E8 intero','Tisana istantanea di finocchio granulato']},
-  {id:'altro',icon:'\uD83C\uDF7D',label:'Altro',names:[]},
-];
-function getCatForFood(name){
-  for(var i=0;i<FOOD_CATS.length-1;i++){if(FOOD_CATS[i].names.indexOf(name)>=0)return FOOD_CATS[i].id;}
-  return 'altro';
-}
-function getOrAssignCat(f){
-  if(f.category)return f.category;
-  var cat=getCatForFood(f.name);
-  f.category=cat;
-  return cat;
-}
-
-// buildCatChips: no-op — chip building handled by buildGenreChips
-function buildCatChips(){}
-
-// Legacy compat stubs
-function togglePromotionById(btn){}
-function deleteCfById(btn){
-  // Legacy: extract food name and remove
-  var id=btn.dataset.cfid;if(!id)return;
-  for(var c of CATEGORIES){
-    var idx=c.items.findIndex(function(f){return escId(f.n)===id||f.n===id;});
-    if(idx>=0){c.items.splice(idx,1);break;}
-  }
-  DISHES=rebuildDISHES();saveCategories();buildGenreChips();buildTrigFilterBar();renderCustomFoods();toast('Rimosso');
-}
-
-
-
-// renderCustomFoods is now defined directly above (unified DB view)
-
-// Reacting food selector
-var reactingFood=null;
-function updateReactFoodBox(){
-  var box=document.getElementById('react-food-box');
-  var chipsEl=document.getElementById('react-food-chips');
-  if(!box||!chipsEl)return;
-  var hasSym=Object.keys(selSym).length>0;
-  box.className='react-food-box'+(hasSym?' vis':'');
-  if(!hasSym){reactingFood=null;return;}
-  var foods=getAllSelectedNames();
-  if(!foods.length){chipsEl.innerHTML='<span style="font-size:11px;color:var(--tx3)">Seleziona prima gli alimenti</span>';return;}
-  chipsEl.innerHTML=foods.map(function(n){
-    var on=reactingFood===n;
-    return '<div class="rfchip'+(on?' on':'')+'" data-name="'+escQ(n)+'" onclick="setReactFoodEl(this)">'+n+'</div>';
-  }).join('');
-}
-function setReactFoodEl(el){setReactFood(el.dataset.name);}
-function setReactFood(name){
-  reactingFood=reactingFood===name?null:name;
-  updateReactFoodBox();
-}
-
-// Biometric data
-var biometrics=[];
-function loadBiometrics(){try{var r=localStorage.getItem('widal-biometrics-v1');if(r)biometrics=JSON.parse(r);}catch(e){biometrics=[];}}
-function saveBiometrics(){try{localStorage.setItem('widal-biometrics-v1',JSON.stringify(biometrics));}catch(e){}}
-function saveBiometric(){
-  var g=parseFloat(document.getElementById('bm-glicemia').value)||null;
-  var p=parseFloat(document.getElementById('bm-peso').value)||null;
-  if(!g&&!p){toast('Inserisci almeno un valore');return;}
-  biometrics.unshift({id:Date.now(),ts:new Date().toISOString(),glicemia:g,peso:p});
-  saveBiometrics();
-  document.getElementById('bm-glicemia').value='';
-  document.getElementById('bm-peso').value='';
-  renderBiometrics();
-  toast('Salvato ✓');
-}
-function renderBiometrics(){
-  var el=document.getElementById('bm-list');if(!el)return;
-  if(!biometrics.length){el.innerHTML='<div style="font-size:12px;color:var(--tx3);padding:8px 0">Nessuna rilevazione ancora.</div>';return;}
-  var last10=biometrics.slice(0,10);
-  el.innerHTML=last10.map(function(b){
-    var parts=[];
-    if(b.glicemia!=null)parts.push('<span class="bm-val">'+b.glicemia+'</span> <span class="bm-unit">mg/dL</span>');
-    if(b.peso!=null)parts.push('<span class="bm-val">'+b.peso+'</span> <span class="bm-unit">kg</span>');
-    return '<div class="bm-entry">'+
-      '<span class="bm-time">'+fmtT(b.ts)+'</span>'+
-      parts.join('<span style="color:var(--tx3);padding:0 6px">·</span>')+
-      '<button class="bm-del" onclick="delBiometric('+b.id+')">✕</button>'+
-      '</div>';
-  }).join('');
-}
-function delBiometric(id){biometrics=biometrics.filter(function(b){return b.id!==id;});saveBiometrics();renderBiometrics();}
-
-
-function togglePromotionById(btn){togglePromotion(btn.dataset.cfid);}
-function deleteCfById(btn){deleteCustomFood(btn.dataset.cfid);}
 /* ── INIT ── */
 loadData();
 initDatePicker();
 buildGenreChips();
-buildCatChips();
+buildCustomGenreChips();
 buildTrigFilterBar();
 buildSyms();buildSevs();setMomento(0);
 updateTriggers();
