@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="Widal"/>
-<title>Diario Widal v4</title>
+<title>Diario Widal v13</title>
 <style>
 :root{
   --bg:#ffffff;--bg2:#f5f5f4;--bg3:#ececea;
@@ -375,6 +375,25 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
   .ctg-warning.warn-yellow{background:#3a2e00;color:#e0c060;}
   .ctg-warning.warn-red{background:#3a1010;color:#f07070;}
 }
+
+/* Glycemic Prediction Card */
+.gpred-card{border:0.5px solid var(--bd);border-radius:var(--rl);padding:12px 14px;margin-top:8px;background:var(--bg);transition:opacity .3s;}
+.gpred-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.gpred-title{font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.gpred-verdict{font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.gpred-verdict.ok{background:#E8F5EE;color:#2E6644;}
+.gpred-verdict.warn{background:#FFF8E7;color:#7A5A00;}
+.gpred-verdict.bad{background:#FCEAEA;color:#A32D2D;}
+@media(prefers-color-scheme:dark){
+  .gpred-verdict.ok{background:#1a3528;color:#80d4a0;}
+  .gpred-verdict.warn{background:#2e2610;color:#e0c060;}
+  .gpred-verdict.bad{background:#2e1010;color:#f07070;}
+}
+.gpred-stats{display:flex;gap:8px;margin-top:8px;}
+.gpred-stat{flex:1;text-align:center;background:var(--bg2);border-radius:6px;padding:6px 4px;}
+.gpred-stat-val{font-size:15px;font-weight:700;line-height:1;}
+.gpred-stat-lbl{font-size:9px;color:var(--tx3);margin-top:2px;}
+.gpred-note{font-size:10px;color:var(--tx3);margin-top:6px;line-height:1.4;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/umd/index.min.js"></script>
 </head>
@@ -472,6 +491,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       <div id="trig-display"><div class="notrig">Seleziona alimenti per vedere i trigger</div></div>
       <div id="rbanner" class="rbanner" style="display:none"></div>
       <div id="gbanner" class="gbanner" style="display:none"></div>
+      <div id="gpred-card" class="gpred-card" style="display:none"></div>
     </div>
     <div class="field">
       <label class="lbl">Sintomi osservati</label>
@@ -904,6 +924,8 @@ const RISK_SECTIONS=[
   {id:"rs01",label:"✅ Sicuri (0-1/5)",minR:0,maxR:1,bg:"#E1F5EE",c:"#2E8B57",bdg:"#B0DEC9"},
 ];
 
+
+const GLYCEMIC_PROFILE = {"version": "ross-glycemic-profile-v1", "generated": "2026-05-26", "data_basis": {"total_curves": 322, "valid_curves": 288, "period1_days": 159, "period2_days": 20, "date_range": "2023-09-25 \u2192 2026-05-26"}, "insulin_response": {"peak_time_median": 86, "peak_time_p25": 50, "peak_time_p75": 142, "recovery_median": 132, "recovery_p25": 88, "recovery_p75": 178, "overshoot_rate": 0.45}, "meal_type_response": {"carbo": {"n": 66, "spike_mean": 2.0, "spike_std": 0.93, "peak_time": 88, "recovery": 107, "auc_mean": 113.0, "overshoot_rate": 0.65}, "proteico": {"n": 19, "spike_mean": 1.58, "spike_std": 0.82, "peak_time": 85, "recovery": 125, "auc_mean": 129.0, "overshoot_rate": 0.42}, "carbo+prot": {"n": 16, "spike_mean": 1.86, "spike_std": 0.63, "peak_time": 116, "recovery": 180, "auc_mean": 136.0, "overshoot_rate": 0.06}, "prot+fibra": {"n": 91, "spike_mean": 1.34, "spike_std": 0.64, "peak_time": 97, "recovery": 144, "auc_mean": 96.0, "overshoot_rate": 0.41}, "carbo+fibra": {"n": 5, "spike_mean": 1.81, "spike_std": 0.7, "peak_time": 102, "recovery": 161, "auc_mean": 135.0, "overshoot_rate": 0.4}, "fibroso": {"n": 37, "spike_mean": 1.55, "spike_std": 0.78, "peak_time": 87, "recovery": 144, "auc_mean": 117.0, "overshoot_rate": 0.43}, "altro": {"n": 54, "spike_mean": 1.5, "spike_std": 0.76, "peak_time": 113, "recovery": 126, "auc_mean": 81.0, "overshoot_rate": 0.43}}, "time_of_day": {"mattina": {"n": 90, "baseline_mean": 5.81, "spike_mean": 1.78, "spike_std": 0.91, "peak_time": 96, "recovery": 114, "overshoot_rate": 0.58}, "pranzo": {"n": 99, "baseline_mean": 6.01, "spike_mean": 1.46, "spike_std": 0.69, "peak_time": 91, "recovery": 138, "overshoot_rate": 0.37}, "sera": {"n": 91, "baseline_mean": 5.73, "spike_mean": 1.56, "spike_std": 0.76, "peak_time": 101, "recovery": 145, "overshoot_rate": 0.44}}, "baseline_effect": {"slope": -0.322, "intercept": 3.48, "r_squared": 0.065, "interpretation": "Ogni +1 mmol/L di basale \u2192 -0.32 spike (relazione inversa)"}, "current_params": {"avg_baseline": 5.4, "avg_spike": 1.45, "avg_peak_time": 122, "avg_recovery": 143, "avg_auc": 83.4}, "volatility_effect": {"stabile": {"n": 58, "spike_mean": 1.93, "auc_mean": 129.0}, "moderato": {"n": 167, "spike_mean": 1.5, "auc_mean": 95.0}, "volatile": {"n": 63, "spike_mean": 1.57, "auc_mean": 110.0}}};
 let selItems={},selSym={},selSev=null,selMeal=null;
 let entries=[],statoEntries=[],apiKey='',currentAiResult=null;
 // Legacy — kept only for import compatibility, always empty in normal operation
@@ -1015,13 +1037,175 @@ function computeGlycemicImpact(){
   keys.forEach(k=>{const d=getItemData(k);if(d.g!=null&&d.g>0){vals.push(d.g);maxG=Math.max(maxG,d.g);}});
   if(!vals.length)return{avg:0,max:0,level:'low',count:keys.length};
   const avg=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
-  // Weighted: if many high-IG items, impact is higher
   const highCount=vals.filter(v=>v>=55).length;
   const score=avg+(highCount>1?highCount*5:0);
   let level='low';
   if(score>=55||maxG>=65)level='high';
   else if(score>=35||maxG>=55)level='med';
   return{avg,max:maxG,level,count:vals.length,highCount};
+}
+
+// ── PREDICTIVE ENGINE (calibrated on personal profile) ──
+function predictGlycemicCurve() {
+  const names = getAllSelectedNames();
+  if (!names.length) return null;
+  
+  const P = GLYCEMIC_PROFILE;
+  if (!P || !P.meal_type_response) return null;
+  
+  // Classify meal composition
+  const txt = names.join(' ').toLowerCase();
+  const carbKW = ['pasta','riso','risotto','pane','gnocchi','cracker','fiocchi','patate','farro','orzo','focaccia','polenta','biscott','pizza','minestra','zuppa'];
+  const protKW = ['pollo','tacchino','uov','pesce','merluzzo','orata','branzino','salmone','tonno','tartare','protein','carne','ombrina','limanda','rombo','nugget','quark'];
+  const fiberKW = ['lenticchi','ceci','fagioli','verdur','insalata','spinac','cavolfiore','zucchine','asparagi','broccoli','scarola','cetriolo','cannellini'];
+  
+  const hasCarb = carbKW.some(k => txt.includes(k));
+  const hasProt = protKW.some(k => txt.includes(k));
+  const hasFiber = fiberKW.some(k => txt.includes(k));
+  
+  let mtype = 'altro';
+  if (hasCarb && hasProt) mtype = 'carbo+prot';
+  else if (hasProt && hasFiber) mtype = 'prot+fibra';
+  else if (hasCarb && hasFiber) mtype = 'carbo+fibra';
+  else if (hasCarb) mtype = 'carbo';
+  else if (hasProt) mtype = 'proteico';
+  else if (hasFiber) mtype = 'fibroso';
+  
+  // Get time slot from meal selection or current hour
+  const hour = new Date().getHours();
+  let slot = 'pranzo';
+  if (selMeal === 'Colazione') slot = 'mattina';
+  else if (selMeal === 'Cena') slot = 'sera';
+  else if (selMeal === 'Pranzo') slot = 'pranzo';
+  else if (hour >= 5 && hour < 11) slot = 'mattina';
+  else if (hour >= 16) slot = 'sera';
+  
+  // Get parameters from profile
+  const typeData = P.meal_type_response[mtype] || P.meal_type_response['altro'] || {};
+  const slotData = P.time_of_day[slot] || {};
+  const current = P.current_params || {};
+  
+  // Blend type and slot parameters (type 60%, slot 40%)
+  const spike = (typeData.spike_mean || 1.5) * 0.6 + (slotData.spike_mean || 1.5) * 0.4;
+  const peakTime = Math.round((typeData.peak_time || 90) * 0.6 + (slotData.peak_time || 90) * 0.4);
+  const recovery = Math.round((typeData.recovery || 130) * 0.6 + (slotData.recovery || 130) * 0.4);
+  const overshootRate = (typeData.overshoot_rate || 0.4) * 0.6 + (slotData.overshoot_rate || 0.4) * 0.4;
+  
+  // Baseline estimate
+  const baseline = current.avg_baseline || slotData.baseline_mean || 5.5;
+  
+  // Predicted peak
+  const predPeak = Math.round((baseline + spike) * 10) / 10;
+  
+  // Build predicted curve (gaussian-ish shape)
+  const curve = [];
+  for (let t = -15; t <= 210; t += 5) {
+    let delta = 0;
+    if (t <= 0) {
+      delta = 0;
+    } else if (t <= peakTime) {
+      // Rising phase: quadratic
+      delta = spike * Math.pow(t / peakTime, 1.5);
+    } else {
+      // Falling phase: exponential decay
+      const decayRate = 3.0 / (recovery - peakTime || 60);
+      delta = spike * Math.exp(-decayRate * (t - peakTime));
+      // Add overshoot dip
+      if (overshootRate > 0.3) {
+        const dipCenter = recovery * 0.9;
+        const dipWidth = 30;
+        const dipDepth = 0.3 * overshootRate;
+        delta -= dipDepth * Math.exp(-Math.pow((t - dipCenter) / dipWidth, 2));
+      }
+    }
+    curve.push({ t, v: Math.round((baseline + delta) * 100) / 100 });
+  }
+  
+  // Confidence
+  const spikeStd = typeData.spike_std || 0.7;
+  const confidence = typeData.n >= 15 ? 'alta' : typeData.n >= 5 ? 'media' : 'bassa';
+  
+  return {
+    mtype, slot, baseline, spike: Math.round(spike * 100) / 100,
+    predPeak, peakTime, recovery, overshootRate,
+    curve, confidence, sampleSize: typeData.n || 0,
+    spikeRange: [Math.round((spike - spikeStd) * 100) / 100, Math.round((spike + spikeStd) * 100) / 100]
+  };
+}
+
+function renderGpredCard() {
+  const card = document.getElementById('gpred-card');
+  if (!card) return;
+  
+  const pred = predictGlycemicCurve();
+  if (!pred) { card.style.display = 'none'; return; }
+  
+  card.style.display = 'block';
+  
+  const peakColor = pred.predPeak > 7.8 ? '#A32D2D' : pred.predPeak > 7.0 ? '#7A5A00' : '#2E6644';
+  const verdictClass = pred.predPeak > 7.8 ? 'bad' : pred.predPeak > 7.0 ? 'warn' : 'ok';
+  const verdictText = pred.predPeak > 7.8 ? 'Picco alto' : pred.predPeak > 7.0 ? 'Al limite' : 'Sotto controllo';
+  
+  // Mini SVG curve
+  const W = 280, H = 60, ML = 24, MT = 8, MR = 4, MB = 12;
+  const CW = W-ML-MR, CH = H-MT-MB;
+  const c = pred.curve;
+  const yMin = Math.min(pred.baseline - 0.3, c.reduce((a,p) => p.v<a?p.v:a, c[0].v));
+  const yMax = Math.max(pred.predPeak + 0.3, 7.8);
+  const xF = t => ML + ((t - c[0].t) / (c[c.length-1].t - c[0].t)) * CW;
+  const yF = v => MT + (yMax - v) / (yMax - yMin) * CH;
+  
+  let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;display:block;margin:4px 0">`;
+  // 7.8 line
+  if (yMax >= 7.8) {
+    svg += `<line x1="${ML}" y1="${yF(7.8)}" x2="${W-MR}" y2="${yF(7.8)}" stroke="var(--red,#E24B4A)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.4"/>`;
+  }
+  // Baseline
+  svg += `<line x1="${ML}" y1="${yF(pred.baseline)}" x2="${W-MR}" y2="${yF(pred.baseline)}" stroke="var(--tx3,#9a9a9a)" stroke-width="0.5" stroke-dasharray="2,3"/>`;
+  // Confidence band (±1 std)
+  const lo = pred.spikeRange[0], hi = pred.spikeRange[1];
+  let bandUp = '', bandDn = '';
+  c.forEach((p, i) => {
+    const delta = p.v - pred.baseline;
+    const ratio = pred.spike > 0 ? delta / pred.spike : 0;
+    const vHi = pred.baseline + ratio * hi;
+    const vLo = pred.baseline + Math.max(0, ratio * lo);
+    bandUp += (i===0?'M':'L') + `${xF(p.t)},${yF(Math.min(vHi, yMax))}`;
+    bandDn = `L${xF(p.t)},${yF(Math.max(vLo, yMin))}` + bandDn;
+  });
+  svg += `<path d="${bandUp}${bandDn}Z" fill="${peakColor}" opacity="0.1"/>`;
+  // Curve line
+  let path = '';
+  c.forEach((p, i) => path += (i===0?'M':'L') + `${xF(p.t)},${yF(p.v)}`);
+  svg += `<path d="${path}" fill="none" stroke="${peakColor}" stroke-width="2" stroke-linejoin="round"/>`;
+  // Peak dot
+  const peakP = c.reduce((b,p) => p.v>b.v?p:b, c[0]);
+  svg += `<circle cx="${xF(peakP.t)}" cy="${yF(peakP.v)}" r="3" fill="${peakColor}"/>`;
+  svg += `<text x="${xF(peakP.t)+5}" y="${yF(peakP.v)+3}" font-size="8" fill="${peakColor}" font-weight="700">${pred.predPeak}</text>`;
+  // Time labels
+  [0,60,120,180].forEach(t => {
+    if (t >= c[0].t && t <= c[c.length-1].t) {
+      svg += `<text x="${xF(t)}" y="${H-1}" font-size="6" fill="var(--tx3,#9a9a9a)" text-anchor="middle">${t}\'</text>`;
+    }
+  });
+  svg += '</svg>';
+  
+  const typeLabels = {carbo:'Carboidrati',proteico:'Proteico','carbo+prot':'Carbo+Prot','prot+fibra':'Prot+Fibra','carbo+fibra':'Carbo+Fibra',fibroso:'Fibre/Verdure',altro:'Misto'};
+  
+  card.innerHTML = `
+    <div class="gpred-header">
+      <span class="gpred-title">🔮 Predizione glicemica</span>
+      <span class="gpred-verdict ${verdictClass}">${verdictText}</span>
+    </div>
+    ${svg}
+    <div class="gpred-stats">
+      <div class="gpred-stat"><div class="gpred-stat-val" style="color:${peakColor}">${pred.predPeak}</div><div class="gpred-stat-lbl">picco atteso</div></div>
+      <div class="gpred-stat"><div class="gpred-stat-val">${pred.peakTime}'</div><div class="gpred-stat-lbl">al picco</div></div>
+      <div class="gpred-stat"><div class="gpred-stat-val">${pred.recovery}'</div><div class="gpred-stat-lbl">recupero</div></div>
+      <div class="gpred-stat"><div class="gpred-stat-val">${Math.round(pred.overshootRate*100)}%</div><div class="gpred-stat-lbl">overshoot</div></div>
+    </div>
+    <div class="gpred-note">Tipo: ${typeLabels[pred.mtype]||pred.mtype} · ${pred.slot} · base ${pred.baseline} · conf. ${pred.confidence} (n=${pred.sampleSize})</div>
+  `;
 }
 
 function getSearchPool(){
@@ -1190,6 +1374,7 @@ function updateTriggers(){
     }
   }
   updateCtgBar();
+  renderGpredCard();
 }
 
 function setMeal(m){
