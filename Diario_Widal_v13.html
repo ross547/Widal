@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="Widal"/>
-<title>Diario Widal v13</title>
+<title>Diario Widal v13 — Glico</title>
 <style>
 :root{
   --bg:#ffffff;--bg2:#f5f5f4;--bg3:#ececea;
@@ -30,7 +30,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;fo
 .hdr h1{font-size:17px;font-weight:600;}
 .hdr p{font-size:11px;color:var(--tx3);margin-top:1px;}
 .tabs{display:flex;border-bottom:0.5px solid var(--bd);background:var(--bg);position:sticky;top:calc(50px + env(safe-area-inset-top,0px));z-index:10;}
-.tab{flex:1;padding:9px 0;font-size:11px;font-weight:600;text-align:center;cursor:pointer;color:var(--tx2);border-bottom:2px solid transparent;}
+.tab{flex:1;padding:9px 0;font-size:10px;font-weight:600;text-align:center;cursor:pointer;color:var(--tx2);border-bottom:2px solid transparent;}
 .tab.on{color:var(--blue);border-bottom-color:var(--blue);}
 .view{padding:14px 16px;flex:1;padding-bottom:calc(20px + var(--safe-b));}
 .field{margin-bottom:12px;}
@@ -394,6 +394,59 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .gpred-stat-val{font-size:15px;font-weight:700;line-height:1;}
 .gpred-stat-lbl{font-size:9px;color:var(--tx3);margin-top:2px;}
 .gpred-note{font-size:10px;color:var(--tx3);margin-top:6px;line-height:1.4;}
+
+/* ══════════════════════════════
+   TAB GLICO — Advisor proattivo
+   ══════════════════════════════ */
+.glico-hero{border-radius:var(--rl);padding:16px;margin-bottom:14px;border:0.5px solid var(--bd);}
+.glico-basale-row{display:flex;gap:8px;align-items:center;margin-bottom:12px;}
+.glico-basale-inp{width:80px;padding:9px 10px;border:0.5px solid var(--blue);border-radius:var(--r);font-size:16px;font-weight:600;text-align:center;background:var(--bg);color:var(--tx);outline:none;}
+.glico-basale-unit{font-size:12px;color:var(--tx2);}
+.glico-basale-status{flex:1;font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px;text-align:center;}
+.glico-basale-status.ok{background:#E8F5EE;color:#2E6644;}
+.glico-basale-status.warn{background:#FFF8E7;color:#7A5A00;}
+.glico-basale-status.high{background:#FCEAEA;color:#A32D2D;}
+@media(prefers-color-scheme:dark){
+  .glico-basale-status.ok{background:#1a3528;color:#80d4a0;}
+  .glico-basale-status.warn{background:#2e2610;color:#e0c060;}
+  .glico-basale-status.high{background:#2e1010;color:#f07070;}
+}
+.glico-meal-sel{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap;}
+.gmtype-btn{flex:1;min-width:70px;padding:8px 6px;border-radius:var(--r);border:0.5px solid var(--bd2);background:var(--bg2);font-size:11px;font-weight:600;cursor:pointer;color:var(--tx2);text-align:center;line-height:1.3;}
+.gmtype-btn.on{background:var(--bluelight);color:var(--blue);border-color:var(--blue);}
+.gadv-card{border-radius:var(--rl);padding:14px;margin-bottom:10px;border:0.5px solid var(--bd);}
+.gadv-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.gadv-title{font-size:13px;font-weight:700;}
+.gadv-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.gadv-badge.green{background:#E8F5EE;color:#2E6644;}
+.gadv-badge.amber{background:#FFF8E7;color:#7A5A00;}
+.gadv-badge.red{background:#FCEAEA;color:#A32D2D;}
+@media(prefers-color-scheme:dark){
+  .gadv-badge.green{background:#1a3528;color:#80d4a0;}
+  .gadv-badge.amber{background:#2e2610;color:#e0c060;}
+  .gadv-badge.red{background:#2e1010;color:#f07070;}
+}
+.gadv-stats{display:flex;gap:6px;margin-bottom:10px;}
+.gadv-stat{flex:1;text-align:center;background:var(--bg2);border-radius:8px;padding:7px 4px;}
+.gadv-stat-val{font-size:18px;font-weight:700;line-height:1;}
+.gadv-stat-lbl{font-size:9px;color:var(--tx3);margin-top:2px;line-height:1.2;}
+.gadv-tip{font-size:11px;color:var(--tx2);line-height:1.5;margin-bottom:8px;}
+.gadv-window{font-size:12px;font-weight:600;padding:8px 11px;border-radius:var(--r);margin-bottom:8px;border:0.5px solid;}
+.gfood-grid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+.gfood-chip{display:inline-flex;flex-direction:column;align-items:center;padding:7px 9px;border-radius:var(--r);cursor:pointer;border:0.5px solid var(--bd2);background:var(--bg2);min-width:68px;}
+.gfood-chip.on{border-color:var(--blue);background:var(--bluelight);}
+.gfood-chip-name{font-size:11px;font-weight:600;color:var(--tx);text-align:center;}
+.gfood-chip-ig{font-size:9px;color:var(--tx3);margin-top:1px;}
+.gfood-chip-dose{font-size:10px;color:var(--blue);margin-top:2px;font-weight:600;}
+.glico-curve-wrap{background:var(--bg2);border-radius:var(--r);padding:8px;margin-bottom:10px;}
+.glog-entry{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--bd);font-size:12px;}
+.glog-time{color:var(--tx3);min-width:80px;flex-shrink:0;font-size:11px;}
+.glog-food{flex:1;font-weight:600;color:var(--tx);}
+.glog-spike{font-weight:700;min-width:36px;text-align:right;}
+.glog-del{font-size:11px;color:var(--tx3);cursor:pointer;border:none;background:none;margin-left:4px;}
+.gprof-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--bd);}
+.gprof-label{font-size:11px;color:var(--tx2);flex:1;}
+.gprof-val{font-size:12px;font-weight:600;color:var(--tx);}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/umd/index.min.js"></script>
 </head>
@@ -405,6 +458,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     <div class="tab" id="tab-hist" onclick="showTab('hist')">Storico</div>
     <div class="tab" id="tab-stato" onclick="showTab('stato')">Stato</div>
     <div class="tab" id="tab-alim" onclick="showTab('alim')">Alimenti</div>
+    <div class="tab" id="tab-glico" onclick="showTab('glico')">⚡ Glico</div>
     <div class="tab" id="tab-stats" onclick="showTab('stats')">Analisi</div>
   </div>
 
@@ -742,6 +796,78 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       <button class="copy-btn" onclick="copyForClaude()">Copia dati per Claude.ai</button>
     </div>
   </div>
+  <!-- TAB GLICO — Advisor proattivo -->
+  <div id="vglico" class="view" style="display:none">
+
+    <!-- Hero: basale + stato -->
+    <div class="glico-hero" id="glico-hero" style="background:var(--bg2);">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;">⚡ Advisor Glicemico</div>
+      <label class="lbl">Basale attuale (Libre / Accuchek)</label>
+      <div class="glico-basale-row">
+        <input type="number" class="glico-basale-inp" id="glico-basale" value="5.4" min="3.0" max="15.0" step="0.1" oninput="onBasaleChange()" onchange="onBasaleChange()"/>
+        <span class="glico-basale-unit">mmol/L</span>
+        <div class="glico-basale-status" id="glico-basale-status">—</div>
+      </div>
+      <label class="lbl" style="margin-bottom:5px;">Tipo pasto appena consumato</label>
+      <div class="glico-meal-sel">
+        <button class="gmtype-btn" id="gmt-prot" onclick="setGlicoMeal('prot+fibra')">🥩 Prot +<br>Verdure</button>
+        <button class="gmtype-btn" id="gmt-misto" onclick="setGlicoMeal('carbo+prot')">🍽 Misto<br>Carbo+Prot</button>
+        <button class="gmtype-btn on" id="gmt-digiuno" onclick="setGlicoMeal('digiuno')">☕ Solo<br>bevanda</button>
+        <button class="gmtype-btn" id="gmt-fibra" onclick="setGlicoMeal('fibroso')">🥗 Solo<br>Verdure</button>
+      </div>
+      <div id="glico-advisor-out"></div>
+    </div>
+
+    <!-- Simulatore glucogeno -->
+    <div class="gadv-card" id="glico-sim-card">
+      <div class="gadv-header">
+        <div class="gadv-title">📊 Simula alimento glucogeno</div>
+      </div>
+      <label class="lbl" style="margin-bottom:6px;">Scegli l'alimento</label>
+      <div class="gfood-grid" id="gfood-grid"></div>
+      <div id="glico-dose-out"></div>
+      <div class="glico-curve-wrap" id="glico-curve-wrap" style="display:none"></div>
+      <div id="glico-conflict-out"></div>
+    </div>
+
+    <!-- Log glucogeni giornata -->
+    <div style="border:0.5px solid var(--bd);border-radius:var(--rl);padding:12px 14px;margin-bottom:14px;background:var(--bg);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div class="stit" style="margin:0;">📋 Glucogeni oggi</div>
+        <button onclick="addGlicoLog()" style="padding:5px 12px;background:var(--blue);color:#fff;border:none;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;">+ Registra</button>
+      </div>
+      <div id="glog-list"><div style="font-size:12px;color:var(--tx3);padding:4px 0;">Nessun glucogeno registrato oggi.</div></div>
+      <div id="glog-form" style="display:none;background:var(--bg2);border-radius:var(--r);padding:10px;margin-top:8px;">
+        <label class="lbl">Alimento</label>
+        <input class="inp" id="glog-food-inp" placeholder="es. riso basmati, patate..." style="margin-bottom:8px;font-size:13px;"/>
+        <label class="lbl">Spike osservato (delta mmol/L)</label>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+          <input type="number" class="inp" id="glog-spike-inp" placeholder="es. 1.7" min="0" max="8" step="0.1" style="width:80px;text-align:center;"/>
+          <span style="font-size:12px;color:var(--tx2);">mmol/L sopra basale</span>
+        </div>
+        <label class="lbl">Note (porzione, orario, contesto)</label>
+        <input class="inp" id="glog-note-inp" placeholder="es. 2 cucchiai a fine pasto proteico" style="margin-bottom:10px;font-size:13px;"/>
+        <div style="display:flex;gap:8px;">
+          <button onclick="saveGlicoLog()" style="flex:1;padding:9px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;">Salva</button>
+          <button onclick="cancelGlicoLog()" style="padding:9px 14px;background:var(--bg3);color:var(--tx2);border:none;border-radius:var(--r);font-size:13px;cursor:pointer;">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profilo personale -->
+    <div style="border:0.5px solid var(--bd);border-radius:var(--rl);padding:12px 14px;background:var(--bg);margin-bottom:14px;">
+      <div class="stit" style="margin-bottom:8px;">📈 Il tuo profilo glicemico (288 curve reali)</div>
+      <div class="gprof-row"><div class="gprof-label">Basale medio attuale</div><div class="gprof-val">5.4 mmol/L</div></div>
+      <div class="gprof-row"><div class="gprof-label">Spike medio carbo puri</div><div class="gprof-val">+2.0 mmol/L</div></div>
+      <div class="gprof-row"><div class="gprof-label">Spike medio prot+fibra</div><div class="gprof-val">+1.34 mmol/L</div></div>
+      <div class="gprof-row"><div class="gprof-label">Spike medio misto</div><div class="gprof-val">+1.86 mmol/L</div></div>
+      <div class="gprof-row"><div class="gprof-label">Tempo al picco (mediano)</div><div class="gprof-val">86 min</div></div>
+      <div class="gprof-row"><div class="gprof-label">Recovery (mediana)</div><div class="gprof-val">132 min</div></div>
+      <div class="gprof-row"><div class="gprof-label">Overshoot rate</div><div class="gprof-val">45% dei pasti</div></div>
+      <div class="gprof-row" style="border:none;"><div class="gprof-label">Effetto basale (ogni +1)</div><div class="gprof-val">−0.32 spike</div></div>
+    </div>
+  </div>
+
 </div>
 <div class="toast" id="toast"></div>
 
@@ -2348,12 +2474,16 @@ function copyForClaude(){const allFoods=CATEGORIES.flatMap(c=>c.items.map(f=>({n
 
 /* ── TABS ── */
 function showTab(t){
-  ['pasto','hist','stato','alim','stats'].forEach(x=>{document.getElementById('v'+x).style.display=x===t?'block':'none';document.getElementById('tab-'+x).className='tab'+(x===t?' on':'');});
-  if(t==='pasto')updateCtgBar();if(t==='hist')renderHist();
+  ['pasto','hist','stato','alim','glico','stats'].forEach(x=>{
+    var el=document.getElementById('v'+x);if(el)el.style.display=x===t?'block':'none';
+    var tab=document.getElementById('tab-'+x);if(tab)tab.className='tab'+(x===t?' on':'');
+  });
+  if(t==='pasto')updateCtgBar();
+  if(t==='hist')renderHist();
   if(t==='stato')renderStato();
   if(t==='alim'){buildTrigFilterBar();renderCustomFoods();initApiKeyUI();}
+  if(t==='glico'){initGlico();}
   if(t==='stats'){renderStats();renderBiometrics();}
-  if(t==='stats')renderStats();
 }
 
 
@@ -2456,9 +2586,424 @@ function renderBiometrics(){
 function delBiometric(id){biometrics=biometrics.filter(function(b){return b.id!==id;});saveBiometrics();renderBiometrics();}
 
 
-function togglePromotionById(btn){togglePromotion(btn.dataset.cfid);}
-function deleteCfById(btn){deleteCustomFood(btn.dataset.cfid);}
-/* ── INIT ── */
+/* ══════════════════════════════════════════════════════
+   GLICO ENGINE — Advisor proattivo v1
+   Basato su ross_glycemic_profile.json (288 curve reali)
+   ══════════════════════════════════════════════════════ */
+
+// Profilo personale hardcoded (stabile, da ross_glycemic_profile.json)
+var ROSS = {
+  baseline: 5.4,          // mmol/L media attuale
+  basaleSlopePerUnit: -0.322, // ogni +1 basale → -0.322 spike
+  basaleIntercept: 3.48,
+  peakMedian: 86,         // minuti
+  recoveryMedian: 132,    // minuti
+  overshootRate: 0.45,
+  byType: {
+    'carbo':      {spikeMean:2.00, peakTime:88,  recovery:107, overshootRate:0.65, auc:113},
+    'proteico':   {spikeMean:1.58, peakTime:85,  recovery:125, overshootRate:0.42, auc:129},
+    'carbo+prot': {spikeMean:1.86, peakTime:116, recovery:180, overshootRate:0.06, auc:136},
+    'prot+fibra': {spikeMean:1.34, peakTime:97,  recovery:144, overshootRate:0.41, auc:96},
+    'carbo+fibra':{spikeMean:1.81, peakTime:102, recovery:161, overshootRate:0.40, auc:135},
+    'fibroso':    {spikeMean:1.55, peakTime:87,  recovery:144, overshootRate:0.43, auc:117},
+    'digiuno':    {spikeMean:0.20, peakTime:30,  recovery:60,  overshootRate:0.10, auc:15},
+  },
+  bySlot: {
+    mattina: {baselineMean:5.81, spikeMean:1.78, peakTime:96,  recovery:114, overshootRate:0.58},
+    pranzo:  {baselineMean:6.01, spikeMean:1.46, peakTime:91,  recovery:138, overshootRate:0.37},
+    sera:    {baselineMean:5.73, spikeMean:1.56, peakTime:101, recovery:145, overshootRate:0.44},
+  }
+};
+
+// Alimenti glucogeni con IG, dose tipica (cucchiai/g), spike atteso (solo alimento)
+var GLICO_FOODS = [
+  {id:'basmati', name:'Riso basmati', ig:58, unit:'cucchiai', dose1:1, dose2:2, dose3:3, spikePer1:0.65, widal:0, note:'Test 30/05: 2 cuc → +1.7 con prot+verdure'},
+  {id:'orzo',    name:'Zuppa orzo',   ig:35, unit:'ciotola',  dose1:0.5,dose2:1, dose3:1.5, spikePer1:1.5, widal:2, note:'IG basso ma spike storico +3.25'},
+  {id:'gnocchi', name:'Gnocchi',      ig:70, unit:'porzione', dose1:0.25,dose2:0.5,dose3:0.75, spikePer1:2.0, widal:1, note:'IG alto — piccole porzioni'},
+  {id:'patate',  name:'Patate cotte', ig:65, unit:'g',        dose1:60, dose2:100,dose3:150, spikePer1:0.018, widal:0, note:'Per 100g spike ~1.8'},
+  {id:'pasta_b', name:'Pasta bianca', ig:65, unit:'g',        dose1:40, dose2:60, dose3:80, spikePer1:0.025, widal:0, note:'Porzioni piccole con proteina'},
+  {id:'pane',    name:'Pane bianco',  ig:75, unit:'fetta',    dose1:0.5,dose2:1, dose3:1.5, spikePer1:0.7, widal:1, note:'IG alto — abbinare sempre proteina'},
+  {id:'mela_c',  name:'Mela cotta',   ig:45, unit:'media',    dose1:0.5,dose2:1, dose3:1.5, spikePer1:0.4, widal:2, note:'Salicilati — monitorare'},
+  {id:'pera',    name:'Pera',         ig:38, unit:'media',    dose1:0.5,dose2:1, dose3:2,   spikePer1:0.35, widal:1, note:'Opzione sicura MCAS'},
+  {id:'biscotti',name:'Biscotti (2)', ig:65, unit:'biscotti', dose1:1,  dose2:2, dose3:3,   spikePer1:0.55, widal:1, note:'Petit beurre / Macine'},
+  {id:'sorbetto',name:'Sorbetto pera',ig:40, unit:'pallina',  dose1:1,  dose2:2, dose3:3,   spikePer1:0.45, widal:1, note:'IG moderato, sicuro MCAS'},
+];
+
+// Stato corrente tab Glico
+var glicoMealType = 'digiuno';
+var glicoMealTs   = null;   // timestamp ultimo pasto registrato
+var glicoSelFood  = null;
+var glicoLogs     = [];
+
+function loadGlicoLogs(){
+  try{var r=localStorage.getItem('widal-glico-logs-v1');if(r)glicoLogs=JSON.parse(r);}catch(e){glicoLogs=[];}
+}
+function saveGlicoLogs(){
+  try{localStorage.setItem('widal-glico-logs-v1',JSON.stringify(glicoLogs));}catch(e){}
+}
+
+// ── Basale change ──
+function onBasaleChange(){
+  var v = parseFloat(document.getElementById('glico-basale').value)||5.4;
+  var el = document.getElementById('glico-basale-status');
+  if(v < 4.5){el.className='glico-basale-status high';el.textContent='⚠ Ipoglicemia';}
+  else if(v <= 5.5){el.className='glico-basale-status ok';el.textContent='✓ Ottimo';}
+  else if(v <= 7.0){el.className='glico-basale-status warn';el.textContent='~ Moderato';}
+  else{el.className='glico-basale-status high';el.textContent='↑ Alto';}
+  runGlicoAdvisor();
+}
+
+// ── Meal type selector ──
+function setGlicoMeal(type){
+  glicoMealType = type;
+  glicoMealTs   = Date.now();
+  var map = {prot:'prot+fibra', misto:'carbo+prot', digiuno:'digiuno', fibra:'fibroso'};
+  // Update buttons
+  document.getElementById('gmt-prot').className    = 'gmtype-btn' + (type==='prot+fibra'?' on':'');
+  document.getElementById('gmt-misto').className   = 'gmtype-btn' + (type==='carbo+prot'?' on':'');
+  document.getElementById('gmt-digiuno').className = 'gmtype-btn' + (type==='digiuno'?' on':'');
+  document.getElementById('gmt-fibra').className   = 'gmtype-btn' + (type==='fibroso'?' on':'');
+  runGlicoAdvisor();
+}
+
+// ── Time slot ──
+function getSlot(){
+  var h = new Date().getHours();
+  if(h>=5&&h<11) return 'mattina';
+  if(h>=11&&h<16) return 'pranzo';
+  return 'sera';
+}
+
+// ── Spike correction for basale ──
+function correctedSpike(baseSpike, basale){
+  var delta = basale - ROSS.baseline;          // quanto sopra/sotto la media
+  var correction = delta * ROSS.basaleSlopePerUnit;  // negativo se basale alto
+  return Math.max(0.1, baseSpike + correction);
+}
+
+// ── Core advisor ──
+function runGlicoAdvisor(){
+  var basale = parseFloat(document.getElementById('glico-basale').value)||5.4;
+  var profile = ROSS.byType[glicoMealType] || ROSS.byType['prot+fibra'];
+  var slot    = ROSS.bySlot[getSlot()];
+
+  // Recovery time from last meal type
+  var recovery = profile.recovery; // minuti
+  var peak     = profile.peakTime;
+  var windowStart = peak + 30;     // 30 min dopo picco inizia la discesa
+  var windowEnd   = recovery + 20; // 20 min dopo recovery per sicurezza
+
+  var mealAgo = glicoMealTs ? Math.round((Date.now()-glicoMealTs)/60000) : null;
+  var now = new Date();
+  var nowMin = now.getHours()*60+now.getMinutes();
+
+  // Predizione picco pasto attuale
+  var mealSpike = correctedSpike(profile.spikeMean, basale);
+  var peakVal   = Math.min(basale + mealSpike, 14.0);
+
+  // Safe spike budget for glucogeno: target picco max 7.8
+  var targetPeak = 7.8;
+  var availBudget = Math.max(0, targetPeak - basale);
+
+  var html = '';
+
+  if(glicoMealType === 'digiuno'){
+    // Stomaco vuoto: valuta inserimento diretto
+    var directSpike = correctedSpike(1.0, basale);
+    var directPeak  = basale + directSpike;
+    var verdict = directPeak <= 7.0 ? 'green' : directPeak <= 7.8 ? 'amber' : 'red';
+    html += '<div class="gadv-card" style="border-color:'+(verdict==='green'?'#A8D5B5':verdict==='amber'?'#F0CC6A':'#F0A0A0')+'">';
+    html += '<div class="gadv-header"><div class="gadv-title">☕ A digiuno / solo bevanda</div>';
+    html += '<div class="gadv-badge '+verdict+'">'+(verdict==='green'?'✓ Via libera':verdict==='amber'?'⚠ Con cautela':'↑ Basale alto')+'</div></div>';
+    html += '<div class="gadv-stats">';
+    html += '<div class="gadv-stat"><div class="gadv-stat-val" style="color:var(--blue)">'+basale+'</div><div class="gadv-stat-lbl">basale<br>mmol/L</div></div>';
+    html += '<div class="gadv-stat"><div class="gadv-stat-val" style="color:'+(verdict==='green'?'#2E6644':verdict==='amber'?'#7A5A00':'#A32D2D')+'">'+availBudget.toFixed(1)+'</div><div class="gadv-stat-lbl">margine<br>disponibile</div></div>';
+    html += '<div class="gadv-stat"><div class="gadv-stat-val">~60</div><div class="gadv-stat-lbl">picco<br>min</div></div>';
+    html += '</div>';
+    if(verdict==='red'){
+      html += '<div class="gadv-tip">⚠ Basale sopra 7.0: attendi che scenda sotto 6.5 prima di inserire glucogeni. Cammina 10 minuti.</div>';
+    } else {
+      html += '<div class="gadv-tip">Hai '+availBudget.toFixed(1)+' mmol/L di margine prima del limite 7.8. Abbina sempre proteina o fibra.</div>';
+    }
+    html += '</div>';
+  } else {
+    // Dopo un pasto: calcola finestra sicura
+    var windowStartTime = null, windowEndTime = null;
+    if(mealAgo !== null){
+      var wsMin = nowMin - mealAgo + windowStart;
+      var weMin = nowMin - mealAgo + windowEnd;
+      var fmt = function(m){ m=((m%1440)+1440)%1440; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); };
+      windowStartTime = fmt(wsMin);
+      windowEndTime   = fmt(weMin);
+    }
+
+    var inWindow = mealAgo !== null && mealAgo >= windowStart && mealAgo <= windowEnd;
+    var tooEarly = mealAgo !== null && mealAgo < windowStart;
+    var tooLate  = mealAgo !== null && mealAgo > windowEnd;
+
+    var verdict = inWindow ? 'green' : tooEarly ? 'amber' : 'ok';
+    var spikeBudget = correctedSpike(1.34, basale); // riferimento prot+fibra
+    var budgetAfterMeal = Math.max(0, targetPeak - peakVal + spikeBudget * 0.5);
+
+    html += '<div class="gadv-card" style="border-color:'+(inWindow?'#A8D5B5':tooEarly?'#F0CC6A':'#A8D5B5')+'">';
+    html += '<div class="gadv-header"><div class="gadv-title">🍽 Dopo pasto '+{prot:'prot+verdure','carbo+prot':'misto','fibroso':'solo verdure'}[glicoMealType]||glicoMealType+'</div>';
+
+    if(mealAgo === null){
+      html += '<div class="gadv-badge amber">Orario non noto</div></div>';
+      html += '<div class="gadv-tip">Non so quando hai mangiato. Aspetta almeno '+windowStart+' min dal pasto prima di inserire glucogeni.</div>';
+    } else if(tooEarly){
+      var waitMin = windowStart - mealAgo;
+      html += '<div class="gadv-badge amber">⏳ Aspetta '+waitMin+' min</div></div>';
+      html += '<div class="gadv-stats">';
+      html += '<div class="gadv-stat"><div class="gadv-stat-val" style="color:#EF9F27">'+mealAgo+'\'</div><div class="gadv-stat-lbl">fa il<br>pasto</div></div>';
+      html += '<div class="gadv-stat"><div class="gadv-stat-val">'+peak+'\'</div><div class="gadv-stat-lbl">picco<br>stimato</div></div>';
+      html += '<div class="gadv-stat"><div class="gadv-stat-val" style="color:#E24B4A">'+waitMin+'\'</div><div class="gadv-stat-lbl">mancano<br>alla finestra</div></div>';
+      html += '</div>';
+      if(windowStartTime) html += '<div class="gadv-window" style="background:#FFF8E7;color:#7A5A00;border-color:#F0CC6A;">⏰ Finestra sicura: '+windowStartTime+' — '+windowEndTime+'</div>';
+      html += '<div class="gadv-tip">Il glucosio del pasto sta ancora salendo. Inserire carboidrati ora rischia di cumulare gli spike. Attendi.</div>';
+    } else if(inWindow){
+      html += '<div class="gadv-badge green">✓ Finestra ottimale</div></div>';
+      html += '<div class="gadv-stats">';
+      html += '<div class="gadv-stat"><div class="gadv-stat-val" style="color:#2E6644">'+mealAgo+'\'</div><div class="gadv-stat-lbl">fa il<br>pasto</div></div>';
+      html += '<div class="gadv-stat"><div class="gadv-stat-val" style="color:var(--blue)">'+peakVal.toFixed(1)+'</div><div class="gadv-stat-lbl">picco<br>stimato</div></div>';
+      html += '<div class="gadv-stat"><div class="gadv-stat-val" style="color:#2E6644">'+availBudget.toFixed(1)+'</div><div class="gadv-stat-lbl">budget<br>glucogeno</div></div>';
+      html += '</div>';
+      if(windowEndTime) html += '<div class="gadv-window" style="background:#E8F5EE;color:#2E6644;border-color:#A8D5B5;">✓ Finestra aperta fino a '+windowEndTime+'</div>';
+      html += '<div class="gadv-tip">Momento ideale. La glicemia sta scendendo dopo il picco. Inserisci il glucogeno selezionato qui sotto: spike cumulativo atteso minimo.</div>';
+    } else {
+      // Oltre la recovery — glicemia tornata al basale, ok ripartire
+      html += '<div class="gadv-badge green">✓ Recupero completo</div></div>';
+      html += '<div class="gadv-stats">';
+      html += '<div class="gadv-stat"><div class="gadv-stat-val">'+mealAgo+'\'</div><div class="gadv-stat-lbl">fa il<br>pasto</div></div>';
+      html += '<div class="gadv-stat"><div class="gadv-stat-val" style="color:#2E6644">~'+basale+'</div><div class="gadv-stat-lbl">glicemia<br>stimata ora</div></div>';
+      html += '<div class="gadv-stat"><div class="gadv-stat-val" style="color:#2E6644">'+availBudget.toFixed(1)+'</div><div class="gadv-stat-lbl">margine<br>pieno</div></div>';
+      html += '</div>';
+      html += '<div class="gadv-tip">Glicemia probabilmente tornata al basale. Hai pieno margine per un nuovo inserimento glucogeno.</div>';
+    }
+    html += '</div>';
+  }
+
+  document.getElementById('glico-advisor-out').innerHTML = html;
+}
+
+// ── Food grid ──
+function buildGfoodGrid(){
+  var el = document.getElementById('gfood-grid');
+  if(!el) return;
+  el.innerHTML = GLICO_FOODS.map(function(f){
+    var wBadge = f.widal >= 3 ? ' <span style="font-size:9px;color:#A32D2D">W'+f.widal+'</span>' : '';
+    return '<div class="gfood-chip" id="gfc-'+f.id+'" onclick="selectGlicoFood(\''+f.id+'\')">'+
+      '<div class="gfood-chip-name">'+f.name+wBadge+'</div>'+
+      '<div class="gfood-chip-ig">IG '+f.ig+'</div>'+
+    '</div>';
+  }).join('');
+}
+
+function selectGlicoFood(id){
+  glicoSelFood = id;
+  GLICO_FOODS.forEach(function(f){
+    var el = document.getElementById('gfc-'+f.id);
+    if(el) el.className = 'gfood-chip'+(f.id===id?' on':'');
+  });
+  renderGlicoSimulator();
+}
+
+function renderGlicoSimulator(){
+  if(!glicoSelFood) return;
+  var food = GLICO_FOODS.find(function(f){return f.id===glicoSelFood;});
+  if(!food) return;
+  var basale = parseFloat(document.getElementById('glico-basale').value)||5.4;
+  var curveEl = document.getElementById('glico-curve-wrap');
+  var doseEl  = document.getElementById('glico-dose-out');
+  var conflEl = document.getElementById('glico-conflict-out');
+  curveEl.style.display = 'block';
+
+  // Compute spike for each dose option using ROSS correction
+  // Base spike = spikePer1 * dose (for unit foods) or spikePer1 * (dose/100) for g
+  // But we adjust by meal context and basale
+  var mealProfile = ROSS.byType[glicoMealType] || ROSS.byType['digiuno'];
+  var contextFactor = glicoMealType==='prot+fibra' ? 0.65 :
+                      glicoMealType==='carbo+prot' ? 0.80 :
+                      glicoMealType==='digiuno'    ? 1.10 : 0.85;
+
+  function spikeFor(dose){
+    var base;
+    if(food.unit==='g') base = food.spikePer1 * dose;
+    else                 base = food.spikePer1 * dose;
+    return correctedSpike(base * contextFactor, basale);
+  }
+
+  var s1=spikeFor(food.dose1), s2=spikeFor(food.dose2), s3=spikeFor(food.dose3);
+  var p1=Math.min(basale+s1,15), p2=Math.min(basale+s2,15), p3=Math.min(basale+s3,15);
+
+  function verdict(p){return p<=7.0?'✓':p<=7.8?'⚠':'✗';}
+  function vcol(p){return p<=7.0?'#2E6644':p<=7.8?'#7A5A00':'#A32D2D';}
+  function vbg(p){return p<=7.0?'#E8F5EE':p<=7.8?'#FFF8E7':'#FCEAEA';}
+
+  doseEl.innerHTML = '<div style="font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:6px;">Spike stimato per dose (contesto: '+glicoMealType+')</div>'+
+    '<div style="display:flex;gap:6px;">'+
+    [
+      [food.dose1, s1, p1],
+      [food.dose2, s2, p2],
+      [food.dose3, s3, p3]
+    ].map(function(row){
+      var dose=row[0],s=row[1],p=row[2];
+      var label = food.unit==='g' ? dose+'g' : dose+' '+food.unit;
+      return '<div style="flex:1;text-align:center;background:'+vbg(p)+';border-radius:8px;padding:8px 4px;border:0.5px solid '+vcol(p)+'20">'+
+        '<div style="font-size:16px;font-weight:700;color:'+vcol(p)+'">'+verdict(p)+'</div>'+
+        '<div style="font-size:13px;font-weight:700;color:var(--tx)">'+label+'</div>'+
+        '<div style="font-size:10px;color:var(--tx2)">+'+s.toFixed(1)+'</div>'+
+        '<div style="font-size:10px;color:var(--tx3)">→'+p.toFixed(1)+'</div>'+
+      '</div>';
+    }).join('')+
+  '</div>'+
+  '<div style="font-size:10px;color:var(--tx3);margin-top:6px;">'+food.note+'</div>';
+
+  // Draw prediction curve SVG
+  var peakT = mealProfile.peakTime || 88;
+  var spike  = s2; // dose media
+  curveEl.innerHTML = buildGlicoCurveSVG(basale, spike, peakT, mealProfile.recovery||132);
+
+  // WIDAL conflict
+  if(food.widal >= 2){
+    var wc = food.widal>=4?'#A32D2D':food.widal>=3?'#7A5A00':'#854F0B';
+    var wb = food.widal>=4?'#FCEAEA':food.widal>=3?'#FFF8E7':'#FAEEDA';
+    conflEl.innerHTML = '<div style="background:'+wb+';border:0.5px solid '+wc+'40;border-radius:var(--r);padding:8px 11px;font-size:11px;color:'+wc+';font-weight:600;margin-top:6px;">⚠ MCAS: rischio Widal '+food.widal+'/5 — '+food.note+'</div>';
+  } else {
+    conflEl.innerHTML = '';
+  }
+}
+
+function buildGlicoCurveSVG(basale, spike, peakMin, recoveryMin){
+  var W=340, H=100, ML=32, MR=8, MT=10, MB=22;
+  var CW=W-ML-MR, CH=H-MT-MB;
+  var tMin=-10, tMax=recoveryMin+30;
+  var vMin=Math.max(0, basale-0.3), vMax=Math.max(basale+spike*1.25, basale+1.5);
+  var xF=function(t){return ML+(t-tMin)/(tMax-tMin)*CW;};
+  var yF=function(v){return MT+(vMax-v)/(vMax-vMin)*CH;};
+
+  // Target zone 3.9–7.8
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;display:block">';
+  var y39=yF(3.9), y78=yF(7.8);
+  if(y78<MT+CH && y39>MT){
+    svg+='<rect x="'+ML+'" y="'+Math.max(MT,y78)+'" width="'+CW+'" height="'+(Math.min(MT+CH,y39)-Math.max(MT,y78))+'" fill="#5DCAA5" opacity="0.08"/>';
+  }
+  // Grid lines
+  [0,60,120,180].filter(function(t){return t<=tMax;}).forEach(function(t){
+    svg+='<line x1="'+xF(t)+'" y1="'+MT+'" x2="'+xF(t)+'" y2="'+(MT+CH)+'" stroke="var(--bd)" stroke-width="0.4"/>';
+    svg+='<text x="'+xF(t)+'" y="'+(H-5)+'" font-size="8" fill="var(--tx3)" text-anchor="middle">'+t+"'</text>";
+  });
+  // y axis labels
+  [Math.floor(vMin*2)/2, Math.round((vMin+vMax)/2*2)/2, Math.floor(vMax*2)/2].forEach(function(v){
+    svg+='<text x="'+(ML-4)+'" y="'+(yF(v)+3)+'" font-size="8" fill="var(--tx3)" text-anchor="end">'+v.toFixed(1)+'</text>';
+  });
+  // Baseline dashed
+  svg+='<line x1="'+ML+'" y1="'+yF(basale)+'" x2="'+(W-MR)+'" y2="'+yF(basale)+'" stroke="var(--tx3)" stroke-width="0.8" stroke-dasharray="3,3"/>';
+
+  // Build predicted curve points using smooth rise/peak/fall
+  var pts=[];
+  for(var t=tMin; t<=tMax; t+=5){
+    var v;
+    if(t<=0){ v=basale; }
+    else if(t<=peakMin){
+      // rise: smooth using sine
+      var prog=t/peakMin;
+      v=basale+spike*Math.sin(prog*Math.PI/2);
+    } else if(t<=recoveryMin){
+      // fall: exponential decay
+      var prog2=(t-peakMin)/(recoveryMin-peakMin);
+      v=basale+spike*Math.cos(prog2*Math.PI/2);
+    } else {
+      // overshoot or flat
+      var prog3=(t-recoveryMin)/30;
+      var overshoot=spike*0.08*(1-prog3);
+      v=Math.max(basale-overshoot, basale-0.15);
+    }
+    pts.push({t:t,v:Math.max(vMin,Math.min(vMax,v))});
+  }
+
+  // Area
+  var area='M'+xF(pts[0].t)+','+yF(basale);
+  pts.forEach(function(p){area+='L'+xF(p.t)+','+yF(p.v);});
+  area+='L'+xF(pts[pts.length-1].t)+','+yF(basale)+'Z';
+  var peakCol = (basale+spike)<=7.0?'#5DCAA5':(basale+spike)<=7.8?'#EF9F27':'#E24B4A';
+  svg+='<path d="'+area+'" fill="'+peakCol+'" opacity="0.18"/>';
+
+  // Line
+  var path='';
+  pts.forEach(function(p,i){path+=(i===0?'M':'L')+xF(p.t)+','+yF(p.v);});
+  svg+='<path d="'+path+'" fill="none" stroke="'+peakCol+'" stroke-width="2" stroke-linejoin="round"/>';
+
+  // Peak dot + label
+  var pkPt=pts.reduce(function(best,p){return p.v>best.v?p:best;},pts[0]);
+  svg+='<circle cx="'+xF(pkPt.t)+'" cy="'+yF(pkPt.v)+'" r="3.5" fill="'+peakCol+'"/>';
+  svg+='<text x="'+(xF(pkPt.t)+5)+'" y="'+(yF(pkPt.v)-3)+'" font-size="9" fill="'+peakCol+'" font-weight="700">'+pkPt.v.toFixed(1)+'</text>';
+
+  // 7.8 target line
+  if(vMax>7.8 && vMin<7.8){
+    svg+='<line x1="'+ML+'" y1="'+yF(7.8)+'" x2="'+(W-MR)+'" y2="'+yF(7.8)+'" stroke="#E24B4A" stroke-width="0.7" stroke-dasharray="2,2" opacity="0.5"/>';
+    svg+='<text x="'+(W-MR-2)+'" y="'+(yF(7.8)-3)+'" font-size="8" fill="#E24B4A" text-anchor="end">7.8</text>';
+  }
+
+  svg+='</svg>';
+  return svg;
+}
+
+// ── Glico log ──
+function addGlicoLog(){
+  document.getElementById('glog-form').style.display='block';
+  // Pre-fill from selected food
+  if(glicoSelFood){
+    var f=GLICO_FOODS.find(function(x){return x.id===glicoSelFood;});
+    if(f) document.getElementById('glog-food-inp').value=f.name;
+  }
+}
+function cancelGlicoLog(){document.getElementById('glog-form').style.display='none';}
+function saveGlicoLog(){
+  var food=document.getElementById('glog-food-inp').value.trim();
+  var spike=parseFloat(document.getElementById('glog-spike-inp').value)||null;
+  var note=document.getElementById('glog-note-inp').value.trim();
+  if(!food){toast('Inserisci il nome alimento');return;}
+  glicoLogs.unshift({id:Date.now(),ts:new Date().toISOString(),food:food,spike:spike,note:note});
+  saveGlicoLogs();
+  document.getElementById('glog-form').style.display='none';
+  document.getElementById('glog-food-inp').value='';
+  document.getElementById('glog-spike-inp').value='';
+  document.getElementById('glog-note-inp').value='';
+  renderGlicoLog();
+  toast('Glucogeno registrato ✓');
+}
+function delGlicoLog(id){
+  glicoLogs=glicoLogs.filter(function(l){return l.id!==id;});
+  saveGlicoLogs();
+  renderGlicoLog();
+}
+function renderGlicoLog(){
+  var el=document.getElementById('glog-list');if(!el)return;
+  var today=new Date().toDateString();
+  var todayLogs=glicoLogs.filter(function(l){return new Date(l.ts).toDateString()===today;});
+  if(!todayLogs.length){el.innerHTML='<div style="font-size:12px;color:var(--tx3);padding:4px 0;">Nessun glucogeno registrato oggi.</div>';return;}
+  el.innerHTML=todayLogs.map(function(l){
+    var spikeCol=l.spike==null?'var(--tx3)':l.spike<=1.5?'#2E6644':l.spike<=2.2?'#7A5A00':'#A32D2D';
+    var t=new Date(l.ts);
+    var tm=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+    return '<div class="glog-entry">'+
+      '<div class="glog-time">'+tm+'</div>'+
+      '<div class="glog-food">'+l.food+(l.note?'<div style="font-size:10px;color:var(--tx3);font-weight:400">'+l.note+'</div>':'')+'</div>'+
+      (l.spike!=null?'<div class="glog-spike" style="color:'+spikeCol+'">+'+l.spike+'</div>':'')+
+      '<button class="glog-del" onclick="delGlicoLog('+l.id+')">✕</button>'+
+    '</div>';
+  }).join('');
+}
+
+// ── Init Glico tab ──
+function initGlico(){
+  loadGlicoLogs();
+  buildGfoodGrid();
+  onBasaleChange();
+  setGlicoMeal('digiuno');
+  renderGlicoLog();
+}
 loadData();
 initDatePicker();
 buildGenreChips();
@@ -2466,6 +3011,7 @@ buildCatChips();
 buildTrigFilterBar();
 buildSyms();buildSevs();setMomento(0);
 updateTriggers();
+loadGlicoLogs();
 </script>
 </body>
 </html>
