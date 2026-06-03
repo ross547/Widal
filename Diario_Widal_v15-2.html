@@ -3543,6 +3543,11 @@ updateTriggers();
 loadGlicoLogs();
 
 /* ══════════════════════════════════════════════════
+   v15 — VARIABILI GLOBALI (dichiarate prima di tutto)
+   ══════════════════════════════════════════════════ */
+var glicoSharedPayload = null; // payload bidirezionale Pasto ↔ Glico
+
+/* ══════════════════════════════════════════════════
    v15 — NUOVE FUNZIONI
    ══════════════════════════════════════════════════ */
 
@@ -3603,12 +3608,13 @@ function updateGlicoSem(){
 }
 
 // ── FLUSSO PASTO → GLICO ──
-var glicoSharedPayload=null; // {foods:[], triggers:[], maxRisk, mealType}
+// glicoSharedPayload dichiarato in testa al blocco v15
 
 function sendToGlico(){
   var names=getAllSelectedNames();
   if(!names.length){toast('Seleziona prima gli alimenti');return;}
   var mealType=classifyMealType(names);
+  // Imposta payload PRIMA di aprire il tab
   glicoSharedPayload={
     foods:names,
     triggers:computeAllTriggers(),
@@ -3617,6 +3623,7 @@ function sendToGlico(){
     fromPasto:true,
     ts:Date.now()
   };
+  // Apri Glico — showTab chiamerà initGlico che leggerà il payload
   showTab('glico');
   toast('Pasto inviato a Glico ✓');
 }
@@ -3991,24 +3998,33 @@ function selectGlicoFood(id){
 }
 
 // ── GLICO: carica payload ricevuto da Pasto ──
+// Override definitivo di initGlico che gestisce il payload da Pasto
 var _origInitGlico=initGlico;
 function initGlico(){
-  if(typeof _origInitGlico==='function')_origInitGlico();
-  // Se c'è un payload da Pasto, preimposta il tipo di pasto
-  if(glicoSharedPayload&&glicoSharedPayload.fromPasto){
-    var mt=glicoSharedPayload.mealType||'prot+fibra';
+  // Chiama initGlico originale (build grid, basale, meal, log)
+  if(typeof _origInitGlico==='function') _origInitGlico();
+
+  // Se c'è un payload da Pasto, lo applica
+  if(glicoSharedPayload && glicoSharedPayload.fromPasto){
+    var mt = glicoSharedPayload.mealType || 'prot+fibra';
     setGlicoMeal(mt);
-    var banner=document.getElementById('glico-recv-banner');
-    // Mostra info nella hero
-    var out=document.getElementById('glico-advisor-out');
-    if(out){
-      var extra='<div style="background:var(--bluelight);border-radius:var(--r);padding:8px 11px;font-size:12px;color:var(--blue);font-weight:600;margin-bottom:8px;">'+
-        '📥 Da Pasto: '+glicoSharedPayload.foods.join(', ')+'<br>'+
-        '<span style="font-weight:400">Classificato come: '+mt+'</span>'+
-      '</div>';
-      out.innerHTML=extra+out.innerHTML;
+
+    // Mostra riepilogo nella hero di Glico
+    var advOut = document.getElementById('glico-advisor-out');
+    if(advOut){
+      var foods = glicoSharedPayload.foods || [];
+      var infoBox = document.createElement('div');
+      infoBox.style.cssText = 'background:var(--bluelight);border:0.5px solid var(--blue);border-radius:var(--r);padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--blue);font-weight:600;';
+      infoBox.innerHTML = '📥 Da Pasto: ' + foods.join(', ') + '<br><span style="font-weight:400">Classificato come: ' + mt + ' — ora scegli il glucogeno</span>';
+      advOut.insertBefore(infoBox, advOut.firstChild);
     }
-    glicoSharedPayload.fromPasto=false; // consumato
+
+    // Mostra pulsante → Pasto
+    var btn = document.getElementById('to-pasto-btn');
+    if(btn) btn.style.display = 'block';
+
+    // Segna come consumato (non ripetere al prossimo open)
+    glicoSharedPayload.fromPasto = false;
   }
   updateDualSemaforo();
 }
