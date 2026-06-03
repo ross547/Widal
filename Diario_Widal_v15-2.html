@@ -3023,7 +3023,13 @@ function runGlicoAdvisor(){
     html += '</div>';
   }
 
-  document.getElementById('glico-advisor-out').innerHTML = html;
+  var advEl = document.getElementById('glico-advisor-out');
+  if(!advEl) return;
+  // Preserva il box "Da Pasto" se presente
+  var recvBox = document.getElementById('glico-pasto-recv');
+  advEl.innerHTML = html;
+  // Reinserisci il box in cima se era presente
+  if(recvBox) advEl.insertBefore(recvBox, advEl.firstChild);
 }
 
 // ── Food grid ──
@@ -3533,39 +3539,34 @@ function renderGlicoLog(){
 function initGlico(){
   loadGlicoLogs();
   buildGfoodGrid();
-  onBasaleChange();
   renderGlicoLog();
 
-  // Se c'è un payload da Pasto, usa quel tipo pasto; altrimenti default digiuno
+  // Se c'è un payload da Pasto, imposta tipo pasto E poi aggiorna advisor
   if(glicoSharedPayload && glicoSharedPayload.fromPasto){
     var mt = glicoSharedPayload.mealType || 'prot+fibra';
+    // setGlicoMeal chiama runGlicoAdvisor internamente
     setGlicoMeal(mt);
-
-    // Box blu con riepilogo alimenti ricevuti
+    // Ora inserisci il box DOPO che runGlicoAdvisor ha già scritto il suo html
     var advOut = document.getElementById('glico-advisor-out');
     if(advOut){
-      // Rimuovi eventuale box precedente
       var old = document.getElementById('glico-pasto-recv');
       if(old) old.remove();
-
       var infoBox = document.createElement('div');
       infoBox.id = 'glico-pasto-recv';
       infoBox.style.cssText = 'background:var(--bluelight);border:0.5px solid var(--blue);border-radius:var(--r);padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--blue);font-weight:600;';
       infoBox.innerHTML = '📥 Da Pasto: ' + (glicoSharedPayload.foods||[]).join(', ') +
-        '<br><span style="font-weight:400">Classificato come: ' + mt + ' — scegli il glucogeno qui sotto</span>';
+        '<br><span style="font-weight:400">Tipo: ' + mt + ' — scegli il glucogeno qui sotto</span>';
       advOut.insertBefore(infoBox, advOut.firstChild);
     }
-
     // Mostra pulsante → Pasto
     var btn = document.getElementById('to-pasto-btn');
     if(btn) btn.style.display = 'block';
-
-    // Consuma il flag (ma mantieni il payload per sendToPasto)
+    // Consuma il flag
     glicoSharedPayload.fromPasto = false;
-
   } else {
     setGlicoMeal('digiuno');
   }
+  onBasaleChange();
 }
 loadData();
 initDatePicker();
