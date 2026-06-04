@@ -1169,7 +1169,7 @@ const RISK_SECTIONS=[
 ];
 
 
-const GLYCEMIC_PROFILE = {"version": "ross-glycemic-profile-v1", "generated": "2026-05-26", "data_basis": {"total_curves": 322, "valid_curves": 288, "period1_days": 159, "period2_days": 20, "date_range": "2023-09-25 \u2192 2026-05-26"}, "insulin_response": {"peak_time_median": 86, "peak_time_p25": 50, "peak_time_p75": 142, "recovery_median": 132, "recovery_p25": 88, "recovery_p75": 178, "overshoot_rate": 0.45}, "meal_type_response": {"carbo": {"n": 66, "spike_mean": 2.0, "spike_std": 0.93, "peak_time": 88, "recovery": 107, "auc_mean": 113.0, "overshoot_rate": 0.65}, "proteico": {"n": 19, "spike_mean": 1.58, "spike_std": 0.82, "peak_time": 85, "recovery": 125, "auc_mean": 129.0, "overshoot_rate": 0.42}, "carbo+prot": {"n": 16, "spike_mean": 1.86, "spike_std": 0.63, "peak_time": 116, "recovery": 180, "auc_mean": 136.0, "overshoot_rate": 0.06}, "prot+fibra": {"n": 91, "spike_mean": 1.34, "spike_std": 0.64, "peak_time": 97, "recovery": 144, "auc_mean": 96.0, "overshoot_rate": 0.41}, "carbo+fibra": {"n": 5, "spike_mean": 1.81, "spike_std": 0.7, "peak_time": 102, "recovery": 161, "auc_mean": 135.0, "overshoot_rate": 0.4}, "fibroso": {"n": 37, "spike_mean": 1.55, "spike_std": 0.78, "peak_time": 87, "recovery": 144, "auc_mean": 117.0, "overshoot_rate": 0.43}, "altro": {"n": 54, "spike_mean": 1.5, "spike_std": 0.76, "peak_time": 113, "recovery": 126, "auc_mean": 81.0, "overshoot_rate": 0.43}}, "time_of_day": {"mattina": {"n": 90, "baseline_mean": 5.81, "spike_mean": 1.78, "spike_std": 0.91, "peak_time": 96, "recovery": 114, "overshoot_rate": 0.58}, "pranzo": {"n": 99, "baseline_mean": 6.01, "spike_mean": 1.46, "spike_std": 0.69, "peak_time": 91, "recovery": 138, "overshoot_rate": 0.37}, "sera": {"n": 91, "baseline_mean": 5.73, "spike_mean": 1.56, "spike_std": 0.76, "peak_time": 101, "recovery": 145, "overshoot_rate": 0.44}}, "baseline_effect": {"slope": -0.322, "intercept": 3.48, "r_squared": 0.065, "interpretation": "Ogni +1 mmol/L di basale \u2192 -0.32 spike (relazione inversa)"}, "current_params": {"avg_baseline": 5.4, "avg_spike": 1.45, "avg_peak_time": 122, "avg_recovery": 143, "avg_auc": 83.4}, "volatility_effect": {"stabile": {"n": 58, "spike_mean": 1.93, "auc_mean": 129.0}, "moderato": {"n": 167, "spike_mean": 1.5, "auc_mean": 95.0}, "volatile": {"n": 63, "spike_mean": 1.57, "auc_mean": 110.0}}};
+const GLYCEMIC_PROFILE = {"version":"ross-glycemic-profile-v1","generated":"2026-06-04","data_basis":{"total_curves":322,"valid_curves":288,"period1_days":159,"period2_days":29,"date_range":"2023-09-25 → 2026-06-04","_lastCalibration":"2026-06-04","_calibrationMatches":19},"insulin_response":{"peak_time_median":86,"peak_time_p25":50,"peak_time_p75":142,"recovery_median":132,"recovery_p25":88,"recovery_p75":178,"overshoot_rate":0.45},"meal_type_response":{"carbo":{"n":69,"spike_mean":1.84,"spike_std":0.93,"peak_time":102,"recovery":118,"auc_mean":113.0,"overshoot_rate":0.65},"proteico":{"n":21,"spike_mean":1.41,"spike_std":0.82,"peak_time":95,"recovery":130,"auc_mean":129.0,"overshoot_rate":0.42},"carbo+prot":{"n":16,"spike_mean":1.86,"spike_std":0.63,"peak_time":116,"recovery":180,"auc_mean":136.0,"overshoot_rate":0.06},"prot+fibra":{"n":98,"spike_mean":1.15,"spike_std":0.64,"peak_time":112,"recovery":155,"auc_mean":96.0,"overshoot_rate":0.41},"carbo+fibra":{"n":5,"spike_mean":1.81,"spike_std":0.7,"peak_time":102,"recovery":161,"auc_mean":135.0,"overshoot_rate":0.4},"fibroso":{"n":39,"spike_mean":1.37,"spike_std":0.78,"peak_time":101,"recovery":154,"auc_mean":117.0,"overshoot_rate":0.43},"altro":{"n":58,"spike_mean":1.32,"spike_std":0.76,"peak_time":116,"recovery":112,"auc_mean":81.0,"overshoot_rate":0.43}},"time_of_day":{"mattina":{"n":90,"baseline_mean":5.81,"spike_mean":1.78,"spike_std":0.91,"peak_time":96,"recovery":114,"overshoot_rate":0.58},"pranzo":{"n":99,"baseline_mean":6.01,"spike_mean":1.46,"spike_std":0.69,"peak_time":91,"recovery":138,"overshoot_rate":0.37},"sera":{"n":91,"baseline_mean":5.73,"spike_mean":1.56,"spike_std":0.76,"peak_time":101,"recovery":145,"overshoot_rate":0.44}},"baseline_effect":{"slope":-0.322,"intercept":3.48,"r_squared":0.065,"interpretation":"Ogni +1 mmol/L di basale → -0.32 spike (relazione inversa)"},"current_params":{"avg_baseline":5.74,"avg_spike":0.94,"avg_peak_time":122,"avg_recovery":143,"avg_auc":83.4},"volatility_effect":{"stabile":{"n":58,"spike_mean":1.93,"auc_mean":129.0},"moderato":{"n":167,"spike_mean":1.5,"auc_mean":95.0},"volatile":{"n":63,"spike_mean":1.57,"auc_mean":110.0}}};
 let selItems={},selSym={},selSev=null,selMeal=null;
 let entries=[],statoEntries=[],apiKey='',currentAiResult=null;
 // Legacy — kept only for import compatibility, always empty in normal operation
@@ -2863,15 +2863,19 @@ function selectDose(idx, dose){
 
 function sendToPasto(){
   showTab('pasto');
-  // Mostra nota in tab Pasto con glucogeno scelto
-  var noteInp = document.getElementById('note-inp');
-  if(noteInp && window._glicoSelectedDose){
+  // Il glucogeno va come tag separato — non occupa il campo note libere
+  if(window._glicoSelectedDose){
     var d = window._glicoSelectedDose;
-    var existing = noteInp.value.trim();
-    var glicNote = 'Glucogeno: '+d.food+(d.label?' ('+d.label+')':'');
-    noteInp.value = existing ? existing+' · '+glicNote : glicNote;
+    var noteInp = document.getElementById('note-inp');
+    if(noteInp){
+      // Rimuovi eventuale tag glucogeno precedente, poi aggiungi il nuovo
+      var existing = noteInp.value.replace(/\s*\[Glico:[^\]]*\]/g, '').trim();
+      var glicTag = '[Glico: '+d.food+(d.label?' '+d.label:'')+']';
+      // Tag in fondo — la nota libera rimane editabile prima del tag
+      noteInp.value = existing ? existing + '\n' + glicTag : glicTag;
+    }
   }
-  toast('Tornato a Pasto ✓ — completa e salva');
+  toast('Tornato a Pasto ✓ — aggiungi note sopra e salva');
 }
 
 /* ══════════════════════════════════════════════
@@ -2938,7 +2942,8 @@ function openPhase2(id){
       }).join('')+
     '</select>'+
     '<div class="phase2-row">'+
-      '<button class="phase2-save" onclick="savePhase2('+id+')">✓ Salva reazioni</button>'+
+      '<button class="phase2-save" onclick="savePhase2('+id+')">✓ Salva</button>'+
+      '<button class="phase2-save" style="background:#5DCAA5" onclick="closePhase2NoReaction('+id+')">✓ Nessuna reazione</button>'+
       '<button class="phase2-cancel" onclick="openPhase2('+id+')">Annulla</button>'+
     '</div></div>';
   var entryEl2=document.getElementById('entry-'+id);
@@ -2965,19 +2970,32 @@ function p2togSev(id,s,i){
   });
 }
 
+function closePhase2NoReaction(id){
+  var e=entries.find(function(x){return x.id===id;}); if(!e) return;
+  e.draft=false;
+  e.phase2ts=new Date().toISOString();
+  // Preserva la nota esistente (es. tag glucogeno)
+  saveData();
+  openPhase2(id);
+  renderHist();
+  updateDualSemaforo();
+  toast('Pasto completato — nessuna reazione ✓');
+}
+
 function savePhase2(id){
   var e=entries.find(function(x){return x.id===id;}); if(!e) return;
   var noteEl=document.getElementById('p2note-'+id);
   var rtEl=document.getElementById('p2rt-'+id);
   if(noteEl) e.note=noteEl.value.trim();
-  if(rtEl) e.reactionTime=rtEl.value;
+  if(rtEl&&rtEl.value) e.reactionTime=rtEl.value;
+  // Chiude sempre la bozza — anche senza reazioni (nessuna reazione = dato clinico valido)
   e.draft=false;
   e.phase2ts=new Date().toISOString();
   saveData();
   openPhase2(id);
   renderHist();
   updateDualSemaforo();
-  toast('Reazioni salvate ✓');
+  toast(e.symptoms&&e.symptoms.length>0 ? 'Reazioni salvate ✓' : 'Pasto completato — nessuna reazione ✓');
 }
 
 /* ══════════════════════════════════════════════
@@ -3124,19 +3142,19 @@ function delBiometric(id){biometrics=biometrics.filter(function(b){return b.id!=
 
 // Profilo personale hardcoded (stabile, da ross_glycemic_profile.json)
 var ROSS = {
-  baseline: 5.4,          // mmol/L media attuale
-  basaleSlopePerUnit: -0.322, // ogni +1 basale → -0.322 spike
+  baseline: 5.74,           // aggiornato calibrazione 04/06/2026
+  basaleSlopePerUnit: -0.322,
   basaleIntercept: 3.48,
-  peakMedian: 86,         // minuti
-  recoveryMedian: 132,    // minuti
+  peakMedian: 86,
+  recoveryMedian: 132,
   overshootRate: 0.45,
   byType: {
-    'carbo':      {spikeMean:2.00, peakTime:88,  recovery:107, overshootRate:0.65, auc:113},
-    'proteico':   {spikeMean:1.58, peakTime:85,  recovery:125, overshootRate:0.42, auc:129},
+    'carbo':      {spikeMean:1.84, peakTime:102, recovery:118, overshootRate:0.65, auc:113},
+    'proteico':   {spikeMean:1.41, peakTime:95,  recovery:130, overshootRate:0.42, auc:129},
     'carbo+prot': {spikeMean:1.86, peakTime:116, recovery:180, overshootRate:0.06, auc:136},
-    'prot+fibra': {spikeMean:1.34, peakTime:97,  recovery:144, overshootRate:0.41, auc:96},
+    'prot+fibra': {spikeMean:1.15, peakTime:112, recovery:155, overshootRate:0.41, auc:96},
     'carbo+fibra':{spikeMean:1.81, peakTime:102, recovery:161, overshootRate:0.40, auc:135},
-    'fibroso':    {spikeMean:1.55, peakTime:87,  recovery:144, overshootRate:0.43, auc:117},
+    'fibroso':    {spikeMean:1.37, peakTime:101, recovery:154, overshootRate:0.43, auc:117},
     'digiuno':    {spikeMean:0.20, peakTime:30,  recovery:60,  overshootRate:0.10, auc:15},
   },
   bySlot: {
