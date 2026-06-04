@@ -2674,31 +2674,29 @@ function importData(input){
   reader.onload = function(e){
     try{
       var data = JSON.parse(e.target.result);
-      var type = data.type || 'full';
       var msg = '';
 
-      // Dati clinici
       if(data.entries){entries = data.entries; saveData(); msg += entries.length+' pasti, ';}
       if(data.statoEntries){statoEntries = data.statoEntries; saveStatoData(); msg += statoEntries.length+' valutazioni, ';}
       if(data.biometrics){biometrics = data.biometrics; saveBiometrics();}
       if(data.glicoLogs){glicoLogs = data.glicoLogs; saveGlicoLogs();}
-
-      // Configurazione
-      if(data.foods){CATEGORIES = data.foods; DISHES = rebuildDISHES(); saveCategories(); msg += CATEGORIES.length+' categorie alimenti, ';}
+      if(data.foods){CATEGORIES = data.foods; DISHES = rebuildDISHES(); saveCategories(); msg += CATEGORIES.length+' categorie, ';}
       else if(data.customFoods){customFoods = data.customFoods; localStorage.removeItem('widal-migration-v3'); migrateCustomFoods();}
       if(data.glycemicProfile){
         try{localStorage.setItem('widal-glycemic-profile-v1', JSON.stringify(data.glycemicProfile));}catch(ex){}
         msg += 'profilo glicemico, ';
       }
 
-      // Rebuild UI
+      // Rebuild UI completo
       buildGenreChips(); buildTrigFilterBar(); renderCustomFoods();
       updateCtgBar(); updateDualSemaforo();
+      // IMPORTANTE: aggiorna anche lo storico
+      if(document.getElementById('vhist') && document.getElementById('vhist').style.display !== 'none'){
+        renderHist();
+      }
 
-      // Data info
-      var dateStr = data.exported ? ' — backup del '+new Date(data.exported).toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'}) : '';
-      msg = 'Importati: ' + msg.replace(/, $/, '') + dateStr + '.';
-      showSyncStatus(msg, 'ok');
+      var dateStr = data.exported ? ' — '+new Date(data.exported).toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'}) : '';
+      showSyncStatus('Importati: ' + msg.replace(/, $/, '') + dateStr, 'ok');
       toast('Dati importati ✓');
     } catch(err){
       showSyncStatus('Errore JSON: '+err.message, 'err');
@@ -2812,15 +2810,36 @@ function sendToGlico(){
   toast('Pasto inviato a Glico ✓');
 }
 
-function sendToPasto(){
-  if(!glicoSharedPayload){toast('Nessun pasto da Pasto'); return;}
-  // Aggiungi eventuale glucogeno selezionato
+function selectDose(idx, dose){
+  // Aggiorna visivamente la selezione
+  [1,2,3].forEach(function(i){
+    var card = document.getElementById('dose-card-'+i);
+    if(card){
+      card.style.border = i===idx ? '2px solid var(--blue)' : '0.5px solid var(--bd2)';
+      card.style.background = i===idx ? 'var(--bluelight)' : 'var(--bg2)';
+    }
+  });
+  // Salva dose selezionata
   if(glicoSelFood){
-    var f=GLICO_FOODS.find(function(x){return x.id===glicoSelFood;});
-    if(f&&glicoSharedPayload.foods.indexOf(f.name)<0) glicoSharedPayload.foods.push(f.name);
+    var food = GLICO_FOODS.find(function(f){return f.id===glicoSelFood;});
+    if(food){
+      var label = food.unit==='g' ? dose+'g' : dose+' '+food.unit;
+      window._glicoSelectedDose = {food: food.name, dose: dose, unit: food.unit, label: label};
+    }
   }
+}
+
+function sendToPasto(){
   showTab('pasto');
-  toast('Pasto inviato a Pasto ✓');
+  // Mostra nota in tab Pasto con glucogeno scelto
+  var noteInp = document.getElementById('note-inp');
+  if(noteInp && window._glicoSelectedDose){
+    var d = window._glicoSelectedDose;
+    var existing = noteInp.value.trim();
+    var glicNote = 'Glucogeno: '+d.food+(d.label?' ('+d.label+')':'');
+    noteInp.value = existing ? existing+' · '+glicNote : glicNote;
+  }
+  toast('Tornato a Pasto ✓ — completa e salva');
 }
 
 /* ══════════════════════════════════════════════
@@ -2926,16 +2945,19 @@ function savePhase2(id){
    ══════════════════════════════════════════════ */
 var _v14SaveEntry = saveEntry;
 function saveEntry(){
-  // Chiama saveEntry originale v14
   _v14SaveEntry();
-  // Aggiunge draft + reliability all'entry appena creata
-  if(entries.length){
-    var e=entries[0];
-    e.draft = !(e.symptoms && e.symptoms.length>0);
-    e.reliability = computeReliability();
+  // Aggiunge draft + reliability all'entry appena creata (entries[0])
+  try {
+    if(entries.length){
+      var e = entries[0];
+      e.draft = !(e.symptoms && e.symptoms.length > 0);
+      e.reliability = computeReliability();
+      saveData(); // salva con i nuovi campi
+    }
+    updateDualSemaforo();
+  } catch(err) {
+    console.warn('v16 saveEntry extra:', err);
   }
-  saveData();
-  updateDualSemaforo();
 }
 
 /* ══════════════════════════════════════════════
@@ -3731,16 +3753,20 @@ function renderGlicoSimulator(){
   function vcol(p){return p<=7.0?'#2E6644':p<=7.8?'#7A5A00':'#A32D2D';}
   function vbg(p){return p<=7.0?'#E8F5EE':p<=7.8?'#FFF8E7':'#FCEAEA';}
 
-  doseEl.innerHTML = '<div style="font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:6px;">Spike stimato per dose (contesto: '+glicoMealType+')</div>'+
-    '<div style="display:flex;gap:6px;">'+
+  var selectedDose = food.dose2; // default dose media
+  doseEl.innerHTML = '<div style="font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:6px;">Spike stimato — tocca per scegliere la dose</div>'+
+    '<div style="display:flex;gap:6px;" id="dose-selector">'+
     [
-      [food.dose1, s1, p1],
-      [food.dose2, s2, p2],
-      [food.dose3, s3, p3]
+      [food.dose1, s1, p1, 1],
+      [food.dose2, s2, p2, 2],
+      [food.dose3, s3, p3, 3]
     ].map(function(row){
-      var dose=row[0],s=row[1],p=row[2];
+      var dose=row[0],s=row[1],p=row[2],idx=row[3];
       var label = food.unit==='g' ? dose+'g' : dose+' '+food.unit;
-      return '<div style="flex:1;text-align:center;background:'+vbg(p)+';border-radius:8px;padding:8px 4px;border:0.5px solid '+vcol(p)+'20">'+
+      var isSelected = (idx===2); // dose media selezionata di default
+      var border = isSelected ? '2px solid '+vcol(p) : '0.5px solid var(--bd2)';
+      var bg = isSelected ? vbg(p) : 'var(--bg2)';
+      return '<div id="dose-card-'+idx+'" onclick="selectDose('+idx+','+dose+')" style="flex:1;text-align:center;background:'+bg+';border-radius:8px;padding:8px 4px;border:'+border+';cursor:pointer;">'+
         '<div style="font-size:16px;font-weight:700;color:'+vcol(p)+'">'+verdict(p)+'</div>'+
         '<div style="font-size:13px;font-weight:700;color:var(--tx)">'+label+'</div>'+
         '<div style="font-size:10px;color:var(--tx2)">+'+s.toFixed(1)+'</div>'+
@@ -3749,6 +3775,10 @@ function renderGlicoSimulator(){
     }).join('')+
   '</div>'+
   '<div style="font-size:10px;color:var(--tx3);margin-top:6px;">'+food.note+'</div>';
+
+  // Salva dose selezionata per sendToPasto
+  window._glicoSelectedDose = {food: food.name, dose: selectedDose, unit: food.unit};
+  window._glicoSpikeEstimate = s2;
 
   // Draw prediction curve SVG
   var peakT = mealProfile.peakTime || 88;
