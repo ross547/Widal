@@ -107,6 +107,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;fo
 .anchor-btn{padding:5px 9px;border-radius:var(--r);border:0.5px solid var(--bd2);background:var(--bg);font-size:11px;font-weight:600;color:var(--tx2);cursor:pointer;}
 .anchor-btn:active{background:var(--bg3);}
 .anchor-btn.clear{color:var(--tx3);}
+.anchor-btn.libre{color:var(--blue);border-color:var(--blue);display:none;}
+.anchor-row.has-val .anchor-btn.libre{display:inline-block;}
+.anchor-libre-copied{color:var(--green,#2E6644)!important;border-color:var(--green,#2E6644)!important;}
 @media(prefers-color-scheme:dark){
   .gbanner.ig-low{background:#1a3528;color:#80d4a0;border-color:#2E6644;}
   .gbanner.ig-med{background:#2e2610;color:#e0c060;border-color:#705c10;}
@@ -683,6 +686,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
         </div>
         <div class="anchor-btns">
           <button class="anchor-btn" onclick="anchorNow()" title="Registra timestamp adesso">⏱ Ora</button>
+          <button class="anchor-btn libre" id="anchor-libre-btn" onclick="copyLibreNote()" title="Copia nota da incollare in Libre">📋 Libre</button>
           <button class="anchor-btn clear" onclick="anchorClear()" title="Rimuovi anchor">✕</button>
         </div>
       </div>
@@ -1749,6 +1753,27 @@ function anchorClear(){
   document.getElementById('anchor-status').className='anchor-status none';
   document.getElementById('anchor-status').textContent='Non inserito';
   document.getElementById('anchor-ts').textContent='';
+}
+
+function copyLibreNote(){
+  if(!libreAnchorData||!libreAnchorData.v){toast('Inserisci prima il valore Libre');return;}
+  const names=getAllSelectedNames();
+  const ts=new Date(libreAnchorData.ts);
+  const hh=String(ts.getHours()).padStart(2,'0');
+  const mm=String(ts.getMinutes()).padStart(2,'0');
+  // Testo compatto da incollare nel campo nota Libre
+  const foods=names.length?names.join(', '):'pasto';
+  const mgdl=Math.round(libreAnchorData.v*18);
+  const note='Pasto h'+hh+':'+mm+' · '+libreAnchorData.v.toFixed(1)+' ('+mgdl+') · '+foods;
+  navigator.clipboard.writeText(note).then(function(){
+    const btn=document.getElementById('anchor-libre-btn');
+    if(btn){btn.textContent='✓ Copiato';btn.classList.add('anchor-libre-copied');
+      setTimeout(function(){btn.textContent='📋 Libre';btn.classList.remove('anchor-libre-copied');},2000);}
+    toast('Nota copiata — incolla in Libre ✓');
+  }).catch(function(){
+    // Fallback: mostra il testo in un prompt selezionabile
+    window.prompt('Copia il testo e incollalo in Libre:',note);
+  });
 }
 function _anchorRefresh(v,now){
   let cls,txt;
