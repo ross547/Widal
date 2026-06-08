@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Widal Editor v2</title>
+<style>
+:root{--bg:#0f0f11;--s1:#18181c;--s2:#222228;--s3:#2a2a32;--bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.13);--tx:#f0f0f5;--tx2:#8888a0;--tx3:#55556a;--ac:#7c6af7;--ac2:#a594ff;--gr:#3ecf8e;--am:#f5a623;--rd:#f04060;--bl:#4c9cf1;--vi:#9B30FF;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;}
+.shell{display:flex;flex-direction:column;height:100vh;}
+.topbar{display:flex;align-items:center;gap:12px;padding:10px 18px;background:var(--s1);border-bottom:1px solid var(--bd);flex-shrink:0;}
+.logo{font-size:16px;font-weight:800;color:var(--ac2);}
+.logo small{font-weight:400;color:var(--tx3);font-size:11px;margin-left:6px;}
+.file-info{font-size:11px;color:var(--tx3);}
+.topbar-right{margin-left:auto;display:flex;gap:8px;}
+.tabbar{display:flex;align-items:stretch;background:var(--s1);border-bottom:1px solid var(--bd);flex-shrink:0;}
+.tbtn{padding:9px 20px;font-size:12px;font-weight:600;color:var(--tx3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;}
+.tbtn.on{color:var(--ac2);border-bottom-color:var(--ac);}
+.tbadge{font-size:10px;background:var(--ac);color:#fff;border-radius:10px;padding:1px 5px;margin-left:5px;}
+.tab-new{margin:5px 10px 5px auto;padding:5px 14px;border-radius:7px;font-size:12px;font-weight:600;background:var(--ac);color:#fff;border:none;cursor:pointer;}
+.main{display:flex;flex:1;overflow:hidden;}
+.left{width:285px;flex-shrink:0;display:flex;flex-direction:column;background:var(--s1);border-right:1px solid var(--bd);}
+.filters{padding:8px 10px;border-bottom:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:5px;}
+.fp{padding:4px 9px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--bd2);background:none;color:var(--tx3);transition:all .12s;}
+.fp:hover{color:var(--tx);}
+.fp.on{background:rgba(124,106,247,.15);color:var(--ac2);border-color:var(--ac);}
+.sbox{padding:7px 10px;border-bottom:1px solid var(--bd);}
+.sinp{width:100%;padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:7px;color:var(--tx);font-size:12px;outline:none;}
+.sinp:focus{border-color:var(--ac);}
+.lcount{padding:3px 10px;font-size:10px;color:var(--tx3);}
+.list{flex:1;overflow-y:auto;}
+.item{padding:9px 12px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .1s;}
+.item:hover{background:var(--s2);}
+.item.sel{background:rgba(124,106,247,.1);border-left:3px solid var(--ac);}
+.iname{font-size:12px;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.imeta{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px;align-items:center;}
+.badge{padding:1px 6px;border-radius:10px;font-size:10px;font-weight:600;}
+.warn{color:var(--am);font-size:10px;}
+.right{flex:1;overflow-y:auto;padding:22px 26px;background:var(--bg);}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--tx3);gap:10px;text-align:center;}
+.eico{font-size:48px;opacity:.2;}
+.ed-title{font-size:18px;font-weight:800;color:var(--tx);margin-bottom:3px;}
+.ed-sub{font-size:11px;color:var(--tx3);font-family:monospace;margin-bottom:18px;}
+.nb{display:inline-block;font-size:9px;font-weight:700;color:var(--gr);background:rgba(62,207,142,.15);border:1px solid var(--gr);border-radius:6px;padding:1px 5px;margin-left:6px;vertical-align:middle;}
+.sec{margin-bottom:18px;}
+.sec-t{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;padding-bottom:6px;border-bottom:1px solid var(--bd);margin-bottom:9px;}
+.frow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field.g{flex:1;min-width:120px;}
+.fl{font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;}
+.fi,.fs,.fta{padding:8px 10px;background:var(--s1);border:1px solid var(--bd2);border-radius:7px;color:var(--tx);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--ac);}
+.fta{resize:vertical;min-height:60px;line-height:1.5;}
+.rbrow{display:flex;gap:4px;margin-top:2px;}
+.rb{width:32px;height:32px;border-radius:6px;border:1px solid var(--bd2);background:var(--s2);color:var(--tx2);font-size:12px;font-weight:700;cursor:pointer;transition:all .12s;}
+.rb.on0,.rb.on1{background:#0d2e1a;color:var(--gr);border-color:var(--gr);}
+.rb.on2{background:#2a2308;color:#f5c842;border-color:#f5c842;}
+.rb.on3{background:#2e1e06;color:var(--am);border-color:var(--am);}
+.rb.on4{background:#2e0d10;color:var(--rd);border-color:var(--rd);}
+.rb.on5{background:#1e0508;color:#ff2040;border-color:#ff2040;}
+.tchips,.mchips,.schips,.igchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px;}
+.tc,.mc,.sc,.igc{padding:5px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--bd2);background:var(--s2);color:var(--tx3);user-select:none;transition:all .12s;}
+.tc.on{border-color:currentColor;}
+.tc[data-t="Istamina"].on{color:#f07070;background:rgba(240,112,112,.1);}
+.tc[data-t="Salicilati"].on{color:var(--am);background:rgba(245,166,35,.1);}
+.tc[data-t="Ammine biogene"].on{color:#f08050;background:rgba(240,128,80,.1);}
+.tc[data-t="Tiramina"].on{color:#f06060;background:rgba(240,96,96,.1);}
+.tc[data-t="TRPA1"].on{color:#9090f0;background:rgba(144,144,240,.1);}
+.tc[data-t="Istamina-lib."].on{color:#d070a0;background:rgba(208,112,160,.1);}
+.sc.on{color:var(--rd);background:rgba(240,64,96,.1);border-color:var(--rd);}
+.igc.basso{color:var(--gr);background:rgba(62,207,142,.1);border-color:var(--gr);}
+.igc.medio{color:var(--am);background:rgba(245,166,35,.1);border-color:var(--am);}
+.igc.alto{color:var(--rd);background:rgba(240,64,96,.1);border-color:var(--rd);}
+.mc.Colazione{color:#f5c842;background:rgba(245,200,66,.1);border-color:#f5c842;}
+.mc.Pranzo{color:var(--bl);background:rgba(76,156,241,.1);border-color:var(--bl);}
+.mc.Cena{color:var(--vi);background:rgba(155,48,255,.1);border-color:var(--vi);}
+.mc.Spuntino{color:var(--gr);background:rgba(62,207,142,.1);border-color:var(--gr);}
+.mc.Snack{color:var(--rd);background:rgba(240,64,96,.1);border-color:var(--rd);}
+.ftag{padding:4px 9px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--bd2);background:var(--s2);color:var(--tx2);transition:all .12s;}
+.ftag.react{color:var(--rd);background:rgba(240,64,96,.15);border-color:var(--rd);}
+.btn{padding:8px 15px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:opacity .12s;}
+.btn:hover{opacity:.82;}.btn:disabled{opacity:.35;cursor:default;}
+.btn-p{background:var(--ac);color:#fff;}.btn-g{background:var(--gr);color:#0a2016;}
+.btn-r{background:rgba(240,64,96,.15);color:var(--rd);border:1px solid var(--rd);}
+.btn-n{background:var(--s2);color:var(--tx2);border:1px solid var(--bd2);}
+.btn-sm{padding:5px 10px;font-size:11px;}
+.actions{display:flex;gap:7px;padding-top:14px;border-top:1px solid var(--bd);margin-top:4px;flex-wrap:wrap;align-items:center;}
+/* TIMELINE */
+.tl-wrap{display:flex;flex:1;flex-direction:column;overflow:hidden;}
+.tl-nav{display:flex;align-items:center;gap:10px;padding:10px 18px;background:var(--s1);border-bottom:1px solid var(--bd);flex-shrink:0;}
+.tl-title{font-size:14px;font-weight:700;color:var(--tx);flex:1;text-align:center;}
+.tl-sub{font-size:11px;color:var(--tx3);text-align:center;margin-top:1px;}
+.tl-nb{padding:6px 13px;border-radius:7px;background:var(--s2);border:1px solid var(--bd2);color:var(--tx2);font-size:13px;cursor:pointer;}
+.tl-nb:hover{color:var(--tx);}
+.tl-di{padding:6px 10px;background:var(--s2);border:1px solid var(--bd2);border-radius:7px;color:var(--tx);font-size:12px;outline:none;}
+.tl-di:focus{border-color:var(--ac);}
+.tl-today{padding:6px 12px;border-radius:7px;background:var(--ac);color:#fff;border:none;font-size:12px;font-weight:600;cursor:pointer;}
+.tl-body{display:flex;flex:1;overflow:hidden;}
+.tl-col{width:355px;flex-shrink:0;overflow-y:auto;border-right:1px solid var(--bd);padding:12px;}
+.tl-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.tl-sum{font-size:11px;color:var(--tx3);}
+.tl-empty{text-align:center;color:var(--tx3);padding:40px 16px;font-size:13px;}
+.tl-meal{display:flex;gap:8px;margin-bottom:7px;align-items:flex-start;}
+.tl-tc{width:42px;flex-shrink:0;text-align:right;padding-top:9px;}
+.tl-time{font-size:11px;font-weight:600;color:var(--tx3);font-family:monospace;}
+.tl-vl{display:flex;flex-direction:column;align-items:center;margin:0 7px;}
+.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:9px;}
+.tl-seg{width:2px;background:var(--bd2);flex:1;min-height:14px;}
+.tl-card{flex:1;border:1px solid var(--bd2);border-radius:9px;padding:9px 11px;cursor:pointer;transition:all .12s;background:var(--s1);}
+.tl-card:hover{border-color:var(--ac2);background:var(--s2);}
+.tl-card.sel{border-color:var(--ac);background:rgba(124,106,247,.08);box-shadow:0 0 0 2px rgba(124,106,247,.18);}
+.tl-ctop{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.tl-mb{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+.tl-foods{font-size:12px;color:var(--tx2);line-height:1.4;}
+.tl-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;}
+.tl-tag{font-size:9px;padding:1px 6px;border-radius:7px;}
+.tl-sym{color:var(--rd);font-size:11px;margin-left:auto;}
+.tl-warn{font-size:9px;color:var(--am);background:rgba(245,166,35,.1);border:1px solid var(--am);border-radius:6px;padding:1px 5px;}
+.tl-gap{display:flex;align-items:center;gap:7px;margin:2px 0 7px 50px;}
+.tl-gl{flex:1;border-top:1px dashed var(--bd2);}
+.tl-ga{font-size:10px;color:var(--tx3);cursor:pointer;padding:3px 8px;border-radius:6px;border:1px dashed var(--bd2);background:none;white-space:nowrap;}
+.tl-ga:hover{color:var(--gr);border-color:var(--gr);}
+.tl-right{flex:1;overflow-y:auto;padding:20px 24px;}
+.tl-re{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--tx3);gap:10px;text-align:center;}
+.di{padding:8px 10px;background:var(--s1);border:1px solid var(--bd2);border-radius:7px;color:var(--tx);font-size:13px;outline:none;}
+.di:focus{border-color:var(--ac);}
+/* Dropzone */
+.dropzone{display:flex;align-items:center;justify-content:center;flex:1;}
+.dz{border:2px dashed var(--bd2);border-radius:14px;padding:44px 40px;cursor:pointer;transition:border-color .15s;text-align:center;max-width:400px;}
+.dz:hover,.dz.drag{border-color:var(--ac);}
+.dz-ico{font-size:40px;display:block;margin-bottom:8px;}
+.dz-txt{color:var(--tx3);font-size:13px;line-height:1.6;}
+.dz-txt strong{color:var(--tx2);}
+/* Toast */
+.toast{position:fixed;bottom:18px;right:18px;padding:9px 15px;border-radius:8px;font-size:13px;background:var(--s1);border:1px solid var(--bd2);color:var(--tx);opacity:0;transform:translateY(6px);transition:all .18s;pointer-events:none;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;transform:none;}
+.toast.ok{border-color:var(--gr);}
+.toast.err{border-color:var(--rd);}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:3px;}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="topbar">
+  <span class="logo">Widal Editor <small>v2</small></span>
+  <span class="file-info" id="fi-info">Nessun file caricato</span>
+  <div class="topbar-right">
+    <button class="btn btn-n btn-sm" onclick="document.getElementById('fi').click()">&#128193; Carica JSON</button>
+    <input type="file" id="fi" accept=".json" style="display:none" onchange="loadFile(this)"/>
+    <button class="btn btn-g btn-sm" id="exp-btn" onclick="exportJson()" disabled>&#8595; Esporta</button>
+  </div>
+</div>
+<div class="tabbar">
+  <button class="tbtn on" id="tb-foods" onclick="showTab('foods')">&#x1F966; Alimenti <span class="tbadge" id="bdg-foods">0</span></button>
+  <button class="tbtn" id="tb-diary" onclick="showTab('diary')">&#x1F4CB; Diario <span class="tbadge" id="bdg-diary">0</span></button>
+  <button class="tbtn" id="tb-tl" onclick="showTab('tl')">&#x1F4C5; Timeline</button>
+  <button class="tab-new" id="new-btn" onclick="newItem()">+ Nuovo</button>
+</div>
+
+<!-- DROPZONE -->
+<div class="dropzone" id="dropzone"
+  ondragover="event.preventDefault();document.getElementById('dz').classList.add('drag')"
+  ondragleave="document.getElementById('dz').classList.remove('drag')"
+  ondrop="handleDrop(event)">
+  <div class="dz" id="dz" onclick="document.getElementById('fi').click()">
+    <span class="dz-ico">&#128193;</span>
+    <div class="dz-txt">Trascina <strong>widal-backup-full-*.json</strong><br>oppure clicca per scegliere il file</div>
+  </div>
+</div>
+
+<!-- TAB FOODS -->
+<div id="tab-foods" class="main" style="display:none">
+  <div class="left">
+    <div class="filters" id="ff">
+      <button class="fp on" onclick="setFF('all',this)">Tutti</button>
+      <button class="fp" onclick="setFF('no-ig',this)">Senza IG</button>
+      <button class="fp" onclick="setFF('r4',this)">R4</button>
+      <button class="fp" onclick="setFF('r5',this)">R5</button>
+      <button class="fp" onclick="setFF('r01',this)">Sicuri 0-1</button>
+    </div>
+    <div class="filters" id="catf" style="border-top:none;padding-top:0"></div>
+    <div class="sbox"><input class="sinp" placeholder="Cerca alimento&#8230;" oninput="fSrch=this.value.toLowerCase();renderFL()"/></div>
+    <div class="lcount" id="fcnt"></div>
+    <div class="list" id="flist"></div>
+  </div>
+  <div class="right" id="fed"><div class="empty"><div class="eico">&#x1F966;</div><p>Seleziona un alimento</p></div></div>
+</div>
+
+<!-- TAB DIARY -->
+<div id="tab-diary" class="main" style="display:none">
+  <div class="left">
+    <div class="filters" id="df">
+      <button class="fp on" onclick="setDF('all',this)">Tutti</button>
+      <button class="fp" onclick="setDF('sym',this)">Con sintomi</button>
+      <button class="fp" onclick="setDF('nm',this)">Senza pasto</button>
+      <button class="fp" onclick="setDF('nr',this)">Senza resp.</button>
+    </div>
+    <div class="sbox"><input class="sinp" placeholder="Cerca&#8230;" oninput="dSrch=this.value.toLowerCase();renderDL()"/></div>
+    <div class="lcount" id="dcnt"></div>
+    <div class="list" id="dlist"></div>
+  </div>
+  <div class="right" id="ded"><div class="empty"><div class="eico">&#x1F4CB;</div><p>Seleziona un pasto</p></div></div>
+</div>
+
+<!-- TAB TIMELINE -->
+<div id="tab-tl" class="tl-wrap" style="display:none">
+  <div class="tl-nav">
+    <button class="tl-nb" onclick="tlMov(-1)">&#9664;</button>
+    <div style="flex:1;text-align:center">
+      <div class="tl-title" id="tl-title">&#8212;</div>
+      <div class="tl-sub" id="tl-sub"></div>
+    </div>
+    <button class="tl-nb" onclick="tlMov(1)">&#9654;</button>
+    <input type="date" class="tl-di" id="tl-di" onchange="tlGo(this.value)"/>
+    <button class="tl-today" onclick="tlToday()">Oggi</button>
+  </div>
+  <div class="tl-body">
+    <div class="tl-col" id="tl-col"></div>
+    <div class="tl-right" id="tl-ed"><div class="tl-re"><div class="eico">&#x1F4C5;</div><p>Clicca un pasto per modificarlo</p></div></div>
+  </div>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var TRIGS=['Istamina','Salicilati','Ammine biogene','Tiramina','TRPA1','Istamina-lib.'];
+var SYMS=['Rinite','Lacrimazione','Starnuti','Prurito nasale','Tosse','Dispnea','Orticaria','Cefalea','Gonfiore addominale'];
+var MEALS=['Colazione','Pranzo','Cena','Spuntino','Snack'];
+var SEVS=['1 -- Lieve','2 -- Moderata','3 -- Notevole','4 -- Intensa','5 -- Severa'];
+var RTIMES=['Istantanea (<2 min)','Rapida (2\u201315 min)','Moderata (15\u201360 min)','Ritardata (>1h)','Assente'];
+var RCOL=['','#3ecf8e','#3ecf8e','#f5c842','#f5a623','#f04060','#ff2040'];
+var RBGC=['','rgba(62,207,142,.1)','rgba(62,207,142,.1)','rgba(245,200,66,.1)','rgba(245,166,35,.1)','rgba(240,64,96,.1)','rgba(255,32,64,.1)'];
+var MEALC={Colazione:'#f5c842',Pranzo:'#4c9cf1',Cena:'#9B30FF',Spuntino:'#3ecf8e',Snack:'#f04060'};
+var MEALBG={Colazione:'rgba(245,200,66,.12)',Pranzo:'rgba(76,156,241,.12)',Cena:'rgba(155,48,255,.12)',Spuntino:'rgba(62,207,142,.12)',Snack:'rgba(240,64,96,.12)'};
+var TCOLORS={'Istamina':'#f07070','Salicilati':'#f5a623','Ammine biogene':'#f08050','Tiramina':'#f06060','TRPA1':'#9090f0','Istamina-lib.':'#d070a0'};
+
+var DB=null, curTab='foods', dirty=false;
+var fFilter='all', fSrch='', fCat=null;
+var dFilter='all', dSrch='';
+var selFood=null, selEntry=null;
+var tlDate=null, tlSel=null;
+var _nf=null, _ne=null;
+
+/* ── LOAD / EXPORT ── */
+function loadFile(inp){
+  var file=inp.files[0]; if(!file)return;
+  var r=new FileReader();
+  r.onload=function(e){
+    try{
+      DB=JSON.parse(e.target.result);
+      if(!DB.foods&&!DB.entries){toast('File non valido','err');return;}
+      DB.foods=DB.foods||[]; DB.entries=DB.entries||[];
+      DB.foods.forEach(function(cat){cat.items.forEach(function(item){item._cat=cat.id;});});
+      dirty=false;
+      document.getElementById('dropzone').style.display='none';
+      document.getElementById('exp-btn').disabled=false;
+      var exp=DB.exported?new Date(DB.exported).toLocaleDateString('it-IT'):'--';
+      document.getElementById('fi-info').textContent=file.name+' \u00b7 '+exp+' \u00b7 '+
+        DB.foods.reduce(function(s,c){return s+c.items.length;},0)+' alimenti \u00b7 '+DB.entries.length+' pasti';
+      buildCatF();
+      var dates=getDates();
+      tlDate=dates.length?dates[dates.length-1]:toDS(new Date());
+      showTab('tl');
+      toast('Caricato \u2713','ok');
+    }catch(err){toast('Errore: '+err.message,'err');}
+  };
+  r.readAsText(file); inp.value='';
+}
+function handleDrop(e){
+  e.preventDefault(); document.getElementById('dz').classList.remove('drag');
+  var f=e.dataTransfer.files[0]; if(!f)return;
+  var r=new FileReader();
+  r.onload=function(ev){
+    var fake={files:[new File([ev.target.result],f.name,{type:'application/json'})]};
+    loadFile(fake);
+  };
+  r.readAsText(f);
+}
+function exportJson(){
+  if(!DB)return;
+  var clean=JSON.parse(JSON.stringify(DB));
+  clean.foods.forEach(function(cat){cat.items.forEach(function(item){delete item._cat;});});
+  // Sort entries by ts descending so Diario Storico shows correct order
+  clean.entries.sort(function(a,b){return new Date(b.ts)-new Date(a.ts);});
+  clean.exported=new Date().toISOString();
+  var blob=new Blob([JSON.stringify(clean,null,2)],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url; a.download='widal-backup-'+new Date().toISOString().slice(0,10)+'-edited.json';
+  a.click(); URL.revokeObjectURL(url);
+  dirty=false; toast('Esportato \u2713','ok');
+}
+
+/* ── TABS ── */
+function showTab(t){
+  curTab=t;
+  ['foods','diary','tl'].forEach(function(x){
+    var tb=document.getElementById('tb-'+x); if(tb)tb.className='tbtn'+(x===t?' on':'');
+    var el=document.getElementById('tab-'+x); if(el)el.style.display=x===t?'flex':'none';
+    if(x===t&&x==='tl')el.style.flexDirection='column';
+  });
+  document.getElementById('new-btn').textContent=t==='tl'?'+ Pasto':'+ Nuovo';
+  if(!DB)return;
+  document.getElementById('bdg-foods').textContent=DB.foods.reduce(function(s,c){return s+c.items.length;},0);
+  document.getElementById('bdg-diary').textContent=DB.entries.length;
+  if(t==='foods')renderFL();
+  if(t==='diary')renderDL();
+  if(t==='tl')renderTL();
+}
+function newItem(){
+  if(!DB){toast('Carica un file prima','err');return;}
+  if(curTab==='foods')newFood();
+  else if(curTab==='tl')newEntryForm(tlDate,null);
+  else newEntryForm(null,null);
+}
+
+/* ── CAT FILTERS ── */
+function buildCatF(){
+  if(!DB)return;
+  document.getElementById('catf').innerHTML=DB.foods.map(function(cat){
+    return '<button class="fp" data-cat="'+cat.id+'" onclick="setCat(\''+cat.id+'\',this)">'+cat.label.split(' ')[0]+' '+cat.id+'</button>';
+  }).join('');
+}
+function setCat(id,btn){
+  fCat=fCat===id?null:id;
+  document.querySelectorAll('#catf .fp').forEach(function(b){b.classList.remove('on');});
+  if(fCat)btn.classList.add('on');
+  renderFL();
+}
+function setFF(f,btn){
+  fFilter=f; fCat=null;
+  document.querySelectorAll('#ff .fp').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  document.querySelectorAll('#catf .fp').forEach(function(b){b.classList.remove('on');});
+  renderFL();
+}
+function setDF(f,btn){
+  dFilter=f;
+  document.querySelectorAll('#df .fp').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  renderDL();
+}
+
+/* ── FOOD LIST & EDITOR ── */
+function allItems(){
+  var all=[];
+  DB.foods.forEach(function(cat,ci){cat.items.forEach(function(item,ii){all.push({item:item,ci:ci,ii:ii,cat:cat});});});
+  return all;
+}
+function filtF(){
+  var items=allItems();
+  if(fSrch)items=items.filter(function(x){return x.item.n.toLowerCase().includes(fSrch);});
+  if(fCat)items=items.filter(function(x){return x.cat.id===fCat;});
+  if(fFilter==='no-ig')items=items.filter(function(x){return x.item.g==null;});
+  if(fFilter==='r4')items=items.filter(function(x){return x.item.r===4;});
+  if(fFilter==='r5')items=items.filter(function(x){return x.item.r===5;});
+  if(fFilter==='r01')items=items.filter(function(x){return x.item.r<=1;});
+  return items.sort(function(a,b){return a.item.n.localeCompare(b.item.n,'it');});
+}
+function fk(ci,ii){return ci+'_'+ii;}
+function renderFL(){
+  if(!DB)return;
+  var items=filtF();
+  document.getElementById('fcnt').textContent=items.length+' alimenti';
+  var selK=selFood?fk(selFood.ci,selFood.ii):null;
+  document.getElementById('flist').innerHTML=items.map(function(x){
+    var k=fk(x.ci,x.ii);
+    var rc=RCOL[x.item.r]||'#888'; var rbg=RBGC[x.item.r]||'transparent';
+    var miss=x.item.g==null||!x.item.cg;
+    return '<div class="item'+(k===selK?' sel':'')+'" onclick="selF('+x.ci+','+x.ii+')">'+
+      '<div class="iname">'+x.item.n+'</div>'+
+      '<div class="imeta">'+
+        '<span class="badge" style="background:'+rbg+';color:'+rc+'">'+x.item.r+'/5</span>'+
+        '<span style="color:var(--tx3);font-size:10px">'+x.cat.label.split(' ')[0]+'</span>'+
+        (x.item.g!=null?'<span style="color:var(--am);font-size:10px">IG '+x.item.g+'</span>':'')+
+        (miss?'<span class="warn">&#9888;</span>':'')+
+      '</div></div>';
+  }).join('');
+}
+function selF(ci,ii){
+  selFood={ci:ci,ii:ii}; renderFL();
+  var f=DB.foods[ci].items[ii]; var cat=DB.foods[ci];
+  var rbs=[0,1,2,3,4,5].map(function(v){return '<button class="rb'+(f.r===v?' on'+v:'')+'" onclick="setFR('+ci+','+ii+','+v+',this)">'+v+'</button>';}).join('');
+  var tcs=TRIGS.map(function(t){return '<span class="tc'+((f.t||[]).includes(t)?' on':'')+'" data-t="'+t+'" onclick="togFT('+ci+','+ii+',\''+t+'\',this)">'+t+'</span>';}).join('');
+  var catOpts=DB.foods.map(function(c,i){return '<option value="'+i+'"'+(i===ci?' selected':'')+'>'+c.label+'</option>';}).join('');
+  var igcs=['basso','medio','alto'].map(function(v){return '<span class="igc'+(f.cg===v?' '+v:'')+'" onclick="setFIG('+ci+','+ii+',\''+v+'\',this)">'+v+'</span>';}).join('');
+  document.getElementById('fed').innerHTML=
+    '<div class="ed-title">'+f.n+'</div><div class="ed-sub">'+cat.label+'</div>'+
+    '<div class="sec"><div class="sec-t">Nome & Categoria</div>'+
+      '<div class="frow">'+
+        '<div class="field g"><div class="fl">Nome</div><input class="fi" value="'+esc(f.n)+'" onchange="setFP('+ci+','+ii+',\'n\',this.value)"/></div>'+
+        '<div class="field"><div class="fl">Categoria</div><select class="fs" onchange="moveF('+ci+','+ii+',parseInt(this.value))">'+catOpts+'</select></div>'+
+      '</div></div>'+
+    '<div class="sec"><div class="sec-t">Profilo MCAS</div>'+
+      '<div class="frow"><div class="field"><div class="fl">Rischio</div><div class="rbrow" id="rb-'+ci+'-'+ii+'">'+rbs+'</div></div></div>'+
+      '<div class="frow"><div class="field g"><div class="fl">Trigger</div><div class="tchips">'+tcs+'</div></div></div>'+
+    '</div>'+
+    '<div class="sec"><div class="sec-t">Indice Glicemico</div>'+
+      '<div class="frow">'+
+        '<div class="field"><div class="fl">IG (0-100)</div><input class="fi" type="number" min="0" max="100" style="width:80px" value="'+(f.g!=null?f.g:'')+'" onchange="setFP('+ci+','+ii+',\'g\',this.value===\'\'?null:parseInt(this.value))"/></div>'+
+        '<div class="field"><div class="fl">Categoria</div><div class="igchips" id="igc-'+ci+'-'+ii+'">'+igcs+'</div></div>'+
+      '</div>'+
+      '<div class="frow"><div class="field g"><div class="fl">Nota glicemica</div><input class="fi" value="'+esc(f.note_g||'')+'" onchange="setFP('+ci+','+ii+',\'note_g\',this.value)"/></div></div>'+
+    '</div>'+
+    '<div class="sec"><div class="sec-t">Razionale</div>'+
+      '<textarea class="fta" style="width:100%" onchange="setFP('+ci+','+ii+',\'rationale\',this.value)">'+esc(f.rationale||'')+'</textarea>'+
+    '</div>'+
+    '<div class="actions">'+
+      '<button class="btn btn-n btn-sm" onclick="navF(-1)">&#8592; Prec.</button>'+
+      '<button class="btn btn-n btn-sm" onclick="navF(1)">Succ. &#8594;</button>'+
+      '<button class="btn btn-r btn-sm" style="margin-left:auto" onclick="delF('+ci+','+ii+')">&#128465; Elimina</button>'+
+    '</div>';
+}
+function setFP(ci,ii,k,v){DB.foods[ci].items[ii][k]=v;dirty=true;renderFL();}
+function setFR(ci,ii,v,btn){
+  DB.foods[ci].items[ii].r=v;dirty=true;
+  document.querySelectorAll('#rb-'+ci+'-'+ii+' .rb').forEach(function(b,i){b.className='rb'+(i===v?' on'+i:'');});
+  renderFL();
+}
+function togFT(ci,ii,t,el){
+  var f=DB.foods[ci].items[ii]; if(!f.t)f.t=[];
+  var i=f.t.indexOf(t);if(i>=0)f.t.splice(i,1);else f.t.push(t);
+  el.className='tc'+(f.t.includes(t)?' on':'');dirty=true;
+}
+function setFIG(ci,ii,v,el){
+  var f=DB.foods[ci].items[ii]; f.cg=f.cg===v?null:v;dirty=true;
+  el.closest('.igchips').querySelectorAll('.igc').forEach(function(c){c.className='igc'+(c.textContent===f.cg?' '+f.cg:'');});
+}
+function moveF(fci,fii,tci){
+  if(fci===tci)return;
+  var item=DB.foods[fci].items.splice(fii,1)[0]; item._cat=DB.foods[tci].id;
+  DB.foods[tci].items.push(item); dirty=true;
+  selFood={ci:tci,ii:DB.foods[tci].items.length-1};
+  renderFL();selF(selFood.ci,selFood.ii);
+  toast('Spostato in '+DB.foods[tci].label,'ok');
+}
+function delF(ci,ii){
+  var name=DB.foods[ci].items[ii].n;
+  if(!confirm('Eliminare "'+name+'"?'))return;
+  DB.foods[ci].items.splice(ii,1);dirty=true;selFood=null;
+  document.getElementById('fed').innerHTML='<div class="empty"><div class="eico">&#x1F966;</div><p>Seleziona un alimento</p></div>';
+  renderFL();toast('Eliminato: '+name,'ok');
+}
+function navF(dir){
+  var items=filtF(); var selK=selFood?fk(selFood.ci,selFood.ii):null;
+  var idx=items.findIndex(function(x){return fk(x.ci,x.ii)===selK;});
+  var next=items[idx+dir]; if(next)selF(next.ci,next.ii);
+}
+
+/* ── DIARY LIST & EDITOR ── */
+function filtD(){
+  var items=DB.entries.slice();
+  if(dSrch)items=items.filter(function(e){return e.foods.join(' ').toLowerCase().includes(dSrch)||(e.note||'').toLowerCase().includes(dSrch);});
+  if(dFilter==='sym')items=items.filter(function(e){return e.symptoms&&e.symptoms.length;});
+  if(dFilter==='nm')items=items.filter(function(e){return !e.meal;});
+  if(dFilter==='nr')items=items.filter(function(e){return e.symptoms&&e.symptoms.length&&!e.reactingFood;});
+  return items;
+}
+function renderDL(){
+  if(!DB)return;
+  var items=filtD();
+  document.getElementById('dcnt').textContent=items.length+' pasti';
+  document.getElementById('dlist').innerHTML=items.map(function(e){
+    var dt=new Date(e.ts);
+    var ds=dt.toLocaleDateString('it-IT',{day:'2-digit',month:'short'})+' '+dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    var hs=e.symptoms&&e.symptoms.length;
+    return '<div class="item'+(selEntry===e.id?' sel':'')+'" onclick="selE('+e.id+',\'ded\')">'+
+      '<div class="iname" style="font-size:11px">'+e.foods.join(', ')+'</div>'+
+      '<div class="imeta">'+
+        '<span style="color:var(--tx3);font-size:10px">'+ds+'</span>'+
+        (e.meal?'<span class="badge" style="color:'+(MEALC[e.meal]||'var(--ac2)')+';background:'+(MEALBG[e.meal]||'rgba(124,106,247,.12)')+'">'+e.meal+'</span>':'<span class="warn">&#9888; pasto</span>')+
+        (hs?'<span style="color:var(--rd);font-size:10px">&#x1F514;'+e.symptoms.length+'</span>':'')+
+      '</div></div>';
+  }).join('');
+}
+function selE(id,target){
+  if(target==='ded')selEntry=id; else tlSel=id;
+  renderDL(); renderEd(id,target||'ded');
+}
+
+/* shared entry editor */
+function renderEd(id,target){
+  var e=DB.entries.find(function(x){return x.id===id;}); if(!e)return;
+  var dt=new Date(e.ts);
+  var dv=e.ts.slice(0,10);
+  var tv=dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+  var mcs=MEALS.map(function(m){return '<span class="mc'+(e.meal===m?' '+m:'')+'" onclick="setMeal('+id+',\''+m+'\',this,\''+target+'\')">'+m+'</span>';}).join('');
+  var scs=SYMS.map(function(s){return '<span class="sc'+((e.symptoms||[]).includes(s)?' on':'')+'" onclick="togSym('+id+',\''+s+'\',this)">'+s+'</span>';}).join('');
+  var so=['',...SEVS].map(function(s){return '<option value="'+s+'"'+((e.severity||'')===(s)?'selected':'')+'>'+(s||'\u2014 nessuna \u2014')+'</option>';}).join('');
+  var ro=['',...RTIMES].map(function(t){return '<option value="'+t+'"'+((e.reactionTime||'')===(t)?'selected':'')+'>'+(t||'\u2014 seleziona \u2014')+'</option>';}).join('');
+  var fts=e.foods.map(function(f){return '<span class="ftag'+(e.reactingFood===f?' react':'')+'" onclick="setRF('+id+',\''+esc(f)+'\',this)">'+f+'</span>';}).join('');
+  var gi=e.glycemic?'<div style="font-size:11px;color:var(--am);margin-top:4px">IG pasto: avg '+e.glycemic.avg+' \u00b7 max '+e.glycemic.max+'</div>':'';
+  var li=e.libreAnchor?'<div style="font-size:11px;color:var(--bl);margin-top:2px">Libre: '+e.libreAnchor.mgdl+' mg/dL @ '+new Date(e.libreAnchor.ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})+'</div>':'';
+  document.getElementById(target).innerHTML=
+    '<div class="ed-title" style="font-size:15px">'+e.foods.join(', ')+'</div>'+
+    '<div class="ed-sub">'+dt.toLocaleDateString('it-IT',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})+' \u00b7 '+tv+'</div>'+
+    '<div class="sec"><div class="sec-t">Orario</div>'+
+      '<div class="frow">'+
+        '<div class="field"><div class="fl">Data</div><input class="di" type="date" value="'+dv+'" onchange="updTime('+id+',this.value,null,\''+target+'\')"/></div>'+
+        '<div class="field"><div class="fl">Ora</div><input class="di" type="time" value="'+tv+'" style="width:110px" onchange="updTime('+id+',null,this.value,\''+target+'\')"/></div>'+
+      '</div></div>'+
+    '<div class="sec"><div class="sec-t">Pasto</div><div class="mchips" id="mc-'+id+'-'+target+'">'+mcs+'</div></div>'+
+    '<div class="sec"><div class="sec-t">Alimenti \u2014 clicca per responsabile</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:5px" id="ft-'+id+'">'+fts+'</div>'+
+      (e.reactingFood?'<div style="font-size:11px;color:var(--rd)">\uD83D\uDD34 <b>'+e.reactingFood+'</b> <span style="cursor:pointer;color:var(--tx3)" onclick="clrRF('+id+',\''+target+'\')">&#10005;</span></div>':'')+
+    '</div>'+
+    '<div class="sec"><div class="sec-t">Sintomi</div><div class="schips" id="sc-'+id+'">'+scs+'</div></div>'+
+    '<div class="sec"><div class="sec-t">Dettagli</div>'+
+      '<div class="frow">'+
+        '<div class="field g"><div class="fl">Gravit\u00e0</div><select class="fs" onchange="setEP('+id+',\'severity\',this.value||null)">'+so+'</select></div>'+
+        '<div class="field g"><div class="fl">Tempo comparsa</div><select class="fs" onchange="setEP('+id+',\'reactionTime\',this.value)">'+ro+'</select></div>'+
+      '</div></div>'+
+    (gi||li?'<div class="sec"><div class="sec-t">Glicemia</div>'+gi+li+'</div>':'')+
+    '<div class="sec"><div class="sec-t">Basale Libre (mmol/L)</div>'+
+      '<div class="frow" style="align-items:center;gap:10px">'+
+        '<input class="di" id="libre-inp-'+id+'" type="number" min="1" max="30" step="0.1" style="width:90px" '+
+          'value="'+(e.libreAnchor?parseFloat((e.libreAnchor.mgdl/18.0182).toFixed(1)):'')+'" '+
+          'placeholder="es. 5.2" data-eid="'+id+'" onchange="setLibre(this.dataset.eid,this.value)"/>'+
+        '<span style="font-size:11px;color:var(--tx3)" id="libre-lbl-'+id+'">'+
+          (e.libreAnchor?'mmol/L &middot; <span style=\"color:var(--bl)\">'+e.libreAnchor.mgdl+' mg/dL</span>':'mmol/L')+
+        '</span>'+
+        (e.libreAnchor?'<button class="btn btn-r btn-sm" data-eid="'+id+'" data-tgt="'+target+'" onclick="clrLibre(this.dataset.eid,this.dataset.tgt)">&#10005;</button>':'')+
+      '</div></div>'+
+    '<div class="sec"><div class="sec-t">Note</div>'+
+      '<textarea class="fta" style="width:100%;min-height:50px" onchange="setEP('+id+',\'note\',this.value)">'+esc(e.note||'')+'</textarea></div>'+
+    '<div class="actions">'+
+      '<button class="btn btn-n btn-sm" onclick="navE(-1,\''+target+'\')">&#8592; Prec.</button>'+
+      '<button class="btn btn-n btn-sm" onclick="navE(1,\''+target+'\')">Succ. &#8594;</button>'+
+      '<button class="btn btn-r btn-sm" style="margin-left:auto" onclick="delE('+id+',\''+target+'\')">&#128465; Elimina</button>'+
+    '</div>';
+}
+function updTime(id,dv,tv,target){
+  var e=DB.entries.find(function(x){return x.id===id;}); if(!e)return;
+  var dt=new Date(e.ts);
+  var cd=e.ts.slice(0,10), ct=dt.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+  e.ts=new Date((dv||cd)+'T'+(tv||ct)+':00').toISOString();
+  DB.entries.sort(function(a,b){return new Date(a.ts)-new Date(b.ts);});
+  dirty=true; if(curTab==='tl')renderTL(); else renderDL();
+}
+function setMeal(id,m,el,target){
+  var e=DB.entries.find(function(x){return x.id===id;}); if(!e)return;
+  e.meal=e.meal===m?null:m;dirty=true;
+  var mc=document.getElementById('mc-'+id+'-'+target);
+  if(mc)mc.querySelectorAll('.mc').forEach(function(c){c.className='mc'+(e.meal===c.textContent?' '+e.meal:'');});
+  renderDL(); if(curTab==='tl')renderTL();
+}
+function togSym(id,s,el){
+  var e=DB.entries.find(function(x){return x.id===id;}); if(!e)return;
+  if(!e.symptoms)e.symptoms=[];
+  var i=e.symptoms.indexOf(s);if(i>=0)e.symptoms.splice(i,1);else e.symptoms.push(s);
+  el.className='sc'+(e.symptoms.includes(s)?' on':'');dirty=true;renderDL();
+}
+function setRF(id,food,el){
+  var e=DB.entries.find(function(x){return x.id===id;}); if(!e)return;
+  e.reactingFood=e.reactingFood===food?null:food;dirty=true;
+  el.closest('div').querySelectorAll('.ftag').forEach(function(c){c.className='ftag'+(e.reactingFood===c.textContent?' react':'');});
+}
+function clrRF(id,target){var e=DB.entries.find(function(x){return x.id===id;});if(!e)return;e.reactingFood=null;dirty=true;renderEd(id,target);}
+function setEP(id,k,v){var e=DB.entries.find(function(x){return x.id===id;});if(!e)return;e[k]=v;dirty=true;}
+function delE(id,target){
+  var e=DB.entries.find(function(x){return x.id===id;}); if(!e)return;
+  if(!confirm('Eliminare "'+e.foods[0]+'"?'))return;
+  DB.entries=DB.entries.filter(function(x){return x.id!==id;});
+  dirty=true;selEntry=null;tlSel=null;
+  document.getElementById(target).innerHTML='<div class="tl-re"><div class="eico">&#x1F4C5;</div><p>Eliminato</p></div>';
+  renderDL();if(curTab==='tl')renderTL();
+  document.getElementById('bdg-diary').textContent=DB.entries.length;
+  toast('Eliminato','ok');
+}
+function navE(dir,target){
+  if(target==='tl-ed'){
+    var day=DB.entries.filter(function(e){return e.ts.slice(0,10)===tlDate;}).sort(function(a,b){return new Date(a.ts)-new Date(b.ts);});
+    var idx=day.findIndex(function(e){return e.id===tlSel;});
+    var nxt=day[idx+dir]; if(nxt){tlSel=nxt.id;renderEd(nxt.id,'tl-ed');renderTL();}
+  } else {
+    var items=filtD(); var idx=items.findIndex(function(e){return e.id===selEntry;});
+    var nxt=items[idx+dir]; if(nxt)selE(nxt.id,'ded');
+  }
+}
+
+/* ── TIMELINE ── */
+function toDS(d){return d.toISOString().slice(0,10);}
+function getDates(){
+  var s=new Set((DB.entries||[]).map(function(e){return e.ts.slice(0,10);}));
+  return Array.from(s).sort();
+}
+function tlMov(dir){
+  if(!DB)return;
+  var dates=getDates(), idx=dates.indexOf(tlDate);
+  if(dir===-1&&idx>0)tlDate=dates[idx-1];
+  else if(dir===1&&idx<dates.length-1)tlDate=dates[idx+1];
+  else{var d=new Date(tlDate+'T12:00:00');d.setDate(d.getDate()+dir);tlDate=toDS(d);}
+  document.getElementById('tl-di').value=tlDate;
+  renderTL();
+}
+function tlGo(v){if(v){tlDate=v;renderTL();}}
+function tlToday(){tlDate=toDS(new Date());document.getElementById('tl-di').value=tlDate;renderTL();}
+
+function renderTL(){
+  if(!DB||!tlDate)return;
+  var dt=new Date(tlDate+'T12:00:00');
+  document.getElementById('tl-title').textContent=dt.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('tl-di').value=tlDate;
+  var day=DB.entries.filter(function(e){return e.ts.slice(0,10)===tlDate;}).sort(function(a,b){return new Date(a.ts)-new Date(b.ts);});
+  var hasSym=day.filter(function(e){return e.symptoms&&e.symptoms.length;}).length;
+  var noMeal=day.filter(function(e){return !e.meal;}).length;
+  document.getElementById('tl-sub').textContent=day.length+' pasti'+(hasSym?' \u00b7 &#x1F514;'+hasSym+' reaz.':'')+(noMeal?' \u00b7 \u26A0'+noMeal+' senza tipo':'');
+  var col=document.getElementById('tl-col');
+  if(!day.length){
+    col.innerHTML='<div class="tl-empty">Nessun pasto<br><br><button class="btn btn-p" onclick="newEntryForm(\''+tlDate+'\',null)">+ Aggiungi pasto</button></div>';
+    document.getElementById('tl-ed').innerHTML='<div class="tl-re"><div class="eico" style="font-size:48px;opacity:.2">&#x1F4C5;</div><p>Giornata vuota</p></div>';
+    return;
+  }
+  var html='<div class="tl-hdr"><span class="tl-sum">'+day.length+' pasti'+(noMeal?' \u00b7 <span style="color:var(--am)">\u26A0'+noMeal+'</span>':'')+'</span><button class="btn btn-p btn-sm" onclick="newEntryForm(\''+tlDate+'\',null)">+ Aggiungi</button></div>';
+  day.forEach(function(e,i){
+    var dt2=new Date(e.ts);
+    var time=dt2.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    var mc=e.meal?MEALC[e.meal]:'var(--tx3)';
+    var mbg=e.meal?MEALBG[e.meal]:'transparent';
+    var hs=e.symptoms&&e.symptoms.length;
+    var foods=e.foods.join(', '); if(foods.length>65)foods=foods.slice(0,65)+'\u2026';
+    var tags=(e.triggers||[]).slice(0,3).map(function(t){var c=TCOLORS[t]||'#888';return '<span class="tl-tag" style="background:'+c+'22;color:'+c+'">'+t+'</span>';}).join('');
+    if(e.maxRisk)tags+='<span class="tl-tag" style="background:'+RBGC[e.maxRisk]+';color:'+RCOL[e.maxRisk]+'">R'+e.maxRisk+'</span>';
+    if(i>0){
+      var gm=(dt2-new Date(day[i-1].ts))/60000;
+      if(gm>180){var gh=Math.round(gm/60);html+='<div class="tl-gap"><div class="tl-gl"></div><button class="tl-ga" onclick="newEntryForm(\''+tlDate+'\',\''+time+'\')">+ '+gh+'h vuote</button><div class="tl-gl"></div></div>';}
+    }
+    html+='<div class="tl-meal">'+
+      '<div class="tl-tc"><span class="tl-time">'+time+'</span></div>'+
+      '<div class="tl-vl"><div class="tl-dot" style="background:'+mc+'"></div>'+(i<day.length-1?'<div class="tl-seg"></div>':'')+'</div>'+
+      '<div class="tl-card'+(tlSel===e.id?' sel':'')+'" onclick="selTL('+e.id+',this)">'+
+        '<div class="tl-ctop">'+
+          (e.meal?'<span class="tl-mb" style="color:'+mc+';background:'+mbg+'">'+e.meal+'</span>':'<span class="tl-warn">\u26A0 tipo?</span>')+
+          (hs?'<span class="tl-sym">&#x1F514;'+e.symptoms.length+'</span>':'')+
+        '</div>'+
+        '<div class="tl-foods">'+foods+'</div>'+
+        (tags?'<div class="tl-tags">'+tags+'</div>':'')+
+        (e.note?'<div style="font-size:10px;color:var(--tx3);margin-top:3px;font-style:italic">'+esc(e.note).slice(0,55)+'</div>':'')+
+      '</div></div>';
+  });
+  col.innerHTML=html;
+  // Only auto-open editor if panel is empty/default, not after a save
+  var tlEdEl=document.getElementById('tl-ed');
+  var isFormOrSaved=tlEdEl&&(tlEdEl.querySelector('#ne-sv2')||tlEdEl.querySelector('.tl-saved'));
+  if(!isFormOrSaved&&(!tlSel||!day.find(function(e){return e.id===tlSel;}))){
+    tlSel=day[0].id;renderEd(tlSel,'tl-ed');
+  }
+}
+function selTL(id,card){
+  tlSel=id;
+  document.querySelectorAll('#tl-col .tl-card').forEach(function(c){c.classList.remove('sel');});
+  if(card)card.classList.add('sel');
+  renderEd(id,'tl-ed');
+}
+
+/* ── NEW FOOD ── */
+function newFood(){
+  selFood=null;renderFL();
+  var catOpts=DB.foods.map(function(c,i){return '<option value="'+i+'">'+c.label+'</option>';}).join('');
+  var tcs=TRIGS.map(function(t){return '<span class="tc" data-t="'+t+'" onclick="togNFT(\''+t+'\',this)">'+t+'</span>';}).join('');
+  var igcs=['basso','medio','alto'].map(function(v){return '<span class="igc" onclick="togNFIG(\''+v+'\',this)">'+v+'</span>';}).join('');
+  _nf={r:0,t:[],cg:null};
+  document.getElementById('fed').innerHTML=
+    '<div class="ed-title">\u2736 Nuovo alimento <span class="nb">NUOVO</span></div>'+
+    '<div class="ed-sub">Compila e salva</div>'+
+    '<div class="sec"><div class="sec-t">Nome & Categoria</div>'+
+      '<div class="frow">'+
+        '<div class="field g"><div class="fl">Nome *</div><input class="fi" id="nf-n" placeholder="es. Branzino al vapore" oninput="document.getElementById(\'nf-s\').disabled=!this.value.trim()"/></div>'+
+        '<div class="field"><div class="fl">Categoria</div><select class="fs" id="nf-c">'+catOpts+'</select></div>'+
+      '</div></div>'+
+    '<div class="sec"><div class="sec-t">Profilo MCAS</div>'+
+      '<div class="frow"><div class="field"><div class="fl">Rischio</div><div class="rbrow" id="nf-rr">'+ [0,1,2,3,4,5].map(function(v){return '<button class="rb'+(v===0?' on0':'')+'" onclick="setNFR('+v+',this)">'+v+'</button>';}).join('') +'</div></div></div>'+
+      '<div class="frow"><div class="field g"><div class="fl">Trigger</div><div class="tchips" id="nf-t">'+tcs+'</div></div></div>'+
+    '</div>'+
+    '<div class="sec"><div class="sec-t">IG</div>'+
+      '<div class="frow">'+
+        '<div class="field"><div class="fl">Valore</div><input class="fi" id="nf-g" type="number" min="0" max="100" style="width:80px" placeholder="0-100"/></div>'+
+        '<div class="field"><div class="fl">Categoria</div><div class="igchips" id="nf-ic">'+igcs+'</div></div>'+
+      '</div></div>'+
+    '<div class="sec"><div class="sec-t">Razionale</div><textarea class="fta" id="nf-r" style="width:100%" placeholder="Note cliniche\u2026"></textarea></div>'+
+    '<div class="actions">'+
+      '<button class="btn btn-g" id="nf-s" onclick="saveNF()" disabled>\u2713 Salva</button>'+
+      '<button class="btn btn-n btn-sm" onclick="cancelForm(\'fed\',\'food\')">Annulla</button>'+
+    '</div>';
+}
+function setNFR(v,btn){if(_nf)_nf.r=v;document.querySelectorAll('#nf-rr .rb').forEach(function(b,i){b.className='rb'+(i===v?' on'+i:'');});}
+function togNFT(t,el){if(!_nf)return;var i=_nf.t.indexOf(t);if(i>=0)_nf.t.splice(i,1);else _nf.t.push(t);el.className='tc'+(_nf.t.includes(t)?' on':'');}
+function togNFIG(v,el){if(!_nf)return;_nf.cg=_nf.cg===v?null:v;el.closest('.igchips').querySelectorAll('.igc').forEach(function(c){c.className='igc'+(c.textContent===_nf.cg?' '+_nf.cg:'');});}
+function saveNF(){
+  var name=(document.getElementById('nf-n').value||'').trim(); if(!name)return;
+  var ci=parseInt(document.getElementById('nf-c').value);
+  var gv=document.getElementById('nf-g').value;
+  var rat=(document.getElementById('nf-r').value||'').trim();
+  var item={n:name,t:_nf.t.slice(),r:_nf.r,_cat:DB.foods[ci].id};
+  if(gv!=='')item.g=parseInt(gv); if(_nf.cg)item.cg=_nf.cg; if(rat)item.rationale=rat;
+  DB.foods[ci].items.push(item);dirty=true;
+  selFood={ci:ci,ii:DB.foods[ci].items.length-1};
+  renderFL();selF(selFood.ci,selFood.ii);
+  document.getElementById('bdg-foods').textContent=DB.foods.reduce(function(s,c){return s+c.items.length;},0);
+  toast('\u2713 Aggiunto: '+name,'ok');
+}
+
+/* ── NEW ENTRY ── */
+function newEntryForm(date,nearTime){
+  var d=date||tlDate||toDS(new Date());
+  var now=new Date();
+  var t=nearTime||now.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+  _ne={meal:null,foods:[],symptoms:[]};
+  var target=curTab==='tl'?'tl-ed':'ded';
+  var mcs=MEALS.map(function(m){return '<span class="mc" onclick="setNEM(\''+m+'\',this)">'+m+'</span>';}).join('');
+  var scs=SYMS.map(function(s){return '<span class="sc" onclick="togNES(\''+s+'\',this)">'+s+'</span>';}).join('');
+  var so=['',...SEVS].map(function(s){return '<option value="'+s+'">'+(s||'\u2014 nessuna \u2014')+'</option>';}).join('');
+  var ro=['',...RTIMES].map(function(t2){return '<option value="'+t2+'">'+(t2||'\u2014 seleziona \u2014')+'</option>';}).join('');
+  var dl=allItems().map(function(x){return '<option value="'+esc(x.item.n)+'">';}).join('');
+  document.getElementById(target).innerHTML=
+    '<div class="ed-title">\u2736 Nuovo pasto <span class="nb">NUOVO</span></div>'+
+    '<div class="ed-sub">Compila e salva</div>'+
+    '<div class="sec"><div class="sec-t">Data & Ora</div>'+
+      '<div class="frow">'+
+        '<div class="field"><div class="fl">Data</div><input class="di" id="ne-d" type="date" value="'+d+'"/></div>'+
+        '<div class="field"><div class="fl">Ora</div><input class="di" id="ne-t" type="time" value="'+t+'" style="width:110px"/></div>'+
+      '</div></div>'+
+    '<div class="sec"><div class="sec-t">Pasto</div><div class="mchips" id="ne-mc">'+mcs+'</div></div>'+
+    '<div class="sec"><div class="sec-t">Alimenti *</div>'+
+      '<div style="display:flex;gap:7px;margin-bottom:7px">'+
+        '<input class="fi" id="ne-fi" style="flex:1" placeholder="Nome alimento\u2026" list="ne-dl" onkeydown="if(event.key===\'Enter\')addNEF()"/>'+
+        '<datalist id="ne-dl">'+dl+'</datalist>'+
+        '<button class="btn btn-p btn-sm" onclick="addNEF()">+</button>'+
+      '</div><div id="ne-fl" style="display:flex;flex-wrap:wrap;gap:5px"></div></div>'+
+    '<div class="sec"><div class="sec-t">Sintomi</div><div class="schips" id="ne-sc">'+scs+'</div></div>'+
+    '<div class="sec"><div class="sec-t">Dettagli</div>'+
+      '<div class="frow">'+
+        '<div class="field g"><div class="fl">Gravit\u00e0</div><select class="fs" id="ne-sv">'+so+'</select></div>'+
+        '<div class="field g"><div class="fl">Tempo comparsa</div><select class="fs" id="ne-rt">'+ro+'</select></div>'+
+      '</div></div>'+
+    '<div class="sec"><div class="sec-t">Note</div><textarea class="fta" id="ne-nt" style="width:100%;min-height:45px"></textarea></div>'+
+    '<div class="sec"><div class="sec-t">Basale Libre (mmol/L)</div>'+
+      '<div class="frow" style="align-items:center;gap:10px">'+
+        '<input class="di" id="ne-libre" type="number" min="1" max="30" step="0.1" style="width:90px" placeholder="es. 5.2"/>'+
+        '<span style="font-size:11px;color:var(--tx3)" id="ne-libre-lbl">mmol/L</span>'+
+      '</div></div>'+
+    '<div class="actions">'+
+      '<button class="btn btn-g" id="ne-sv2" onclick="saveNE(\''+target+'\')" disabled>\u2713 Salva pasto</button>'+
+      '<button class="btn btn-n btn-sm" onclick="cancelForm(\''+target+'\',\'entry\')">' + 'Annulla</button>'+
+    '</div>';
+}
+function setNEM(m,el){if(!_ne)return;_ne.meal=_ne.meal===m?null:m;el.closest('.mchips').querySelectorAll('.mc').forEach(function(c){c.className='mc'+(c.textContent===_ne.meal?' '+_ne.meal:'');});}
+function addNEF(){
+  var inp=document.getElementById('ne-fi');
+  var name=(inp.value||'').trim(); if(!name)return;
+  if(_ne.foods.includes(name)){toast('Gi\u00e0 presente','err');return;}
+  _ne.foods.push(name);inp.value='';
+  renderNEFL();document.getElementById('ne-sv2').disabled=false;
+}
+function remNEF(name){
+  _ne.foods=_ne.foods.filter(function(f){return f!==name;});
+  renderNEFL();document.getElementById('ne-sv2').disabled=_ne.foods.length===0;
+}
+function renderNEFL(){
+  var el=document.getElementById('ne-fl'); if(!el)return;
+  el.innerHTML=_ne.foods.map(function(f){return '<span class="ftag">'+f+' <span style="cursor:pointer;color:var(--rd);margin-left:3px" onclick="remNEF(\''+esc(f)+'\')">&#10005;</span></span>';}).join('');
+}
+function togNES(s,el){if(!_ne)return;var i=_ne.symptoms.indexOf(s);if(i>=0)_ne.symptoms.splice(i,1);else _ne.symptoms.push(s);el.className='sc'+((_ne.symptoms.includes(s))?' on':'');}
+function saveNE(target){
+  if(!_ne||!_ne.foods.length){toast('Aggiungi almeno un alimento','err');return;}
+  var dv=document.getElementById('ne-d').value;
+  var tv=document.getElementById('ne-t').value;
+  var ts=new Date(dv+'T'+tv+':00').toISOString();
+  var trigs=new Set(); var mr=0;
+  DB.foods.forEach(function(cat){cat.items.forEach(function(item){if(_ne.foods.includes(item.n)){(item.t||[]).forEach(function(t){trigs.add(t);});if((item.r||0)>mr)mr=item.r||0;}});});
+  var libreVal=parseFloat(document.getElementById('ne-libre').value||'');
+  var libreAnchor=null;
+  if(!isNaN(libreVal)&&libreVal>0){
+    libreAnchor={v:libreVal,mgdl:Math.round(libreVal*18.0182),ts:ts,offsetMin:0,method:'manual'};
+  }
+  var entry={id:Date.now(),foods:_ne.foods.slice(),triggers:[...trigs],maxRisk:mr,
+    glycemic:null,symptoms:_ne.symptoms.slice(),
+    severity:document.getElementById('ne-sv').value||null,
+    meal:_ne.meal,reactionTime:document.getElementById('ne-rt').value||'',
+    note:document.getElementById('ne-nt').value.trim(),
+    reactingFood:null,ts:ts,draft:false,reliability:'manual',
+    libreAnchor:libreAnchor};
+  var idx=DB.entries.findIndex(function(e){return new Date(e.ts)>new Date(ts);});
+  if(idx>=0)DB.entries.splice(idx,0,entry);else DB.entries.push(entry);
+  dirty=true;tlDate=ts.slice(0,10);tlSel=entry.id;selEntry=entry.id;
+  renderDL();renderTL();
+  document.getElementById('bdg-diary').textContent=DB.entries.length;
+  // Show confirmation panel — prevents renderTL from auto-overwriting with editor
+  var dt2=new Date(ts);
+  var tStr=dt2.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+  var savedHtml='<div class="tl-saved" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;text-align:center">'+
+    '<div style="font-size:40px;color:var(--gr)">\u2713</div>'+
+    '<div style="font-size:14px;color:var(--gr);font-weight:600">Salvato alle '+tStr+'</div>'+
+    '<div style="font-size:12px;color:var(--tx3);max-width:300px">'+entry.foods.join(', ')+'</div>'+
+    '<div style="display:flex;gap:10px;margin-top:6px">'+
+      '<button class="btn btn-p" onclick="newEntryForm(\''+ts.slice(0,10)+'\',null)">+ Aggiungi altro pasto</button>'+
+      '<button class="btn btn-n btn-sm" onclick="renderEd('+entry.id+',\''+target+'\')">Modifica questo</button>'+
+    '</div></div>';
+  document.getElementById(target).innerHTML=savedHtml;
+  toast('\u2713 Pasto aggiunto','ok');
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+function setLibre(id,val){
+  var e=DB.entries.find(function(x){return x.id===id;}); if(!e)return;
+  if(!val||isNaN(parseFloat(val))){return;}
+  var mmol=parseFloat(val);
+  var mgdl=Math.round(mmol*18.0182);
+  if(!e.libreAnchor){
+    e.libreAnchor={v:mmol,mgdl:mgdl,ts:e.ts,offsetMin:0,method:'manual'};
+  } else {
+    e.libreAnchor.v=mmol;
+    e.libreAnchor.mgdl=mgdl;
+    e.libreAnchor.method='manual';
+  }
+  dirty=true;
+  // Update the display label inline
+  var spans=document.querySelectorAll('.sec-t');
+  spans.forEach(function(s){
+    if(s.textContent==='Basale Libre (mmol/L)'){
+      var sp=s.nextElementSibling&&s.nextElementSibling.querySelector('span');
+      if(sp)sp.innerHTML='mmol/L · <span style="color:var(--bl)">'+mgdl+' mg/dL</span>';
+    }
+  });
+  toast(mmol+' mmol/L → '+mgdl+' mg/dL ✓','ok');
+}
+function clrLibre(id,target){
+  var e=DB.entries.find(function(x){return x.id===id;}); if(!e)return;
+  delete e.libreAnchor; dirty=true;
+  renderEd(id,target); toast('Basale rimosso','ok');
+}
+function cancelForm(targetId,type){
+  var el=document.getElementById(targetId); if(!el)return;
+  if(type==='food'){
+    el.innerHTML='<div class="empty"><div class="eico">&#x1F966;</div><p>Seleziona un alimento</p></div>';
+  } else {
+    el.innerHTML='<div class="tl-re"><div class="eico" style="font-size:48px;opacity:.2">&#x1F4C5;</div><p>Seleziona un pasto</p></div>';
+  }
+}
+function toast(msg,type){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show '+(type||'');
+  clearTimeout(t._t);t._t=setTimeout(function(){t.className='toast';},2400);
+}
+window.addEventListener('beforeunload',function(e){if(dirty){e.preventDefault();e.returnValue='';}});
+</script>
+</body>
+</html>
