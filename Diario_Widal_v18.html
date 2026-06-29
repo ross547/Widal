@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="Widal"/>
-<title>Diario Widal v18</title>
+<title>Diario Widal v19</title>
 <style>
 :root{
   --bg:#ffffff;--bg2:#f5f5f4;--bg3:#ececea;
@@ -532,6 +532,45 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .export-card-desc{font-size:11px;color:var(--tx3);margin-bottom:8px;line-height:1.4;}
 .export-btn{width:100%;padding:8px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;}
 .export-btn.sec{background:var(--bg2);color:var(--tx2);border:0.5px solid var(--bd2);}
+/* ══ v19 — SIMULATORE MULTI-CURVA ══ */
+.msim-box{border:0.5px solid var(--blue);border-radius:var(--rl);padding:14px;background:var(--bg);margin-bottom:14px;}
+.msim-title{font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.msim-basale-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
+.msim-sl{flex:1;height:4px;accent-color:var(--blue);}
+.msim-bval{font-size:17px;font-weight:700;color:var(--tx);min-width:38px;}
+.msim-bunit{font-size:11px;color:var(--tx2);}
+.msim-bstat{font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;}
+.msim-bstat.ok{background:#E8F5EE;color:#2E6644;}
+.msim-bstat.warn{background:#FFF8E7;color:#7A5A00;}
+.msim-bstat.high{background:#FCEAEA;color:#A32D2D;}
+@media(prefers-color-scheme:dark){
+  .msim-bstat.ok{background:#1a3528;color:#80d4a0;}
+  .msim-bstat.warn{background:#2e2610;color:#e0c060;}
+  .msim-bstat.high{background:#2e1010;color:#f07070;}
+}
+.msim-food-grid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+.msim-fchip{display:inline-flex;flex-direction:column;align-items:center;padding:6px 9px;border-radius:var(--r);cursor:pointer;border:0.5px solid var(--bd2);background:var(--bg2);min-width:70px;}
+.msim-fchip.on{border-color:var(--blue);background:var(--bluelight);}
+.msim-fchip-name{font-size:11px;font-weight:600;color:var(--tx);text-align:center;line-height:1.2;}
+.msim-fchip-ig{font-size:9px;color:var(--tx3);margin-top:1px;}
+.msim-dose-row{display:flex;gap:5px;margin-bottom:10px;}
+.msim-dcard{flex:1;text-align:center;padding:8px 4px;border-radius:var(--r);border:0.5px solid var(--bd2);background:var(--bg2);cursor:pointer;}
+.msim-dcard.on{border-width:2px;}
+.msim-dcard-verdict{font-size:16px;font-weight:700;}
+.msim-dcard-label{font-size:12px;font-weight:600;color:var(--tx);margin-top:2px;}
+.msim-dcard-spike{font-size:10px;color:var(--tx2);}
+.msim-dcard-peak{font-size:10px;color:var(--tx3);}
+.msim-curve-wrap{background:var(--bg2);border-radius:var(--r);padding:8px;margin-bottom:8px;overflow:hidden;}
+.msim-stats{display:flex;gap:6px;margin-bottom:8px;}
+.msim-stat{flex:1;text-align:center;background:var(--bg2);border-radius:6px;padding:6px 4px;}
+.msim-stat-val{font-size:14px;font-weight:700;line-height:1;}
+.msim-stat-lbl{font-size:9px;color:var(--tx3);margin-top:2px;line-height:1.2;}
+.msim-multi-wrap{background:var(--bg2);border-radius:var(--r);padding:8px;margin-bottom:8px;overflow:hidden;}
+.msim-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+.msim-legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--tx2);cursor:pointer;}
+.msim-note{font-size:10px;color:var(--tx3);margin-top:6px;line-height:1.5;padding:6px 8px;background:var(--bg2);border-radius:var(--r);}
+.msim-send-btn{width:100%;padding:10px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;margin-top:8px;display:none;}
+.msim-send-btn:active{opacity:.85;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/umd/index.min.js"></script>
 </head>
@@ -1021,14 +1060,57 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     <!-- Profilo personale -->
     <div style="border:0.5px solid var(--bd);border-radius:var(--rl);padding:12px 14px;background:var(--bg);margin-bottom:14px;">
       <div class="stit" style="margin-bottom:8px;">📈 Il tuo profilo glicemico (288 curve reali)</div>
-      <div class="gprof-row"><div class="gprof-label">Basale medio attuale</div><div class="gprof-val">5.4 mmol/L</div></div>
-      <div class="gprof-row"><div class="gprof-label">Spike medio carbo puri</div><div class="gprof-val">+2.0 mmol/L</div></div>
-      <div class="gprof-row"><div class="gprof-label">Spike medio prot+fibra</div><div class="gprof-val">+1.34 mmol/L</div></div>
-      <div class="gprof-row"><div class="gprof-label">Spike medio misto</div><div class="gprof-val">+1.86 mmol/L</div></div>
-      <div class="gprof-row"><div class="gprof-label">Tempo al picco (mediano)</div><div class="gprof-val">86 min</div></div>
-      <div class="gprof-row"><div class="gprof-label">Recovery (mediana)</div><div class="gprof-val">132 min</div></div>
-      <div class="gprof-row"><div class="gprof-label">Overshoot rate</div><div class="gprof-val">45% dei pasti</div></div>
-      <div class="gprof-row" style="border:none;"><div class="gprof-label">Effetto basale (ogni +1)</div><div class="gprof-val">−0.32 spike</div></div>
+      <div class="gprof-row"><div class="gprof-label">Basale medio attuale</div><div class="gprof-val" id="gpv-0">5.4 mmol/L</div></div>
+      <div class="gprof-row"><div class="gprof-label">Spike medio carbo puri</div><div class="gprof-val" id="gpv-1">+2.0 mmol/L</div></div>
+      <div class="gprof-row"><div class="gprof-label">Spike medio prot+fibra</div><div class="gprof-val" id="gpv-2">+1.34 mmol/L</div></div>
+      <div class="gprof-row"><div class="gprof-label">Spike medio misto</div><div class="gprof-val" id="gpv-3">+1.86 mmol/L</div></div>
+      <div class="gprof-row"><div class="gprof-label">Tempo al picco (mediano)</div><div class="gprof-val" id="gpv-4">86 min</div></div>
+      <div class="gprof-row"><div class="gprof-label">Recovery (mediana)</div><div class="gprof-val" id="gpv-5">132 min</div></div>
+      <div class="gprof-row"><div class="gprof-label">Overshoot rate</div><div class="gprof-val" id="gpv-6">45% dei pasti</div></div>
+      <div class="gprof-row" style="border:none;"><div class="gprof-label">Effetto basale (ogni +1)</div><div class="gprof-val" id="gpv-7">−0.32 spike</div></div>
+    </div>
+
+    <!-- ══ v19 — SIMULATORE MULTI-CURVA ══ -->
+    <div class="msim-box" id="msim-box">
+      <div class="msim-title">📊 Simulatore curve — confronto glucogeni</div>
+
+      <!-- Slider basale sincronizzato -->
+      <label class="lbl" style="margin-bottom:4px;">Basale pre-glucogeno</label>
+      <div class="msim-basale-row">
+        <input type="range" class="msim-sl" id="msim-sl" min="4.5" max="8.5" step="0.1" value="5.8" oninput="msimOnBasale()">
+        <span class="msim-bval" id="msim-bval">5.8</span>
+        <span class="msim-bunit">mmol/L</span>
+        <span class="msim-bstat" id="msim-bstat"></span>
+      </div>
+
+      <!-- Tipo contesto -->
+      <label class="lbl" style="margin-bottom:5px;">Contesto pasto precedente</label>
+      <div class="glico-meal-sel" style="margin-bottom:10px;">
+        <button class="gmtype-btn" id="msim-prot" onclick="msimSetMeal('prot+fibra')">🥩 Prot+<br>Verdure</button>
+        <button class="gmtype-btn" id="msim-misto" onclick="msimSetMeal('carbo+prot')">🍽 Misto</button>
+        <button class="gmtype-btn on" id="msim-digi" onclick="msimSetMeal('digiuno')">☕ Solo<br>bevanda</button>
+        <button class="gmtype-btn" id="msim-fibra" onclick="msimSetMeal('fibroso')">🥗 Verdure</button>
+      </div>
+
+      <!-- Griglia alimenti -->
+      <label class="lbl" style="margin-bottom:5px;">Seleziona glucogeno</label>
+      <div class="msim-food-grid" id="msim-food-grid"></div>
+
+      <!-- Dose cards (visibili dopo selezione) -->
+      <div id="msim-dose-section" style="display:none;">
+        <label class="lbl" style="margin-bottom:5px;">Dose</label>
+        <div class="msim-dose-row" id="msim-dose-row"></div>
+        <div class="msim-note" id="msim-food-note"></div>
+        <!-- Curva singola -->
+        <div class="msim-curve-wrap" id="msim-curve-wrap"></div>
+        <div class="msim-stats" id="msim-stats"></div>
+        <button class="msim-send-btn" id="msim-send-btn" onclick="msimSendToGlico()">← Usa questo glucogeno in Glico</button>
+      </div>
+
+      <!-- Confronto multi-curva sempre visibile -->
+      <label class="lbl" style="margin-top:10px;margin-bottom:5px;">Confronto tutte le dosi medie</label>
+      <div class="msim-multi-wrap"><svg id="msim-multi-svg" style="width:100%;display:block;"></svg></div>
+      <div class="msim-legend" id="msim-legend"></div>
     </div>
   </div>
 
@@ -3420,7 +3502,7 @@ function showTab(t){
   if(t==='hist')renderHist();
   if(t==='stato'){renderStato();updateCalibBanner();}
   if(t==='alim'){buildTrigFilterBar();renderCustomFoods();initApiKeyUI();}
-  if(t==='glico'){ checkLibreAutoImport();initGlico();updateDualSemaforo();}
+  if(t==='glico'){ checkLibreAutoImport();initGlico();msimInit();updateDualSemaforo();}
   if(t==='stats'){renderStats();renderBiometrics();}
 }
 
@@ -4328,6 +4410,376 @@ buildTrigFilterBar();
 buildSyms();buildSevs();setMomento(0);
 updateTriggers();
 loadGlicoLogs();
+
+/* ══════════════════════════════════════════════════════
+   MSIM — Simulatore multi-curva v19
+   Integrato nel tab Glico, usa ROSS esistente
+   ══════════════════════════════════════════════════════ */
+
+var _msimSyncing = false;
+var MSIM_FOODS = [
+  {id:'basmati',  name:'Riso basmati',       ig:58, unit:'cucchiai',  dose1:1,   dose2:2,   dose3:3,   spikePer1:0.65,  widal:0, note:'Test validato 30/05: 2 cuc → +1.7 con prot+verdure'},
+  {id:'patate',   name:'Patate al forno',     ig:65, unit:'g',         dose1:60,  dose2:100, dose3:150, spikePer1:0.018, widal:0, note:'Rischio Widal 0. Per 100g spike atteso ~1.8'},
+  {id:'lenticchie',name:'Lenticchie (pasta)', ig:32, unit:'g secchi',  dose1:30,  dose2:50,  dose3:70,  spikePer1:0.022, widal:1, note:'Validato 19-21 giu senza reazioni. IG basso, fibra alta.'},
+  {id:'pera',     name:'Pera',                ig:38, unit:'frutti',    dose1:0.5, dose2:1,   dose3:2,   spikePer1:0.35,  widal:1, note:'Opzione sicura MCAS — preferire a fine pasto proteico'},
+  {id:'quinoa',   name:'Quinoa',              ig:53, unit:'g secchi',  dose1:30,  dose2:50,  dose3:70,  spikePer1:0.020, widal:1, note:'Da testare. Sciacquare bene (saponine). CG 17 su 60g.'},
+  {id:'avena',    name:'Avena integrale',     ig:55, unit:'g',         dose1:20,  dose2:30,  dose3:40,  spikePer1:0.028, widal:1, note:'Beta-glucani rallentano IG effettivo. Da testare.'},
+  {id:'sorbetto', name:'Sorbetto pera',       ig:40, unit:'palline',   dose1:1,   dose2:2,   dose3:3,   spikePer1:0.45,  widal:1, note:'Sicuro MCAS. IG moderato — usare come glucogeno di emergenza.'},
+  {id:'orzo_z',   name:'Zuppa orzo',          ig:35, unit:'ciotola',   dose1:0.5, dose2:1,   dose3:1.5, spikePer1:1.5,   widal:2, note:'⚠ Widal 2. Spike storico reale +3.25 — usare con cautela.'},
+];
+
+var MSIM_COLORS = ['#2a78d6','#1baf7a','#eda100','#4a3aa7','#e34948','#e87ba4','#eb6834','#008300'];
+
+var msimSelFood  = null;
+var msimSelDose  = 2;
+var msimMealType = 'digiuno';
+
+function msimGetBasale(){
+  return parseFloat(document.getElementById('msim-sl').value) || 5.8;
+}
+
+function msimCorrectedSpike(base, basale){
+  var delta = basale - ROSS.baseline;
+  var corr  = delta * ROSS.basaleSlopePerUnit;
+  return Math.max(0.05, base + corr);
+}
+
+function msimContextFactor(){
+  if(msimMealType==='prot+fibra') return 0.65;
+  if(msimMealType==='carbo+prot') return 0.80;
+  if(msimMealType==='digiuno')    return 1.10;
+  return 0.85;
+}
+
+function msimSpikeFor(food, dose, basale){
+  var base = food.spikePer1 * dose * msimContextFactor();
+  return msimCorrectedSpike(base, basale);
+}
+
+function msimVerdict(peak){
+  if(peak<=7.0) return {v:'✓',c:'#2E6644',bg:'#E8F5EE',label:'ottimo'};
+  if(peak<=7.8) return {v:'⚠',c:'#7A5A00',bg:'#FFF8E7',label:'cautela'};
+  return {v:'✗',c:'#A32D2D',bg:'#FCEAEA',label:'sopra soglia'};
+}
+
+function msimBuildCurve(basale, spike, peakMin, recoveryMin){
+  var pts=[], tMin=-10, tMax=recoveryMin+40;
+  for(var t=tMin; t<=tMax; t+=3){
+    var v;
+    if(t<=0){ v=basale; }
+    else if(t<=peakMin){
+      var p=t/peakMin;
+      v=basale+spike*Math.sin(p*Math.PI/2);
+    } else if(t<=recoveryMin){
+      var p2=(t-peakMin)/(recoveryMin-peakMin);
+      v=basale+spike*Math.cos(p2*Math.PI/2);
+    } else {
+      var p3=(t-recoveryMin)/30;
+      var os=spike*0.08*(1-p3);
+      v=Math.max(basale-os, basale-0.15);
+    }
+    pts.push({t:t, v:Math.min(14, Math.max(3.0, v))});
+  }
+  return pts;
+}
+
+function msimOnBasale(){
+  if(_msimSyncing) return;
+  var b = msimGetBasale();
+  document.getElementById('msim-bval').textContent = b.toFixed(1);
+  // Sync with glico-basale input (senza triggering onBasaleChange)
+  var gi = document.getElementById('glico-basale');
+  if(gi && Math.abs(parseFloat(gi.value)-b)>0.05){ gi.value=b.toFixed(1); }
+  var el = document.getElementById('msim-bstat');
+  if(!el) return;
+  if(b<4.5){      el.className='msim-bstat high'; el.textContent='⚠ Ipo'; }
+  else if(b<=5.5){ el.className='msim-bstat ok';   el.textContent='✓ Ottimo'; }
+  else if(b<=7.0){ el.className='msim-bstat warn';  el.textContent='~ Moderato'; }
+  else{            el.className='msim-bstat high'; el.textContent='↑ Alto'; }
+  msimRender();
+}
+
+function msimSetMeal(type){
+  msimMealType = type;
+  ['prot','misto','digi','fibra'].forEach(function(k){ document.getElementById('msim-'+k).className='gmtype-btn'; });
+  var map={'prot+fibra':'prot','carbo+prot':'misto','digiuno':'digi','fibroso':'fibra'};
+  if(map[type]) document.getElementById('msim-'+map[type]).className='gmtype-btn on';
+  msimRender();
+}
+
+function msimBuildFoodGrid(){
+  var el = document.getElementById('msim-food-grid'); if(!el) return;
+  el.innerHTML = MSIM_FOODS.map(function(f){
+    var wBadge = f.widal>=2?' <span style="font-size:9px;color:#A32D2D">W'+f.widal+'</span>':'';
+    return '<div class="msim-fchip" id="msim-fc-'+f.id+'" onclick="msimSelectFood(\''+f.id+'\')">' +
+      '<div class="msim-fchip-name">'+f.name+wBadge+'</div>' +
+      '<div class="msim-fchip-ig">IG '+f.ig+'</div>' +
+    '</div>';
+  }).join('');
+}
+
+function msimSelectFood(id){
+  msimSelFood = id;
+  msimSelDose = 2;
+  MSIM_FOODS.forEach(function(f){
+    var el=document.getElementById('msim-fc-'+f.id);
+    if(el) el.className='msim-fchip'+(f.id===id?' on':'');
+  });
+  msimRender();
+}
+
+function msimSelectDose(d){
+  msimSelDose = d;
+  msimRender();
+}
+
+function msimRender(){
+  msimRenderSingle();
+  msimRenderMultiSVG();
+}
+
+function msimRenderSingle(){
+  var secEl = document.getElementById('msim-dose-section');
+  if(!msimSelFood){ if(secEl) secEl.style.display='none'; return; }
+  if(secEl) secEl.style.display='block';
+
+  var food = MSIM_FOODS.find(function(f){return f.id===msimSelFood;});
+  if(!food) return;
+  var basale = msimGetBasale();
+  var mealP  = ROSS.byType[msimMealType] || ROSS.byType['digiuno'];
+  var peakT  = mealP.peakTime;
+  var recT   = mealP.recovery;
+
+  // Dose cards
+  var doses = [food.dose1, food.dose2, food.dose3];
+  var doseRowEl = document.getElementById('msim-dose-row');
+  if(doseRowEl){
+    doseRowEl.innerHTML = doses.map(function(dose, i){
+      var idx=i+1;
+      var sp  = msimSpikeFor(food, dose, basale);
+      var pk  = Math.min(basale+sp, 14);
+      var vd  = msimVerdict(pk);
+      var lbl = (food.unit==='g'||food.unit==='g secchi') ? dose+'g' : dose+' '+food.unit;
+      var isSel = idx===msimSelDose;
+      return '<div class="msim-dcard'+(isSel?' on':'')+'" id="msim-dc-'+idx+'" onclick="msimSelectDose('+idx+')" style="'+
+        (isSel?'border-color:'+vd.c+';background:'+vd.bg:'')+'">'+
+        '<div class="msim-dcard-verdict" style="color:'+vd.c+'">'+vd.v+'</div>'+
+        '<div class="msim-dcard-label">'+lbl+'</div>'+
+        '<div class="msim-dcard-spike" style="color:'+vd.c+'">+'+sp.toFixed(2)+'</div>'+
+        '<div class="msim-dcard-peak" style="color:'+vd.c+'">→'+pk.toFixed(1)+'</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  // Note
+  var noteEl = document.getElementById('msim-food-note');
+  if(noteEl) noteEl.textContent = food.note;
+
+  // Curve SVG
+  var dose = doses[msimSelDose-1];
+  var spike = msimSpikeFor(food, dose, basale);
+  var peak  = Math.min(basale+spike, 14);
+  var vd    = msimVerdict(peak);
+  var pts   = msimBuildCurve(basale, spike, peakT, recT);
+  var pkPt  = pts.reduce(function(b,p){return p.v>b.v?p:b;}, pts[0]);
+
+  var W=330, H=88, ML=28, MR=6, MT=8, MB=18, CW=W-ML-MR, CH=H-MT-MB;
+  var tMin=-10, tMax=recT+40;
+  var vMin=Math.max(3.0, basale-0.3), vMax=Math.max(peak*1.05, basale+1.5);
+  var xF=function(t){return ML+(t-tMin)/(tMax-tMin)*CW;};
+  var yF=function(v){return MT+(vMax-v)/(vMax-vMin)*CH;};
+
+  var area='M'+xF(pts[0].t)+','+yF(basale);
+  pts.forEach(function(p){area+='L'+xF(p.t)+','+yF(p.v);});
+  area+='L'+xF(pts[pts.length-1].t)+','+yF(basale)+'Z';
+
+  var path=''; pts.forEach(function(p,i){path+=(i===0?'M':'L')+xF(p.t)+','+yF(p.v);});
+
+  var gridLines='';
+  [0,60,120,180].filter(function(t){return t<=tMax;}).forEach(function(t){
+    gridLines+='<line x1="'+xF(t)+'" y1="'+MT+'" x2="'+xF(t)+'" y2="'+(MT+CH)+'" stroke="var(--bd)" stroke-width="0.4"/>';
+    gridLines+='<text x="'+xF(t)+'" y="'+(H-3)+'" font-size="7" fill="var(--tx3)" text-anchor="middle">'+t+"'</text>";
+  });
+  [basale, (basale+vMax)/2].forEach(function(v){
+    gridLines+='<text x="'+(ML-3)+'" y="'+(yF(v)+3)+'" font-size="7" fill="var(--tx3)" text-anchor="end">'+v.toFixed(1)+'</text>';
+  });
+
+  var limit78 = (vMax>7.8&&vMin<7.8) ?
+    '<line x1="'+ML+'" y1="'+yF(7.8)+'" x2="'+(W-MR)+'" y2="'+yF(7.8)+'" stroke="#E24B4A" stroke-width="0.7" stroke-dasharray="2,2" opacity="0.6"/>'+
+    '<text x="'+(W-MR-2)+'" y="'+(yF(7.8)-3)+'" font-size="7" fill="#E24B4A" text-anchor="end">7.8</text>' : '';
+
+  var svgHtml = '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;display:block">'+
+    '<rect x="'+ML+'" y="'+Math.max(MT,yF(7.8))+'" width="'+CW+'" height="'+(Math.min(MT+CH,yF(3.9))-Math.max(MT,yF(7.8)))+'" fill="#5DCAA5" opacity="0.06"/>'+
+    gridLines+
+    '<line x1="'+ML+'" y1="'+yF(basale)+'" x2="'+(W-MR)+'" y2="'+yF(basale)+'" stroke="var(--tx3)" stroke-width="0.7" stroke-dasharray="3,3"/>'+
+    limit78+
+    '<path d="'+area+'" fill="'+vd.c+'" opacity="0.14"/>'+
+    '<path d="'+path+'" fill="none" stroke="'+vd.c+'" stroke-width="2" stroke-linejoin="round"/>'+
+    '<circle cx="'+xF(pkPt.t)+'" cy="'+yF(pkPt.v)+'" r="3" fill="'+vd.c+'"/>'+
+    '<text x="'+(xF(pkPt.t)+4)+'" y="'+(yF(pkPt.v)-3)+'" font-size="8" fill="'+vd.c+'" font-weight="700">'+pkPt.v.toFixed(1)+'</text>'+
+  '</svg>';
+
+  var wrapEl = document.getElementById('msim-curve-wrap');
+  if(wrapEl) wrapEl.innerHTML = svgHtml;
+
+  // Stats
+  var statsEl = document.getElementById('msim-stats');
+  if(statsEl){
+    var stats=[
+      {val:'+'+spike.toFixed(2), lbl:'spike', col:vd.c},
+      {val:peak.toFixed(1),      lbl:'picco mmol/L', col:vd.c},
+      {val:pkPt.t+"'",           lbl:'al picco', col:'var(--tx)'},
+      {val:recT+"'",             lbl:'recovery', col:'var(--tx)'},
+    ];
+    statsEl.innerHTML = stats.map(function(s){
+      return '<div class="msim-stat"><div class="msim-stat-val" style="color:'+s.col+'">'+s.val+'</div><div class="msim-stat-lbl">'+s.lbl+'</div></div>';
+    }).join('');
+  }
+
+  // Send button
+  var sendEl = document.getElementById('msim-send-btn');
+  if(sendEl){ sendEl.style.display='block'; sendEl.dataset.food=food.name; sendEl.dataset.spike=spike.toFixed(2); }
+
+  // Widal conflict
+  var conflEl = document.getElementById('glico-conflict-out');
+  if(conflEl && food.widal>=2){
+    var wc=food.widal>=4?'#A32D2D':food.widal>=3?'#7A5A00':'#854F0B';
+    var wb=food.widal>=4?'#FCEAEA':food.widal>=3?'#FFF8E7':'#FAEEDA';
+    conflEl.innerHTML='<div style="background:'+wb+';border:0.5px solid '+wc+'40;border-radius:var(--r);padding:7px 10px;font-size:11px;color:'+wc+';font-weight:600;margin-top:6px;">⚠ MCAS: rischio Widal '+food.widal+'/5</div>';
+  } else if(conflEl){ conflEl.innerHTML=''; }
+}
+
+function msimRenderMultiSVG(){
+  var svgEl = document.getElementById('msim-multi-svg');
+  var legEl = document.getElementById('msim-legend');
+  if(!svgEl) return;
+
+  var basale  = msimGetBasale();
+  var mealP   = ROSS.byType[msimMealType] || ROSS.byType['digiuno'];
+  var peakT   = mealP.peakTime;
+  var recT    = mealP.recovery;
+
+  var W=330, H=110, ML=28, MR=6, MT=8, MB=18, CW=W-ML-MR, CH=H-MT-MB;
+  var tMin=-10, tMax=recT+50;
+
+  // Compute all peaks to set vMax
+  var allPeaks = MSIM_FOODS.map(function(f){
+    return basale + msimSpikeFor(f, f.dose2, basale);
+  });
+  var vMax = Math.min(14, Math.max.apply(null, allPeaks)*1.05);
+  var vMin = Math.max(3.0, basale-0.3);
+
+  var xF=function(t){return ML+(t-tMin)/(tMax-tMin)*CW;};
+  var yF=function(v){return MT+(vMax-v)/(vMax-vMin)*CH;};
+
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;display:block">';
+
+  // TIR zone
+  var y39=yF(3.9), y78=yF(7.8);
+  svg+='<rect x="'+ML+'" y="'+Math.max(MT,y78)+'" width="'+CW+'" height="'+(Math.min(MT+CH,y39)-Math.max(MT,y78))+'" fill="#5DCAA5" opacity="0.07"/>';
+
+  // Grid
+  [0,60,120,180].filter(function(t){return t<=tMax;}).forEach(function(t){
+    svg+='<line x1="'+xF(t)+'" y1="'+MT+'" x2="'+xF(t)+'" y2="'+(MT+CH)+'" stroke="var(--bd)" stroke-width="0.4"/>';
+    svg+='<text x="'+xF(t)+'" y="'+(H-3)+'" font-size="7" fill="var(--tx3)" text-anchor="middle">'+t+"'</text>";
+  });
+  [vMin, 7.0, 7.8, vMax].forEach(function(v){
+    if(v<=vMax && v>=vMin){
+      svg+='<text x="'+(ML-3)+'" y="'+(yF(v)+3)+'" font-size="7" fill="var(--tx3)" text-anchor="end">'+v.toFixed(1)+'</text>';
+    }
+  });
+
+  // Basale
+  svg+='<line x1="'+ML+'" y1="'+yF(basale)+'" x2="'+(W-MR)+'" y2="'+yF(basale)+'" stroke="var(--tx3)" stroke-width="0.7" stroke-dasharray="3,3"/>';
+  // 7.8 limit
+  if(vMax>7.8&&vMin<7.8){
+    svg+='<line x1="'+ML+'" y1="'+yF(7.8)+'" x2="'+(W-MR)+'" y2="'+yF(7.8)+'" stroke="#E24B4A" stroke-width="0.7" stroke-dasharray="2,2" opacity="0.5"/>';
+  }
+
+  // Curves
+  var legHtml='';
+  MSIM_FOODS.forEach(function(food, i){
+    var col   = MSIM_COLORS[i % MSIM_COLORS.length];
+    var spike = msimSpikeFor(food, food.dose2, basale);
+    var peak  = Math.min(basale+spike, 14);
+    var pts   = msimBuildCurve(basale, spike, peakT, recT);
+    var vd    = msimVerdict(peak);
+    var isSel = msimSelFood===food.id;
+    var sw    = isSel ? 2.2 : 1.2;
+    var op    = isSel ? '1' : '0.65';
+
+    var path=''; pts.forEach(function(p,j){path+=(j===0?'M':'L')+xF(p.t)+','+yF(Math.max(vMin,Math.min(vMax,p.v)));});
+    svg+='<path d="'+path+'" fill="none" stroke="'+col+'" stroke-width="'+sw+'" stroke-linejoin="round" opacity="'+op+'"/>';
+
+    // Peak dot
+    var pkPt=pts.reduce(function(b,p){return p.v>b.v?p:b;},pts[0]);
+    svg+='<circle cx="'+xF(pkPt.t)+'" cy="'+yF(Math.min(vMax,pkPt.v))+'" r="2.5" fill="'+col+'" opacity="'+op+'"/>';
+    if(isSel){
+      svg+='<text x="'+(xF(pkPt.t)+3)+'" y="'+(yF(Math.min(vMax,pkPt.v))-3)+'" font-size="7" fill="'+col+'" font-weight="700">'+peak.toFixed(1)+'</text>';
+    }
+
+    // Legend entry
+    var doseLabel = (food.unit==='g'||food.unit==='g secchi') ? food.dose2+'g' : food.dose2+' '+food.unit;
+    legHtml+='<div class="msim-legend-item" onclick="msimSelectFood(\''+food.id+'\')">'+
+      '<span style="width:12px;height:2px;background:'+col+';display:inline-block;border-radius:1px;flex-shrink:0"></span>'+
+      '<span style="'+(isSel?'font-weight:700;color:var(--tx)':'')+'">'+(food.name.length>12?food.name.slice(0,12)+'…':food.name)+
+      ' <span style="color:'+vd.c+'">→'+peak.toFixed(1)+'</span></span>'+
+    '</div>';
+  });
+
+  svg+='</svg>';
+  svgEl.setAttribute('viewBox','0 0 '+W+' '+H);
+  svgEl.innerHTML=svg.replace('<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;display:block">','');
+  if(legEl) legEl.innerHTML=legHtml;
+}
+
+function msimSendToGlico(){
+  var btn = document.getElementById('msim-send-btn');
+  if(!btn) return;
+  var foodName = btn.dataset.food;
+  var spike    = btn.dataset.spike;
+  // Sync basale to glico tab
+  var b = msimGetBasale();
+  var gi = document.getElementById('glico-basale');
+  if(gi){ gi.value = b.toFixed(1); onBasaleChange(); }
+  // Show recv box
+  var rb = document.getElementById('glico-recv-box');
+  if(rb){
+    rb.className='glico-recv-box vis';
+    rb.textContent='⚡ Da simulatore: '+foodName+' — spike atteso +'+spike+' mmol/L';
+  }
+  // Fill glog form
+  var glogInp = document.getElementById('glog-food-inp');
+  if(glogInp) glogInp.value = foodName;
+  // Scroll to advisor
+  var hero = document.getElementById('glico-hero');
+  if(hero) hero.scrollIntoView({behavior:'smooth'});
+  toast(foodName+' inviato all\'Advisor ✓');
+}
+
+function msimInit(){
+  msimBuildFoodGrid();
+  msimOnBasale();
+  msimRenderMultiSVG();
+}
+
+// Sync glico-basale input → msim slider (senza ricorsione)
+var _origOnBasaleChange = onBasaleChange;
+onBasaleChange = function(){
+  _origOnBasaleChange();
+  if(_msimSyncing) return;
+  var gi = document.getElementById('glico-basale');
+  var sl = document.getElementById('msim-sl');
+  if(gi && sl){
+    var gv = parseFloat(gi.value);
+    if(!isNaN(gv) && Math.abs(parseFloat(sl.value)-gv) > 0.05){
+      _msimSyncing = true;
+      sl.value = gv.toFixed(1);
+      msimOnBasale();
+      _msimSyncing = false;
+    }
+  }
+};
 </script>
 </body>
 </html>
